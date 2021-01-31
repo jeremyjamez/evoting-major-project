@@ -1,0 +1,40 @@
+{
+  "name": "evoting",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@geist-ui/react": "^2.1.0-canary.2",
+    "@geist-ui/react-icons": "^1.0.1",
+    "@geist-ui/style": "^2.0.0",
+    "@hookform/resolvers": "^2.0.0-beta.7",
+    "@reactchartjs/react-chart.js": "^1.0.0-rc.3",
+    "@svgdotjs/svg.js": "^3.0.16",
+    "@svgdotjs/svg.panzoom.js": "^2.1.1",
+    "axios": "^0.21.1",
+    "chart.js": "^2.9.4",
+    "moment": "^2.29.1",
+    "mssql": "^6.2.3",
+    "next": "10.0.3",
+    "next-auth": "^3.1.0",
+    "react": "17.0.1",
+    "react-colorful": "^4.4.4",
+    "react-data-table-component": "^6.11.6",
+    "react-dom": "17.0.1",
+    "react-dropzone": "^11.2.4",
+    "react-hook-form": "^6.14.2",
+    "react-step-builder": "^2.0.4",
+    "styled-components": "^5.2.1",
+    "svgdom": "^0.1.8",
+    "swr": "^0.4.0",
+    "yup": "^0.32.8"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.0",
+    "typescript": "^4.1.3"
+  }
+}

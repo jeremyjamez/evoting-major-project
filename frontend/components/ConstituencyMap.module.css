@@ -1,0 +1,7 @@
+.constituency {
+    fill: #DDE8ED;
+}
+
+.active, .constituency:hover {
+    fill: #3d6cb9;
+}
