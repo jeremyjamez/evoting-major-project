@@ -40,11 +40,14 @@ const Login = () => {
                                     </Grid>
                                     <Grid xs={24}>
                                         <Input name="password" width="100%" type="password" size="large" ref={register}>Password</Input>
-                                        <ul type="*">
-                                            <li>{errors.password?.message.error1}</li>
-                                            <li>{errors.password?.message.error2}</li>
-                                            <li>{errors.password?.message.error3}</li>
-                                        </ul>
+                                        {
+                                            errors.password ?
+                                                <Text type="error">
+                                                    {errors.password?.message.error1} <br/>
+                                                    {errors.password?.message.error2} <br/>
+                                                    {errors.password?.message.error3}
+                                                </Text> : ''
+                                        }
                                     </Grid>
                                     <Grid xs={12}>
                                         <Button htmlType="submit" type="secondary">Login</Button>

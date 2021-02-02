@@ -1,19 +1,6 @@
 import { Button, Grid, Input, Text } from "@geist-ui/react";
 import ChevronLeft from '@geist-ui/react-icons/chevronLeft';
 
-const questions = [
-    {
-        id: 1,
-        question: "What is your address?",
-        answer: ""
-    },
-    {
-        id: 2,
-        question: "What is your occupation?",
-        answer: ""
-    }
-];
-
 export default function VerificationStepOne(props) {
     return (
         <>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\eVotingApi.csproj": {}
+    "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\eVotingApi.csproj": {
+    "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\eVotingApi.csproj",
+        "projectUniqueName": "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj",
         "projectName": "eVotingApi",
-        "projectPath": "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\eVotingApi.csproj",
+        "projectPath": "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj",
         "packagesPath": "C:\\Users\\romar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\obj\\",
+        "outputPath": "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",
