@@ -5,8 +5,9 @@ import { useConstituencies, useConstituencyMP } from "../../utils/swr-utils"
 import DashboardLayout from "./layout"
 import https from "https"
 import { useForm } from "react-hook-form"
+import { Minus, Plus } from "@geist-ui/react-icons"
 
-const Constituencies = ({constituencyData}) => {
+const Constituencies = ({ constituencyData }) => {
 
     const [mapCol, setMapCol] = useState(24)
     const [sideCol, setSideCol] = useState(0)
@@ -102,6 +103,22 @@ const Constituencies = ({constituencyData}) => {
                             </Row>
                         </Grid>
                     </Grid.Container>
+                    <div id="mapControls">
+                        <Grid.Container gap={2}>
+                            <Grid>
+                                <Button type="secondary" icon={<Minus />} auto />
+                            </Grid>
+                            <Grid>
+                                <Button type="secondary" icon={<Plus />} auto />
+                            </Grid>
+                        </Grid.Container>
+                    </div>
+                    <style jsx>{`
+                            #mapControls {
+                                position: absolute;
+                                bottom: 5%;
+                            }
+                            `}</style>
                 </Tabs.Item>
                 <Tabs.Item label="add" value="2">
                     <form>

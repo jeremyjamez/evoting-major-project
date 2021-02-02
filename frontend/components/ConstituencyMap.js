@@ -387,7 +387,13 @@ class ConstituencyMap extends React.Component {
     }
     componentDidMount() {
         require ("@svgdotjs/svg.panzoom.js")
-        const draw = SVG(rawSvg).addTo('#map').size('100%', '100%').panZoom({ zoomMin: 1, zoomMax: 20 })
+        const draw = SVG(rawSvg).addTo('#map').size('100%', '100%').panZoom({ zoomMin: 2, zoomMax: 10, zoomFactor: 1 })
+
+        
+
+        draw.on('zoom', (ev) => {
+            console.log(ev.detail.level)
+        })
 
         if (this.state.selected == null) {
             this.props.colsize(0)
