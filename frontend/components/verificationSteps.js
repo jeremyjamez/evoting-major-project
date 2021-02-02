@@ -4,6 +4,10 @@ import VerificationStepOne from "./verificationStepOne";
 import {Row} from '@geist-ui/react';
 import VerificationStepTwo from './verificationStepTwo';
 
+/**
+ * Component that displays the security questions in a .
+ * Hooked up to `verificationSteps.js` as a `Step` component
+ */
 function VerificationSteps() {
 
     return (
@@ -20,11 +24,6 @@ function VerificationSteps() {
 
 VerificationSteps.propTypes = {
     onPageChanged: PropTypes.func
-}
-
-export async function getStaticProps() {
-    const res = fetch("https://localhost:5000/api/Voters/{id}");
-    
 }
 
 export default VerificationSteps;

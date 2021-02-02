@@ -1,5 +1,5 @@
 import { SVG } from "@svgdotjs/svg.js"
-//import "@svgdotjs/svg.panzoom.js"
+
 import React, { useState, useRef } from "react"
 import styles from "./ConstituencyMap.module.css"
 
@@ -373,7 +373,10 @@ l-1.4,4.1l-5.5,5.1l0.1,14.5l2.4,2.8l3.6,0.8l2.8-1.2l4-0.2l1.8,1.2l1.6-1.3l1.8-1l
 l12,2.7l5.8,1l5.6,1.4l3.4,1.4l1.6,2.4l5,1.6l4.6,3.2l18.6,5h8l2.6-3L848.8,279.9z"/>
 </svg>
 `
-
+/**
+ * Component that displays constituency map of Jamaica.
+ * 
+ */
 class ConstituencyMap extends React.Component {
     constructor(props) {
         super(props)
@@ -383,8 +386,8 @@ class ConstituencyMap extends React.Component {
         }
     }
     componentDidMount() {
-
-        const draw = SVG(rawSvg).addTo('#map').size('100%', '100%')//.panZoom({ zoomMin: 1, zoomMax: 20 })
+        require ("@svgdotjs/svg.panzoom.js")
+        const draw = SVG(rawSvg).addTo('#map').size('100%', '100%').panZoom({ zoomMin: 1, zoomMax: 20 })
 
         if (this.state.selected == null) {
             this.props.colsize(0)
