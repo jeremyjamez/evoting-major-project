@@ -5,7 +5,7 @@ import {Row} from '@geist-ui/react';
 import VerificationStepTwo from './verificationStepTwo';
 
 /**
- * Component that displays the security questions in a .
+ * Component that displays the security questions.
  * Hooked up to `verificationSteps.js` as a `Step` component
  */
 function VerificationSteps() {

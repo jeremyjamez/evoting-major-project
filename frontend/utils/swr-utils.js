@@ -78,3 +78,12 @@ export const useConstituencyMP = (name) => {
 export const usePollingStations = () => {
 
 }
+
+export const useSecurityQuestions = (voterId) => {
+    const { data: questions, error } = useSWR(`${baseUrl}/voters/GetSecurityQuestionsById/${voterId}`)
+
+    return {
+        questions,
+        isError: error
+    }
+}
