@@ -12,7 +12,7 @@ export default function VerificationStepOne(props) {
         <>
             <Grid.Container gap={2} justify="center">
                 <Grid xs={24}>
-                    <Text style={{ textAlign: 'center' }} h1></Text>
+                    <Text style={{ textAlign: 'center' }} h1>What is your address?</Text>
                 </Grid>
                 <Grid xs={24}>
                     <Input style={{ fontSize: '1.5rem' }} required placeholder="Type answer here" size="large" width="100%" status="secondary" clearable />

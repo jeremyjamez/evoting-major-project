@@ -1,25 +1,12 @@
 import { Button, Grid, Input, Text } from "@geist-ui/react";
 import ChevronLeft from '@geist-ui/react-icons/chevronLeft';
 
-const questions = [
-    {
-        id: 1,
-        question: "What is your address?",
-        answer: ""
-    },
-    {
-        id: 2,
-        question: "What is your occupation?",
-        answer: ""
-    }
-];
-
 export default function VerificationStepTwo(props) {
     return (
         <>
             <Grid.Container gap={2} justify="center">
                 <Grid xs={24}>
-                    <Text style={{ textAlign: 'center' }} h1>{questions[1].question}</Text>
+                    <Text style={{ textAlign: 'center' }} h1>What is your mother's maiden name?</Text>
                 </Grid>
                 <Grid xs={24}>
                     <Input style={{ fontSize: '1.5rem' }} required placeholder="Type answer here" size="large" width="100%" status="secondary" clearable />
