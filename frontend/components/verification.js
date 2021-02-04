@@ -3,12 +3,13 @@ import { Step, Steps } from 'react-step-builder';
 import VerificationStepOne from "./verificationStepOne";
 import {Row} from '@geist-ui/react';
 import VerificationStepTwo from './verificationStepTwo';
+import Stepper from 'react-stepper-horizontal'
 
 /**
  * Component that displays the security questions.
  * Hooked up to `verificationSteps.js` as a `Step` component
  */
-function VerificationSteps() {
+function Verification() {
 
     return (
         <>
@@ -22,8 +23,4 @@ function VerificationSteps() {
     )
 }
 
-VerificationSteps.propTypes = {
-    onPageChanged: PropTypes.func
-}
-
-export default VerificationSteps;
+export default Verification;
