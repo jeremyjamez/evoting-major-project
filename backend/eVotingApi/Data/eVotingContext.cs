@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using eVotingApi.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace eVotingApi.Models
+namespace eVotingApi.Data
 {
     public class eVotingContext : DbContext
     {

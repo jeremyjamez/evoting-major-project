@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Models.DTO;
+using eVotingApi.Data;
 
 namespace eVotingApi.Controllers
 {
