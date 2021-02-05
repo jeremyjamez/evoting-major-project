@@ -7,11 +7,7 @@ const schema = yup.object().shape({
     username: yup.string().required(),
     password: yup.string().matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@#!%*?&])[A-Za-z\d$@#!%*?&].{8,}/,
         {
-            message: {
-                error1: 'Password should contain at least 8 characters',
-                error2: 'Should contain at least 1 uppercase letter [A-Z]',
-                error3: 'Should contain at least 1 lowercase letter [a-z]'
-            }
+            message: 'Invalid Password'
         }).required(),
 });
 
@@ -36,16 +32,17 @@ const Login = () => {
                                 <Grid.Container gap={2} justify="center">
                                     <Grid xs={24}>
                                         <Input name="username" width="100%" size="large" ref={register}>Username</Input>
-                                        <p>{errors.username?.message}</p>
+                                        <p>{errors.username ? errors.message.username : ''}</p>
                                     </Grid>
                                     <Grid xs={24}>
                                         <Input name="password" width="100%" type="password" size="large" ref={register}>Password</Input>
                                         {
                                             errors.password ?
                                                 <Text type="error">
-                                                    {errors.password?.message.error1} <br/>
-                                                    {errors.password?.message.error2} <br/>
-                                                    {errors.password?.message.error3}
+                                                    Password should contain at least 8 characters <br/>
+                                                    Should contain at least 1 uppercase letter [A-Z] <br/>
+                                                    Should contain at least 1 lowercase letter [a-z] <br/>
+                                                    Should contain at least 1 special character [$@#!%*?&]
                                                 </Text> : ''
                                         }
                                     </Grid>

@@ -7,7 +7,7 @@ export default function Home() {
   const [session, loading] = useSession()
   return <>
     {!session && <>
-      <Page dotBackdrop>
+      <Page>
         <Page.Content>
           <Login />
         </Page.Content>

@@ -1,4 +1,4 @@
-import { Button, Grid, Input, Text } from "@geist-ui/react";
+import { Button, Grid, Input, Spacer, Text } from "@geist-ui/react";
 import ChevronLeft from '@geist-ui/react-icons/chevronLeft';
 
 /**
@@ -17,12 +17,11 @@ export default function VerificationStepOne(props) {
                 <Grid xs={24}>
                     <Input style={{ fontSize: '1.5rem' }} required placeholder="Type answer here" size="large" width="100%" status="secondary" clearable />
                 </Grid>
-
-                <Grid xs={24}>
-                    <Grid.Container justify="space-between">
-                        <Grid><Button iconRight={<ChevronLeft />} type="secondary" effect ghost size="large" disabled={props.isFirst()} auto></Button></Grid>
-                        <Grid><Button size="large" type="success" disabled={props.isLast()} auto effect shadow>Next</Button></Grid>
-                    </Grid.Container>
+            </Grid.Container>
+            <Spacer y={1}/>
+            <Grid.Container justify="flex-end">
+                <Grid>
+                    <Button type="secondary" size="large" auto shadow>Next</Button>
                 </Grid>
             </Grid.Container>
         </>

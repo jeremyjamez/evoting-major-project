@@ -20,7 +20,7 @@ export default function Login() {
                         </Row>
 
                         <Row justify="center">
-                            <Link href="/verification">
+                            <Link href="/agreement">
                                 <Button type="secondary" size="large" ghost>Login</Button>
                             </Link>
                         </Row>
