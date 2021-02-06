@@ -1,16 +1,20 @@
 ﻿using eVotingApi.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 
 namespace eVotingApi.Data
 {
-    public class eVotingContext : DbContext
+    public class eVotingContext : IdentityDbContext
     {
         public eVotingContext(DbContextOptions<eVotingContext> options)
             :base(options)
         {
 
         }
+
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public DbSet<Election> Elections { get; set; }
         public DbSet<Voter> Voters { get; set; }
@@ -26,14 +30,14 @@ namespace eVotingApi.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder
-                
-                .UseSqlServer(@"Data Source=DESKTOP-24V9D5U;Initial Catalog=evotingdb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;MultipleActiveResultSets=true");
-
+            //optionsBuilder
+                //.UseSqlServer(Configuration);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Vote>()
                 .HasOne(v => v.Voter)
                 .WithMany(vo => vo.Votes)
@@ -65,8 +69,7 @@ namespace eVotingApi.Data
                 .HasForeignKey(ps => ps.CentreId);
 
             modelBuilder.Entity<MemberOfParliament>()
-                .HasKey(k => new { k.ConstituencyId, k.CandidateId });
-                
+                .HasKey(k => new { k.ConstituencyId, k.CandidateId });                
         }
     }
 }

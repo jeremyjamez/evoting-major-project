@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Models.DTO;
 using eVotingApi.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace eVotingApi.Controllers
 {
