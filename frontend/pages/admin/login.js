@@ -2,6 +2,7 @@ import { Button, Card, Grid, Input, Page, Spacer, Text } from "@geist-ui/react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import { csrfToken } from 'next-auth/client'
 
 const schema = yup.object().shape({
     username: yup.string().required(),
@@ -11,8 +12,9 @@ const schema = yup.object().shape({
         }).required(),
 });
 
-const Login = () => {
+const Login = ({csrfToken}) => {
 
+    console.log("token: " + csrfToken)
     const { handleSubmit, register, errors } = useForm({
         resolver: yupResolver(schema)
     })
@@ -28,7 +30,8 @@ const Login = () => {
                     <Grid xs={24} xl={12}>
                         <Card hoverable>
                             <h4>eVoting Prototype - Admin Login</h4>
-                            <form onSubmit={handleSubmit(onSubmit)}>
+                            <form method="post" action="/api/auth/callback/credentials">
+                                <input name='csrfToken' type='hidden' defaultValue={csrfToken}/>
                                 <Grid.Container gap={2} justify="center">
                                     <Grid xs={24}>
                                         <Input name="username" width="100%" size="large" ref={register}>Username</Input>
@@ -39,9 +42,9 @@ const Login = () => {
                                         {
                                             errors.password ?
                                                 <Text type="error">
-                                                    Password should contain at least 8 characters <br/>
-                                                    Should contain at least 1 uppercase letter [A-Z] <br/>
-                                                    Should contain at least 1 lowercase letter [a-z] <br/>
+                                                    Password should contain at least 8 characters <br />
+                                                    Should contain at least 1 uppercase letter [A-Z] <br />
+                                                    Should contain at least 1 lowercase letter [a-z] <br />
                                                     Should contain at least 1 special character [$@#!%*?&]
                                                 </Text> : ''
                                         }
@@ -62,6 +65,12 @@ const Login = () => {
             </Page>
         </>
     )
+}
+
+Login.getInitialProps = async (context) => {
+    return {
+        csrfToken: await csrfToken(context)
+    }
 }
 
 export default Login

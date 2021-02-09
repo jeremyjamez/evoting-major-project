@@ -1,4 +1,5 @@
 import { Col, Page, Row } from "@geist-ui/react"
+import { Component, useState } from "react"
 import { Strider, Step } from "react-strider"
 import GettingStarted from "../components/gettingStarted"
 import PhoneNumber from "../components/phoneNumberStep"
@@ -8,6 +9,7 @@ import { useSecurityQuestions } from "../utils/swr-utils"
 const Verification = (props) => {
 
     const { questions } = useSecurityQuestions(props.votersId)
+    const [correct, setCorrect] = useState(0)
 
     return (
         <>
@@ -22,7 +24,7 @@ const Verification = (props) => {
                             </Step>
                             <Step>
                                 {({ next, goTo, active, hiding, activeIndex }) => (
-                                    <SecurityQuestion {...props} number={activeIndex} next={next} />
+                                    <SecurityQuestion {...props} pushAnswer={() => setCorrect(correct + 1)} number={activeIndex} item={questions[activeIndex]} next={next} />
                                 )}
                             </Step>
                             <Step>
@@ -32,7 +34,7 @@ const Verification = (props) => {
                             </Step>
                             <Step>
                                 {({ next, goTo, active, hiding, activeIndex }) => (
-                                    <PhoneNumber next={next}/>
+                                    <PhoneNumber next={next} />
                                 )}
                             </Step>
                         </Strider>

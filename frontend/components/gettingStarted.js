@@ -8,7 +8,7 @@ const GettingStarted = (props) => {
                     <Text h2>You will be asked two (2) security questions in order to verify your identity and your mobile phone number in order to receive
                         the confirmation code at the end.
                     </Text>
-                    <Text type="warning" h3>Ensure that answers are spelt correctly and with correct formatting and that the phone number you enter is the one you currently use.</Text>
+                    <Text type="error" h3>IMPORTANT: Ensure that your answers are spelt correctly and that the phone number you enter is the one you currently use.</Text>
                 </Grid>
             </Grid.Container>
             <Grid.Container justify="flex-end">

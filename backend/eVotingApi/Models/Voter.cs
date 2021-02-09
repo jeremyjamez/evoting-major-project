@@ -23,6 +23,8 @@ namespace eVotingApi.Models
         [Required]
         public string Address { get; set; }
         [Required]
+        public string Parish { get; set; }
+        [Required]
         public string Gender { get; set; }
         [Required]
         public DateTime DateOfBirth { get; set; }
@@ -32,6 +34,12 @@ namespace eVotingApi.Models
         public string Occupation { get; set; }
         [Required]
         public string MothersMaidenName { get; set; }
+        [Required]
+        public string PlaceOfBirth { get; set; }
+        [Required]
+        public string MothersPlaceOfBirth { get; set; }
+        [Required]
+        public string FathersPlaceOfBirth { get; set; }
         [Required]
         public long ConstituencyId { get; set; }
 

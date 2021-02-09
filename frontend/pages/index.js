@@ -14,7 +14,8 @@ export default function Home() {
       </Page>
     </>}
     {session && <>
-
+    {console.log(session)}
+    <p>Brij</p>
     </>}
   </>
 }

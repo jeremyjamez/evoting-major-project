@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace eVotingApi.Models
@@ -19,6 +20,7 @@ namespace eVotingApi.Models
         public DateTime ExpiryDate { get; set; }
 
         [ForeignKey(nameof(UserId))]
+        [JsonIgnore]
         public IdentityUser User { get; set; }
     }
 }
