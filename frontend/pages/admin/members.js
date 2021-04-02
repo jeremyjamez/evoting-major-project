@@ -7,10 +7,12 @@ import moment from "moment";
 import { useMembers, usePoliticalParties } from "../../utils/swr-utils";
 import FilterComponent from "../../components/FilterComponent"
 import { useForm } from "react-hook-form"
+import jwt from 'jsonwebtoken'
+import { parseCookies } from 'nookies'
 
-const Members = () => {
-    const { members } = useMembers('/Members');
-    const { parties } = usePoliticalParties('/PoliticalParties');
+const Members = ({token}) => {
+    const { members } = useMembers(token);
+    const { parties } = usePoliticalParties(token);
 
     const columns = useMemo(() => [
         {
@@ -212,7 +214,7 @@ const Members = () => {
 
     return (
         <DashboardLayout>
-            <Tabs initialValue="1">
+            <Tabs initialValue="1" style={{margin: '16px'}}>
                 {/**
                  * Tab that displays a list of all members
                  */}
@@ -223,6 +225,7 @@ const Members = () => {
                         highlightOnHover
                         subHeader
                         subHeaderComponent={subHeaderComponentMemo}
+                        noHeader
                     />
                 </Tabs.Item>
                 {/** 
@@ -231,7 +234,7 @@ const Members = () => {
                 <Tabs.Item label="add" value="2">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Grid.Container gap={2} justify="center">
-                            <Grid xl={3}>
+                            <Grid xl={3} style={{display:'block'}}>
                                 Prefix
                                 <Spacer y={.5} />
                                 <Select placeholder="Mr/Mrs/Ms" size="large" name="prefix" onChange={handlePrefixChange} width="100%">
@@ -257,7 +260,7 @@ const Members = () => {
                                 </Input>
                             </Grid>
 
-                            <Grid xl={3}>
+                            <Grid xl={3} style={{display:'block'}}>
                                 Suffix
                                 <Spacer y={.5} />
                                 <Select placeholder="Jr/Snr" name="suffix" onChange={handleSuffixChange} width="100%" size="large">
@@ -270,7 +273,7 @@ const Members = () => {
                                 </Select>
                             </Grid>
 
-                            <Grid xl={3}>
+                            <Grid xl={3} style={{display:'block'}}>
                                 Gender
                                 <Spacer y={.5} />
                                 <Select placeholder="Gender" name="gender" onChange={handleGenderChange} width="100%" size="large">
@@ -291,7 +294,7 @@ const Members = () => {
                                 </Input>
                             </Grid>
 
-                            <Grid xl={3}>
+                            <Grid xl={3} style={{display:'block'}}>
                                 Position
                                 <Spacer y={.5} />
                                 <AutoComplete placeholder="Position" name="position" onSearch={searchHandler} width="100%" size="large" options={options}/>
@@ -299,7 +302,7 @@ const Members = () => {
                                     Position
                                 </Input> */}
                             </Grid>
-                            <Grid xl={3}>
+                            <Grid xl={3} style={{display:'block'}}>
                                 Affiliation
                                 <Spacer y={.5} />
                                 <Select placeholder="Affiliation" name="partyId" onChange={handleAffiliationChange} width="100%" size="large">
@@ -340,6 +343,29 @@ const Members = () => {
             </Tabs>
         </DashboardLayout>
     )
+}
+
+export async function getServerSideProps(context){
+    const cookies = parseCookies(context)
+
+    const token = cookies.token
+    const decodedToken = jwt.decode(token, { complete: true })
+    var dateNow = moment(moment().valueOf()).unix()
+
+    if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            token
+        }
+    }
 }
 
 export default Members

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVotingApi.Controllers
 {
+    [Authorize(Roles = "Administrator,ECJ")]
     [Route("api/Constituencies")]
     [ApiController]
     public class ConstituenciesController : ControllerBase
@@ -22,6 +24,7 @@ namespace eVotingApi.Controllers
         }
 
         // GET: api/Constituencies
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Constituency>>> GetConstituencies()
         {

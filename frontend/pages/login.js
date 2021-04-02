@@ -27,10 +27,10 @@ export default function Login() {
                     </Card>
                 </Grid>
                 <Grid xs={24}>
-                    <Note filled type="error" style={{fontSize: '1.15rem'}}>No functionality. Click Login to move to next page.</Note>
+                    <Note filled type="error" style={{fontSize: '1.15rem', width: '100%'}}>No functionality. Click Login to move to next page.</Note>
                 </Grid>
                 <Grid xs={24}>
-                    <Note filled style={{fontSize: '1.15rem'}}>Enter the <strong>Elector Registration No.</strong> that is located on your <strong>Voter's ID</strong> and click Login to continue.</Note>
+                    <Note filled style={{fontSize: '1.15rem', width: '100%'}}>Enter the <strong>Elector Registration No.</strong> that is located on your <strong>Voter's ID</strong> and click Login to continue.</Note>
                 </Grid>
             </Grid.Container>
         </>

@@ -1,4 +1,5 @@
 ﻿using eVotingApi.Models;
+using eVotingApi.Models.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -6,15 +7,13 @@ using System;
 
 namespace eVotingApi.Data
 {
-    public class eVotingContext : IdentityDbContext
+    public class eVotingContext : IdentityDbContext<ApplicationUser>
     {
         public eVotingContext(DbContextOptions<eVotingContext> options)
             :base(options)
         {
 
         }
-
-        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public DbSet<Election> Elections { get; set; }
         public DbSet<Voter> Voters { get; set; }

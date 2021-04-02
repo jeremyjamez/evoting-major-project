@@ -1,70 +1,74 @@
 import useSWR from "swr";
+import axios from 'axios'
 
-const fetcher = (...args) => fetch(...args).then(res => res.json());
-const baseUrl = process.env.apiUrl
+export const fetcher = (url, token) =>
+    axios.get(url, {headers:{Authorization: 'Bearer ' + token}}).then(res => res.data)
 
-export const useMembers = (path) => {
-    const { data: members, error } = useSWR(`${baseUrl}${path}`)
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL
+
+export const useMembers = (token) => {
+    const { data: members, error } = useSWR([`${baseUrl}/members`,token], fetcher)
     return {
         members,
         isError: error
     }
 };
 
-export const useCandidates = (path) => {
-    const { data: candidates, error } = useSWR(`${baseUrl}${path}`)
+export const useCandidates = (token) => {
+    const { data: candidates, error } = useSWR([`${baseUrl}/candidates`,token], fetcher)
     return {
         candidates,
         isError: error
     }
 }
 
-export const useElections = (path) => {
-    const { data: elections, error } = useSWR(`${baseUrl}${path}`)
+export const useElections = (token) => {
+    const { data: elections, error } = useSWR([`${baseUrl}/elections`,token], fetcher)
     return {
         elections,
         isError: error
     }
 };
 
-export const usePoliticalParties = (path) => {
-    const { data: parties, error } = useSWR(`${baseUrl}${path}`)
+export const usePoliticalParties = (token) => {
+    const { data: parties, error } = useSWR([`${baseUrl}/politicalparties`,token], fetcher)
     return {
         parties,
         isError: error
     }
 };
 
-export const useVoters = (path) => {
-    const { data: voters, error } = useSWR(`${baseUrl}${path}`)
+export const useVoters = (path,token) => {
+    const { data: voters, error } = useSWR([`${baseUrl}${path}`,token], fetcher)
     return {
         voters,
         isError: error
     }
 };
 
-export const useConstituencies = (path) => {
-    const { data: constituencies, error } = useSWR(`${baseUrl}${path}`)
+export const useConstituencies = (token) => {
+    const { data: constituencies, error } = useSWR([`${baseUrl}/constituencies`,token], fetcher)
     return {
         constituencies,
         isError: error
     }
 }
 
-export const useMP = (path) => {
-    const { data: mps, error } = useSWR(`${baseUrl}${path}`)
+export const useMP = (path,token) => {
+    const { data: mps, error } = useSWR([`${baseUrl}${path}`,token], fetcher)
     return {
         mps,
         isError: error
     }
 }
 
-export const useConstituencyMP = (name) => {
-    const { data: constituency } = useSWR(`${baseUrl}/Constituencies/GetByName/${name}`)
-    const { data: candidate } = useSWR(() => `${baseUrl}/Candidates/GetByConstituency/${constituency.constituencyId}`)
-    const { data: mp } = useSWR(() => `${baseUrl}/MemberOfParliaments/${constituency.constituencyId}/${candidate.candidateId}`)
-    const { data: member } = useSWR(() => `${baseUrl}/Members/${candidate.candidateId}`)
-    const { data: voters } = useSWR(() => `${baseUrl}/voters/GetByConstituencyId/${constituency.constituencyId}`)
+export const useConstituencyMP = (name,token) => {
+    const { data: constituency } = useSWR([`${baseUrl}/Constituencies/GetByName/${name}`,token], fetcher)
+    const { data: candidate } = useSWR(() => [`${baseUrl}/Candidates/GetByConstituency/${constituency.constituencyId}`,token], fetcher)
+    const { data: mp } = useSWR(() => [`${baseUrl}/MemberOfParliaments/${constituency.constituencyId}/${candidate.candidateId}`,token], fetcher)
+    const { data: member } = useSWR(() => [`${baseUrl}/Members/${candidate.candidateId}`,token], fetcher)
+    const { data: voters } = useSWR(() => [`${baseUrl}/voters/GetByConstituencyId/${constituency.constituencyId}`,token], fetcher)
 
     return {
         constituency,
@@ -80,10 +84,30 @@ export const usePollingStations = () => {
 }
 
 export const useSecurityQuestions = (voterId) => {
-    const { data: questions, error } = useSWR(`${baseUrl}/voters/GetSecurityQuestionsById/${voterId}`)
+    const { data: questions, error } = useSWR(`${baseUrl}/voters/GetSecurityQuestionsById/${voterId}`, fetcher)
 
     return {
         questions,
+        isError: error
+    }
+}
+
+export const useUsers = (token) => {
+    const { data: users, error } = useSWR([`${baseUrl}/users`, token], fetcher)
+
+    return {
+        users,
+        isLoading: !error && !users,
+        isError: error
+    }
+}
+
+export const useRoles = (token) => {
+    const { data: roles, error } = useSWR([`${baseUrl}/users/roles`, token], fetcher)
+
+    return {
+        roles,
+        isLoading: !error && !roles,
         isError: error
     }
 }

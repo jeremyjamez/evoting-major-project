@@ -11,6 +11,8 @@ import { useForm } from "react-hook-form"
 import { useDropzone } from "react-dropzone"
 import axios from "axios"
 import https from "https"
+import jwt from 'jsonwebtoken'
+import { parseCookies } from 'nookies'
 
 const baseStyle = {
     flex: 1,
@@ -40,9 +42,9 @@ const rejectStyle = {
     borderColor: '#ff1744'
 };
 
-const PoliticalParties = () => {
-    const { parties } = usePoliticalParties('/politicalparties')
-    const { members } = useMembers('/members')
+const PoliticalParties = ({ token }) => {
+    const { parties } = usePoliticalParties(token)
+    const { members } = useMembers(token)
 
     const [file, setFile] = useState()
     const [progress, setProgress] = useState(0)
@@ -60,7 +62,7 @@ const PoliticalParties = () => {
         {
             name: 'Icon',
             center: true,
-            cell: row => row.icon !== "" ? <Image width={30} height={30} src={row.icon}/> : ""
+            cell: row => row.icon !== "" ? <Image width={30} height={30} src={row.icon} /> : ""
         },
         {
             name: 'Colour',
@@ -93,7 +95,7 @@ const PoliticalParties = () => {
             },
         })
             .then(res => {
-                if(res.data.statusCode === 200) {
+                if (res.data.statusCode === 200) {
                     setToast({
                         text: 'Upload Complete',
                         type: 'success'
@@ -148,26 +150,26 @@ const PoliticalParties = () => {
                 'founded': moment(data.foundedDate).toISOString()
             })
         })
-        .then(res => {
-            if(res.status === 201){
-                setToast({
-                    text: 'Successfully added!',
-                    type: 'success'
-                })
-            } else {
+            .then(res => {
+                if (res.status === 201) {
+                    setToast({
+                        text: 'Successfully added!',
+                        type: 'success'
+                    })
+                } else {
+                    setToast({
+                        text: 'Failed to add!',
+                        type: 'error'
+                    })
+                }
+            })
+            .catch(error => {
+                console.log(error)
                 setToast({
                     text: 'Failed to add!',
                     type: 'error'
                 })
-            }
-        })
-        .catch(error => {
-            console.log(error)
-            setToast({
-                text: 'Failed to add!',
-                type: 'error'
             })
-        })
     }
 
     const handleColourChange = (e) => {
@@ -212,60 +214,62 @@ const PoliticalParties = () => {
 
     return (
         <DashboardLayout>
-            <Grid.Container gap={2}>
-                <Grid xl={18}>
-                    <DataTable
-                        columns={columns}
-                        data={parties}
-                    />
-                </Grid>
-                <Grid xl={6}>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <Grid.Container justify="center" gap={2} alignItems="flex-end">
-                            <Grid xl={24}>
-                                <Input width="100%" name="partyName" ref={register({ required: true })} size="large">Name</Input>
-                            </Grid>
-                            <Grid xl={24}>
-                                Icon
+            <div style={{ margin: '16px' }}>
+                <Grid.Container gap={2}>
+                    <Grid xl={18} style={{ display: 'block' }}>
+                        <DataTable
+                            columns={columns}
+                            data={parties}
+                            noHeader
+                        />
+                    </Grid>
+                    <Grid xl={6}>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <Grid.Container justify="center" gap={2} alignItems="flex-end">
+                                <Grid xl={24}>
+                                    <Input width="100%" name="partyName" ref={register({ required: true })} size="large">Name</Input>
+                                </Grid>
+                                <Grid xl={24} style={{ display: 'block' }}>
+                                    Icon
                                 <div {...getRootProps({ style })}>
-                                    <input {...getInputProps()} />
-                                    <p>Drag and drop icon file here, or click to select file</p>
-                                </div>
-                                {
-                                    progress > 0 ?
-                                        <>
-                                        <Spacer y={.5} />
-                                        <Progress value={progress} hidden={progress === 100} />
-                                        </>
-                                        : null
-                                }
-                                {
-                                    file ?
-                                        <>
-                                            <Spacer y={.5} />
-                                            <Note label="file">{file}</Note>
-                                        </> : null
-                                }
+                                        <input {...getInputProps()} />
+                                        <p>Drag and drop icon file here, or click to select file</p>
+                                    </div>
+                                    {
+                                        progress > 0 ?
+                                            <>
+                                                <Spacer y={.5} />
+                                                <Progress value={progress} hidden={progress === 100} />
+                                            </>
+                                            : null
+                                    }
+                                    {
+                                        file ?
+                                            <>
+                                                <Spacer y={.5} />
+                                                <Note label="file">{file}</Note>
+                                            </> : null
+                                    }
 
-                            </Grid>
-                            <Grid xl={12}>
-                                <Input width="100%" type="date" name="foundedDate" ref={register} size="large">Founded</Input>
-                            </Grid>
-                            <Grid xl={12}>
-                                Party Colour
+                                </Grid>
+                                <Grid xl={12}>
+                                    <Input width="100%" type="date" name="foundedDate" ref={register} size="large">Founded</Input>
+                                </Grid>
+                                <Grid xl={12} style={{ display: 'block' }}>
+                                    Party Colour
                                 <Spacer y={.5} />
-                                <Popover trigger="hover" content={<HexColorPicker color={colour} onChange={handleColourChange} />}>
-                                    <Dot><HexColorInput placeholder="Party Colour" color={colour} onChange={handleColourChange} /></Dot>
-                                </Popover>
-                            </Grid>
-                            <Grid>
-                                <Button id="addBtn" htmlType="submit" type="secondary" ghost>Add</Button>
-                            </Grid>
-                        </Grid.Container>
-                    </form>
-                </Grid>
-            </Grid.Container>
-            <style global jsx>{`
+                                    <Popover trigger="hover" content={<HexColorPicker color={colour} onChange={handleColourChange} />}>
+                                        <Dot><HexColorInput placeholder="Party Colour" color={colour} onChange={handleColourChange} /></Dot>
+                                    </Popover>
+                                </Grid>
+                                <Grid>
+                                    <Button id="addBtn" htmlType="submit" type="secondary" style={{ width: '100%' }} shadow>Add</Button>
+                                </Grid>
+                            </Grid.Container>
+                        </form>
+                    </Grid>
+                </Grid.Container>
+                <style global jsx>{`
                 .tooltip-content.popover > .inner {
                     padding: 0 !important
                 }
@@ -275,11 +279,36 @@ const PoliticalParties = () => {
                     background-color: ${colour}
                 }
                 #addBtn.btn:hover, #addBtn.btn:focus {
-                    background-color: ${colour} !important
+                    background-color: ${colour} !important;
+                    border-color: ${colour} !important
                 }
             `}</style>
+            </div>
         </DashboardLayout>
     )
+}
+
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context)
+
+    const token = cookies.token
+    const decodedToken = jwt.decode(token, { complete: true })
+    var dateNow = moment(moment().valueOf()).unix()
+
+    if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            token
+        }
+    }
 }
 
 export default PoliticalParties

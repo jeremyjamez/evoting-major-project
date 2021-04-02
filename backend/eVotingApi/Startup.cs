@@ -1,7 +1,10 @@
 using eVotingApi.Config;
 using eVotingApi.Data;
 using eVotingApi.Models;
+using eVotingApi.Models.Auth;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,8 +18,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace eVotingApi
 {
@@ -38,6 +43,23 @@ namespace eVotingApi
             services.AddDbContext<eVotingContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("eVotingDatabase"))
             );
+
+            services.AddSpaStaticFiles(configuration: options => { options.RootPath = "wwwroot"; });
+
+            var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
+
+            var tokenValidationParams = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                RequireExpirationTime = false,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            services.AddSingleton(tokenValidationParams);
 
             services.Configure<FormOptions>(o =>
             {
@@ -72,13 +94,27 @@ namespace eVotingApi
                 jwt.TokenValidationParameters = tokenValidationParams;
             });
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<eVotingContext>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("NextJsCorsPolicy", builder =>
+                {
+                    builder
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .WithOrigins("http://localhost:3000");
+                });
+            });
+
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -89,14 +125,10 @@ namespace eVotingApi
 
             app.UseRouting();
 
-            // global cors policy
-            app.UseCors(x => x
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
+            app.UseCors("NextJsCorsPolicy");
 
             app.UseStaticFiles();
+
             app.UseStaticFiles(new StaticFileOptions()
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot")),
@@ -105,12 +137,52 @@ namespace eVotingApi
 
             app.UseAuthentication();
 
+            MyIdentityDataInitializer.SeedData(userManager, roleManager);
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+        }
+    }
+
+    public static class MyIdentityDataInitializer
+    {
+        public static void SeedData(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            SeedRoles(roleManager);
+        }
+
+        public static void SeedUsers(UserManager<ApplicationUser> userManager)
+        {
+        }
+
+        public static void SeedRoles(RoleManager<IdentityRole> roleManager)
+        {
+            if (!roleManager.RoleExistsAsync("Administrator").Result)
+            {
+                var role = new IdentityRole();
+                role.Name = "Administrator";
+                IdentityResult roleResult = roleManager.CreateAsync(role).Result;
+            }
+
+            if (!roleManager.RoleExistsAsync("EDW").Result)
+            {
+                var role = new IdentityRole();
+                role.Name = "EDW";
+                IdentityResult roleResult = roleManager.CreateAsync(role).Result;
+            }
+
+            if (!roleManager.RoleExistsAsync("EOJ").Result)
+            {
+                var role = new IdentityRole()
+                {
+                    Name = "EOJ"
+                };
+                IdentityResult roleResult = roleManager.CreateAsync(role).Result;
+            }
         }
     }
 }

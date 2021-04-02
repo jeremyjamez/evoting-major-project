@@ -4,7 +4,12 @@ $background-colour: #fff8d2
     font-weight: 400
     src: local('Quicksand'), url(/fonts/Quicksand.ttf) format('ttf')
 
-body 
-    background-color: $background-colour !important
+body, html 
     height: 100%
+    background-color: $background-colour !important
     font-family: 'Quicksand', sans-serif !important
+
+#__next
+    display: flex
+    flex-flow: column
+    height: 100%
