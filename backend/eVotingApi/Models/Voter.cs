@@ -35,6 +35,8 @@ namespace eVotingApi.Models
         [Required]
         public long ConstituencyId { get; set; }
 
+        public string Role { get; set; }
+
         public virtual ICollection<Vote> Votes { get; set; }
         public virtual Constituency Constituency { get; set; }
     }

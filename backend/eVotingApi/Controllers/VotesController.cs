@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVotingApi.Controllers
 {
+    [Authorize(Roles = "EDW")]
     [Route("api/[controller]")]
     [ApiController]
     public class VotesController : ControllerBase

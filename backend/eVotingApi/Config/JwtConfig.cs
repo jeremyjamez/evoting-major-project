@@ -8,5 +8,7 @@ namespace eVotingApi.Config
     public class JwtConfig
     {
         public string Secret { get; set; }
+
+        public int ExpirationInDays { get; set; }
     }
 }

@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace eVotingApi.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "EDW,ECJ")]
     [Route("api/Voters")]
     [ApiController]
     public class VotersController : ControllerBase

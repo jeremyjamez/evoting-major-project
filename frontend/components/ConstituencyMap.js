@@ -1,12 +1,12 @@
 import { SVG } from "@svgdotjs/svg.js"
 
-import React, { useState, useRef } from "react"
+import React from "react"
 import styles from "./ConstituencyMap.module.css"
 
 const rawSvg = `<svg version="1.1"
 id="svg2" inkscape:version="0.91 r13725" sodipodi:docname="Constituencies of Jamaica.svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg"
 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 907.1 436.5"
-style="enable-background:new 0 0 907.1 436.5;" xml:space="preserve">
+xml:space="preserve">
 <style type="text/css">
 .st0{stroke:#646464;stroke-width:1.4;}
 </style>
@@ -386,23 +386,26 @@ class ConstituencyMap extends React.Component {
         }
     }
     componentDidMount() {
-        require ("@svgdotjs/svg.panzoom.js")
-        const draw = SVG(rawSvg).addTo('#map').size('100%', '100%').panZoom({ zoomMin: 2, zoomMax: 10, zoomFactor: 1 })
-
-        
+        require("@svgdotjs/svg.panzoom.js")
+        const draw = SVG(rawSvg).addTo('#map').panZoom({ zoomMin: 1.5, zoomMax: 10, zoomFactor: 1 })
 
         draw.on('zoom', (ev) => {
             console.log(ev.detail.level)
         })
 
         if (this.state.selected == null) {
-            this.props.colsize(0)
+            //this.props.colsize(0)
         }
 
-        for (const constituency of draw.find('path')) {
+        draw.find('path').map((constituency, i) => {
             constituency.addClass(styles.constituency)
-            constituency.click(() => {
 
+            if(i === 0){
+                this.setState({ selected: constituency })
+                console.log(this.state.selected)
+            }
+
+            constituency.click(() => {
                 this.setState({ selected: constituency })
                 this.state.selected.toggleClass(styles.active)
 
@@ -414,14 +417,13 @@ class ConstituencyMap extends React.Component {
                 }
 
                 this.props.onClick(this.state.selected.attr('name'))
-                this.props.colsize(4)
             })
-        }
+        })
     }
 
     render() {
         return (
-            <div id="map"></div>
+            <div id="map" style={{height: '100%'}}></div>
         )
     }
 }

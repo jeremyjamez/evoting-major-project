@@ -1,16 +1,19 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Tabs, Grid, Text, Collapse, Pagination, Spacer, Input, Select, Button, Loading, AutoComplete } from "@geist-ui/react";
+import { Tabs, Grid, Collapse, Spacer, Select, Button, AutoComplete } from "@geist-ui/react";
 import DashboardLayout from "./layout";
-import https from "https";
 import moment from "moment";
 import DataTable from "react-data-table-component";
 import FilterComponent from "../../components/FilterComponent";
 import { useForm } from "react-hook-form";
-import { useCandidates, useMembers } from "../../utils/swr-utils";
+import { useCandidates, useConstituencies, useElections, useMembers } from "../../utils/swr-utils";
+import jwt from 'jsonwebtoken'
+import { parseCookies } from 'nookies'
 
-export default function Candidates({ constituencyData, electionData }) {
-    const { candidates } = useCandidates('/candidates');
-    const { members } = useMembers('/members');
+export default function Candidates({ token }) {
+    const { candidates } = useCandidates(token)
+    const { members } = useMembers(token)
+    const { constituencies } = useConstituencies(token)
+    const { elections } = useElections(token)
 
     var [selectedRows, setSelectedRows] = useState([]);
 
@@ -178,20 +181,17 @@ export default function Candidates({ constituencyData, electionData }) {
 
     return (
         <DashboardLayout>
-            <Tabs initialValue="1">
+            <Tabs initialValue="1" style={{margin: '16px'}}>
                 <Tabs.Item label="all candidates" value="1">
-                    {
-                        !candidates ? <Loading size="large">Loading</Loading> :
-                            <DataTable
-                                columns={candidateCol}
-                                data={filteredCandidates}
-                                highlightOnHover
-                                fixedHeader
-                                pagination
-                                paginationResetDefaultPage={resetPaginationToggle}
-                                subHeader
-                                subHeaderComponent={subHeaderComponentMemo} />
-                    }
+                    <DataTable
+                        columns={candidateCol}
+                        data={filteredCandidates}
+                        highlightOnHover
+                        noHeader
+                        pagination
+                        paginationResetDefaultPage={resetPaginationToggle}
+                        subHeader
+                        subHeaderComponent={subHeaderComponentMemo} />
                 </Tabs.Item>
                 <Tabs.Item label="add" value="2">
                     <DataTable
@@ -222,7 +222,7 @@ export default function Candidates({ constituencyData, electionData }) {
                                                             <Grid xs={8}>
                                                                 <Select name="constituencyId" placeholder="Choose constituency" onChange={handleConstituencyChange} size="large" width="100%">
                                                                     {
-                                                                        constituencyData.map(constituency => {
+                                                                        constituencies.map(constituency => {
                                                                             return (
                                                                                 <Select.Option value={`${constituency.constituencyId}`}>{constituency.name}</Select.Option>
                                                                             )
@@ -234,7 +234,7 @@ export default function Candidates({ constituencyData, electionData }) {
 
                                                                 <Select name="electionId" placeholder="Select election" size="large" width="100%">
                                                                     {
-                                                                        electionData.map(election => {
+                                                                        elections.map(election => {
                                                                             return (
                                                                                 <Select.Option
                                                                                     value={`${election.electionId}`}>
@@ -247,7 +247,7 @@ export default function Candidates({ constituencyData, electionData }) {
 
                                                                 <Spacer x={2} />
 
-                                                                <AutoComplete name="ministerOf" placeholder="Ministry" onSearch={searchHandler} options={options} size="large" width="100%"/>
+                                                                <AutoComplete name="ministerOf" placeholder="Ministry" onSearch={searchHandler} options={options} size="large" width="100%" />
                                                             </Grid>
                                                             <Grid xs={24}>
                                                                 <Button htmlType="submit" type="secondary">Add as candidate</Button>
@@ -269,7 +269,30 @@ export default function Candidates({ constituencyData, electionData }) {
     )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context)
+
+    const token = cookies.token
+    const decodedToken = jwt.decode(token, { complete: true })
+    var dateNow = moment(moment().valueOf()).unix()
+
+    if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            token
+        }
+    }
+}
+
+/* export async function getStaticProps() {
     const httpsAgent = new https.Agent({
         rejectUnauthorized: false,
     });
@@ -285,4 +308,4 @@ export async function getStaticProps() {
             electionData
         }
     }
-}
+} */

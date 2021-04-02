@@ -1,9 +1,0 @@
-{
-    "version": 3,
-    "mappings": "AAAA,AAAA,UAAU,CAAC;EACP,gBAAgB,EAAE,WAAW;CAAG;;AAEpC,AAAA,OAAO,CAAC;EACJ,WAAW,EAAE,2BAA2B;EACxC,KAAK,EAAE,eAAe;EACtB,gBAAgB,EAAE,KAAK;CAAG",
-    "sources": [
-        "NavButton.module.sass"
-    ],
-    "names": [],
-    "file": "NavButton.module.css"
-}

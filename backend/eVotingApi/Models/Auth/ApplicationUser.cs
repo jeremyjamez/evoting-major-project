@@ -5,12 +5,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace eVotingApi.Models.DTO.Requests
+namespace eVotingApi.Models.Auth
 {
-    public class UserRegistrationRequestDto
+    public class ApplicationUser : IdentityUser
     {
-        [Required]
-        public string UserName { get; set; }
         [Required]
         public string FirstName { get; set; }
         [Required]
@@ -20,12 +18,8 @@ namespace eVotingApi.Models.DTO.Requests
         [Required]
         public string TRN { get; set; }
         [Required]
-        public string Password { get; set; }
-        [Required]
         public string Role { get; set; }
-        [Required]
-        public string PhoneNumber { get; set; }
-        [Required]
-        public string Email { get; set; }
+
+        public DateTime? LastLoggedIn { get; set; }
     }
 }

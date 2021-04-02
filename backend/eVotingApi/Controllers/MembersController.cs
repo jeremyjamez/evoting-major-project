@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Models.DTO;
 using eVotingApi.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVotingApi.Controllers
 {
+    [Authorize(Roles = "Administrator,ECJ")]
     [Route("api/Members")]
     [ApiController]
     public class MembersController : ControllerBase

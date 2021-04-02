@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Button, Grid, Input, Select, Spacer, Spinner, Tabs, Tooltip, useToasts } from "@geist-ui/react";
+import { Button, Grid, Input, Select, Spacer, Tabs, useToasts } from "@geist-ui/react";
 import { Trash2 } from "@geist-ui/react-icons";
 import DashboardLayout from "./layout";
 import https from "https";
@@ -7,14 +7,16 @@ import DataTable from "react-data-table-component";
 import moment from "moment";
 import FilterComponent from "../../components/FilterComponent";
 import { useElections } from "../../utils/swr-utils";
+import jwt from 'jsonwebtoken'
+import { parseCookies } from 'nookies'
 
-const Elections = () => {
+const Elections = ({ token }) => {
     const [electionDate, setElectionDate] = useState();
     const [electionStartTime, setElectionStartTime] = useState();
     const [electionEndTime, setElectionEndTime] = useState();
     const [electionType, setElectionType] = useState();
 
-    const { elections } = useElections('/Elections');
+    const { elections } = useElections(token);
 
     const columns = React.useMemo(() => [
         {
@@ -137,65 +139,78 @@ const Elections = () => {
 
     return (
         <DashboardLayout>
-            <Grid.Container gap={2}>
-                <Grid xs={24}>
-                    <Tabs initialValue="1">
-                        <Tabs.Item label="all" value="1">
-                            <DataTable
-                                columns={columns}
-                                data={filterText === '' ? elections : filteredElections}
-                                pagination
-                                highlightOnHover
-                                subHeader
-                                subHeaderComponent={subHeaderComponentMemo}
-                            />
-                        </Tabs.Item>
-                        <Tabs.Item label="add" value="2">
-                            <Grid.Container >
-                                <Grid xs={24} xl={6} alignContent="center">
-                                    <Grid.Container gap={2}>
-                                        <Grid xs={24}>
-                                            Election Type
-                                            <Spacer y={.5} />
-                                            <Select placeholder="Election Type" size="large" width="100%" onChange={selectHandler}>
-                                                <Select.Option value="General Election">General Election</Select.Option>
-                                                <Select.Option value="Local Government Election">Local Government Election</Select.Option>
-                                                <Select.Option value="By-election">By-election</Select.Option>
-                                            </Select>
-                                        </Grid>
-                                        <Grid xs={24}>
-                                            <Input type="date" value={electionDate} onChange={electionDateHandler} size="large" width="100%" >
-                                                Election Date
-                                            </Input>
-                                        </Grid>
+            <Tabs initialValue="1" style={{margin: '16px'}}>
+                <Tabs.Item label="all" value="1">
+                    <DataTable
+                        columns={columns}
+                        data={filterText === '' ? elections : filteredElections}
+                        pagination
+                        highlightOnHover
+                        noHeader
+                        subHeader
+                        subHeaderComponent={subHeaderComponentMemo}
+                    />
+                </Tabs.Item>
+                <Tabs.Item label="add" value="2">
+                    <Grid.Container gap={2}>
+                        <Grid xs={24} xl={6} alignContent="center">
+                            <Grid.Container gap={2}>
+                                <Grid xs={24} style={{display: 'block'}}>
+                                    Election Type
+                                    <Spacer y={.5} />
+                                    <Select placeholder="Election Type" size="large" width="100%" onChange={selectHandler}>
+                                        <Select.Option value="General Election">General Election</Select.Option>
+                                        <Select.Option value="Local Government Election">Local Government Election</Select.Option>
+                                        <Select.Option value="By-election">By-election</Select.Option>
+                                    </Select>
+                                </Grid>
+                                <Grid xs={24}>
+                                    <Input type="date" value={electionDate} onChange={electionDateHandler} size="large" width="100%" >Election Date</Input>
+                                </Grid>
 
-                                        <Grid xs={12}>
-                                            <Input type="time" value={electionStartTime} size="large" width="100%" >
-                                                Start
-                                            </Input>
-                                        </Grid>
-                                        <Grid xs={12}>
-                                            <Input type="time" value={electionEndTime} size="large" width="100%" >
-                                                End
-                                            </Input>
-                                        </Grid>
-                                    </Grid.Container>
-
-                                    <Spacer y={2} />
-
-                                    <Button type="secondary" ghost onClick={addElectionClick}>Save</Button>
+                                <Grid xs={12}>
+                                    <Input type="time" value={electionStartTime} size="large" width="100%" >Start</Input>
+                                </Grid>
+                                <Grid xs={12}>
+                                    <Input type="time" value={electionEndTime} size="large" width="100%" >End</Input>
                                 </Grid>
                             </Grid.Container>
-                        </Tabs.Item>
+                        </Grid>
+                        <Grid xs={24}>
+                            <Button type="secondary" shadow onClick={addElectionClick}>Save</Button>
+                        </Grid>
+                    </Grid.Container>
+                </Tabs.Item>
 
-                        <Tabs.Item label="update" value="3">
+                <Tabs.Item label="update" value="3">
 
-                        </Tabs.Item>
-                    </Tabs>
-                </Grid>
-            </Grid.Container>
+                </Tabs.Item>
+            </Tabs>
         </DashboardLayout>
     )
+}
+
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context)
+
+    const token = cookies.token
+    const decodedToken = jwt.decode(token, { complete: true })
+    var dateNow = moment(moment().valueOf()).unix()
+
+    if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            token
+        }
+    }
 }
 
 export default Elections;
