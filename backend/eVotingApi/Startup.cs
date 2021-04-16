@@ -2,6 +2,7 @@ using eVotingApi.Config;
 using eVotingApi.Data;
 using eVotingApi.Models;
 using eVotingApi.Models.Auth;
+using eVotingApi.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IO;
@@ -39,6 +41,15 @@ namespace eVotingApi
         {
             
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
+
+            services.Configure<EVotingDatabaseSettings>(
+                Configuration.GetSection(nameof(EVotingDatabaseSettings)));
+
+            services.AddSingleton<IEVotingDatabaseSettings>(sp =>
+            sp.GetRequiredService<IOptions<EVotingDatabaseSettings>>().Value);
+
+            services.AddSingleton<VoterService>();
+            services.AddSingleton<ConstituencyService>();
 
             services.AddDbContext<eVotingContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("eVotingDatabase"))
@@ -67,21 +78,6 @@ namespace eVotingApi
                 o.MultipartBodyLengthLimit = int.MaxValue;
                 o.MemoryBufferThreshold = int.MaxValue;
             });
-
-            var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
-
-            var tokenValidationParams = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = true,
-                RequireExpirationTime = false,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            services.AddSingleton(tokenValidationParams);
 
             services.AddAuthentication(options =>
             {

@@ -18,7 +18,6 @@ namespace eVotingApi.Data
         public DbSet<Election> Elections { get; set; }
         public DbSet<Voter> Voters { get; set; }
         public DbSet<Candidate> Candidates { get; set; }
-        public DbSet<Constituency> Constituencies { get; set; }
         public DbSet<PollingDivision> PollingDivisions { get; set; }
         public DbSet<Vote> Votes { get; set; }
         public DbSet<PollingCentre> PollingCentres { get; set; }
@@ -37,15 +36,10 @@ namespace eVotingApi.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Vote>()
-                .HasOne(v => v.Voter)
-                .WithMany(vo => vo.Votes)
-                .HasForeignKey(v => v.VoterId);
-
-            modelBuilder.Entity<Voter>()
+            /*modelBuilder.Entity<Voter>()
                 .HasOne(v => v.Constituency)
                 .WithMany(c => c.Voters)
-                .HasForeignKey(v => v.ConstituencyId);
+                .HasForeignKey(v => v.ConstituencyId);*/
 
             modelBuilder.Entity<Member>()
                 .HasOne(m => m.PoliticalParty)

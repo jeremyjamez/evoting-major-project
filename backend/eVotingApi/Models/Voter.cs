@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,45 +9,47 @@ using System.Threading.Tasks;
 
 namespace eVotingApi.Models
 {
-    [Table("Voter")]
     public class Voter
     {
-        [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+        [BsonId]
         public long VoterId { get; set; }
-        [Required]
+        [BsonRequired]
         public string Prefix { get; set; }
-        [Required]
+        [BsonRequired]
         public string FirstName { get; set; }
-        [Required]
+        [BsonRequired]
         public string MiddleName { get; set; }
-        [Required]
+        [BsonRequired]
         public string LastName { get; set; }
-        [Required]
+        [BsonRequired]
         public string Address { get; set; }
-        [Required]
+        [BsonRequired]
         public string Parish { get; set; }
-        [Required]
+        [BsonRequired]
         public string Gender { get; set; }
-        [Required]
+        [BsonRequired]
         public DateTime DateOfBirth { get; set; }
-        [Required]
+        [BsonRequired]
         public string Telephone { get; set; }
-        [Required]
+        [BsonRequired]
         public string Occupation { get; set; }
-        [Required]
+        [BsonRequired]
         public string MothersMaidenName { get; set; }
-        [Required]
+        [BsonRequired]
         public string PlaceOfBirth { get; set; }
-        [Required]
+        [BsonRequired]
         public string MothersPlaceOfBirth { get; set; }
-        [Required]
+        [BsonRequired]
         public string FathersPlaceOfBirth { get; set; }
-        [Required]
+
+        [BsonRequired]
         public long ConstituencyId { get; set; }
 
-        public string Role { get; set; }
-
-        public virtual ICollection<Vote> Votes { get; set; }
-        public virtual Constituency Constituency { get; set; }
+        //public virtual ICollection<Vote> Votes { get; set; }
+        //public virtual Constituency Constituency { get; set; }
     }
 }

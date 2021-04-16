@@ -10,6 +10,7 @@ using eVotingApi.Models.DTO;
 using eVotingApi.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using eVotingApi.Services;
 
 namespace eVotingApi.Controllers
 {
@@ -18,20 +19,54 @@ namespace eVotingApi.Controllers
     [ApiController]
     public class VotersController : ControllerBase
     {
-        private readonly eVotingContext _context;
+        //private readonly eVotingContext _context;
+        private readonly VoterService _voterService;
 
-        public VotersController(eVotingContext context)
+        public VotersController(VoterService voterService)
         {
-            _context = context;
+            _voterService = voterService;
         }
 
         // GET: api/Voters
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Voter>>> GetVoters()
+        public async Task<IActionResult> GetVoters()
         {
-            return await _context.Voters
-                .Include(v => v.Constituency)
-                .ToListAsync();
+            return Ok(await _voterService.Get());
+        }
+
+        // GET: api/Voters/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetVoter(long id)
+        {
+            var voter = await _voterService.GetById(id);
+
+            if (voter == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(voter);
+        }
+
+        [Route("[action]/{constituencyId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetByConstituencyId(long constituencyId)
+        {
+            var constituency = await _voterService.GetByConstituencyId(constituencyId);
+
+            if(constituency == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(constituency);
+        }
+
+        /*// GET: api/Voters
+        [HttpGet]
+        public ActionResult<Task<IEnumerable<Voter>>> GetVoters()
+        {
+            return _voterService.Get();
         }
 
         // GET: api/Voters/5
@@ -132,16 +167,6 @@ namespace eVotingApi.Controllers
         private bool VoterExists(long id)
         {
             return _context.Voters.Any(e => e.VoterId == id);
-        }
-
-        private static SecurityQuestionsDTO QuestionsToDTO(Voter voter) =>
-            new SecurityQuestionsDTO
-            {
-                Address = voter.Address,
-                DateOfBirth = voter.DateOfBirth,
-                Telephone = voter.Telephone,
-                Occupation = voter.Occupation,
-                MothersMaidenName = voter.MothersMaidenName
-            };
+        }*/
     }
 }
