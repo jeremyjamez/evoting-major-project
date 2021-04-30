@@ -2,6 +2,12 @@ import { Avatar, Button, Card, Grid, Image, Page } from "@geist-ui/react"
 import CandidateCard from "../components/CandidateCardComponent"
 import Link from "next/link"
 
+const candidates = [
+    {
+        
+    }
+]
+
 const SelectCandidate = () => {
     return (
         <>

@@ -1,8 +1,9 @@
 ﻿using eVotingApi.Models;
 using eVotingApi.Models.DTO;
+using eVotingApi.Models.DTO.Responses;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,40 +23,144 @@ namespace eVotingApi.Services
             _voters = database.GetCollection<Voter>(settings.VoterCollectionName);
         }
 
-        public async Task<List<VoterDto>> Get()
+        /// <summary>
+        /// Returns a list of all voters
+        /// </summary>
+        /// <returns>An enumerable of voters</returns>
+        public async Task<IEnumerable<VoterDto>> Get()
         {
-            return await _voters.AsQueryable().Select(x => VoterToDto(x)).ToListAsync();
+            //var v = await _voters.AsQueryable().Select(x => VoterToDto(x)).ToListAsync();
+            return await _voters.Find(voter => true).Project(x => VoterToDto(x)).ToListAsync();
         }
 
-        public async Task<VoterDto> GetById(long id)
+        /// <summary>
+        /// Returns a voter specified by the ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>VoterDto</returns>
+        public async Task<VoterDto> GetById(string id)
         {
             return await _voters.AsQueryable().Where(voter => voter.VoterId == id).Select(voter => VoterToDto(voter)).FirstOrDefaultAsync();
         }
         
-        public async Task<Voter> GetByIdandDob(long id, string dob)
+        /// <summary>
+        /// Checks if the voter which is specified by the ID and date of birth, is registered
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dob"></param>
+        /// <returns>A RegisteredResponse object containing boolean values if the voter is registered and has 2FA enabled</returns>
+        public async Task<RegisteredResponse> IsRegistered(VoterDto voterDto)
         {
-            return await _voters.Find(voter => voter.VoterId == id && voter.DateOfBirth.Equals(DateTime.Parse(dob))).FirstOrDefaultAsync();
+            var builder = Builders<Voter>.Filter;
+            var filter = builder.And(builder.Eq("voterId", voterDto.VoterId), builder.Eq("dateofBirth", DateTime.Parse(voterDto.DateofBirth).Date.ToString("dd/MM/yyyy")));
+            var result = await _voters.Find(filter).FirstOrDefaultAsync();
+
+            RegisteredResponse registeredResponse;
+
+            if(result != null)
+            {
+                if (!result.isTwoFactorEnabled)
+                {
+                    registeredResponse = new RegisteredResponse
+                    {
+                        isRegistered = true,
+                        isTwoFactorEnabled = false
+                    };
+                    return registeredResponse;
+                }
+                else
+                {
+                    registeredResponse = new RegisteredResponse
+                    {
+                        isRegistered = true,
+                        isTwoFactorEnabled = true
+                    };
+                    return registeredResponse;
+                }
+            }
+
+            return new RegisteredResponse { isRegistered = false, isTwoFactorEnabled = false };
         }
 
-        public async Task<IEnumerable<Voter>> GetByConstituencyId(long id)
+        /// <summary>
+        /// Returns all voters within a constituency specified by the ID
+        /// </summary>
+        /// <param name="constituencyId"></param>
+        /// <returns>An enumerable of voters</returns>
+        public async Task<IEnumerable<Voter>> GetByConstituency(string constituency)
         {
-            return await _voters.Find(voter => voter.ConstituencyId == id).ToListAsync();
+            return await _voters.Find(voter => voter.Constituency == constituency).ToListAsync();
         }
 
-        public async Task<SecurityQuestionsDTO> GetByVoterId(long id)
+        /// <summary>
+        /// Retrieves a voter specified by the ID and returns a Data Transfer Object (DTO) containing data for security questions
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>SecurityQuestionsDTO</returns>
+        public async Task<SecurityQuestionsDTO> GetByVoterId(string id)
         {
-            var questions = await _voters.AsQueryable().Where(voter => voter.VoterId == id).Select(voter => QuestionsToDTO(voter)).FirstOrDefaultAsync();
-
-            return questions;
+            return await _voters.AsQueryable().Where(voter => voter.VoterId == id).Select(voter => QuestionsToDTO(voter)).FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="salt"></param>
+        /// <param name="hashedSecretCode"></param>
+        /// <param name="voterId"></param>
+        /// <returns></returns>
+        public async Task<UpdateResult> UpdateHashedSecretCode(string salt, long voterId)
+        {
+            var filter = Builders<Voter>.Filter.Eq("voterId", voterId);
+            var update = Builders<Voter>.Update.Set("salt", salt).Set("isTwoFactorEnabled", true).CurrentDate("lastModified");
+            var result = await _voters.UpdateOneAsync(filter, update);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="voterId"></param>
+        /// <returns></returns>
+        public async Task<string> GetSecretCodeSalt(string voterId)
+        {
+            return await _voters.AsQueryable().Where(voter => voter.VoterId == voterId).Select(voter => voter.Salt).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Data Transfer Object (DTO) which hides some properties of the Voter entity
+        /// </summary>
+        /// <param name="voter"></param>
+        /// <returns></returns>
         private static VoterDto VoterToDto(Voter voter) =>
+            new VoterDto
+            {
+                VoterId = voter.VoterId,
+                FirstName = voter.FirstName,
+                MiddleName = voter.MiddleName,
+                LastName = voter.LastName,
+                DateofBirth = voter.DateOfBirth
+            };
+
+        /// <summary>
+        /// Data Transfer Object (DTO) which hides some properties of the Voter entity
+        /// </summary>
+        /// <param name="voter"></param>
+        /// <returns></returns>
+        private static VoterDto VoterToIDandDobDto(Voter voter) =>
             new VoterDto
             {
                 VoterId = voter.VoterId,
                 DateofBirth = voter.DateOfBirth
             };
 
+        /// <summary>
+        /// Data Transfer Object (DTO) which hides some properties of the Voter entity to
+        /// only contain data for generating security questions
+        /// </summary>
+        /// <param name="voter"></param>
+        /// <returns></returns>
         private static SecurityQuestionsDTO QuestionsToDTO(Voter voter) =>
             new SecurityQuestionsDTO
             {

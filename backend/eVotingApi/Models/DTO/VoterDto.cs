@@ -7,7 +7,10 @@ namespace eVotingApi.Models.DTO
 {
     public class VoterDto
     {
-        public long VoterId { get; set; }
-        public DateTime DateofBirth { get; set; }
+        public string VoterId { get; set; }
+        public string FirstName { get; set; }
+        public string MiddleName { get; set; }
+        public string LastName { get; set; }
+        public string DateofBirth { get; set; }
     }
 }

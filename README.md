@@ -6,7 +6,7 @@
     - [ ] Display list of candidates based on voter constituency
 - [ ] Add verification code confirmation (from 2FA)
 - [x] Setup user login
-    - [-] Allow admin to add new users of the system
+    - [ ] Allow admin to add new users of the system
     - [ ] Display role specific layout (Admin, EOJ worker, election day worker)
 - [x] Add voters list page
     - [ ] Add import for voters list (Import list as CSV and parse as JSON)

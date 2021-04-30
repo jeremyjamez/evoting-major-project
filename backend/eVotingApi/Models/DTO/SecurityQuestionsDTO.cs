@@ -11,7 +11,7 @@ namespace eVotingApi.Models.DTO
         [Required]
         public string Address { get; set; }
         [Required]
-        public DateTime DateOfBirth { get; set; }
+        public string DateOfBirth { get; set; }
         [Required]
         public string Telephone { get; set; }
         [Required]

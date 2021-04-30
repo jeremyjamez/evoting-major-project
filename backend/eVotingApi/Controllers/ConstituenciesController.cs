@@ -28,17 +28,16 @@ namespace eVotingApi.Controllers
         // GET: api/Constituencies
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IEnumerable<Constituency>> GetConstituencies()
+        public async Task<ActionResult<IEnumerable<Constituency>>> GetConstituencies()
         {
-            return await _constituencyService.Get();
+            return Ok(await _constituencyService.Get());
         }
-
 
         // GET: api/Constituencies/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Constituency>> GetConstituency(int id)
         {
-            var constituency = await _constituencyService.Get(id);
+            var constituency = await _constituencyService.GetById(id);
 
             if (constituency == null)
             {
@@ -53,7 +52,7 @@ namespace eVotingApi.Controllers
         [HttpGet]
         public async Task<ActionResult<Constituency>> GetConstituencyByName(string name)
         {
-            var constituency = await _constituencyService.Get(name);
+            var constituency = await _constituencyService.GetByName(name);
 
             if (constituency == null)
             {

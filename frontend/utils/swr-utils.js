@@ -111,3 +111,13 @@ export const useRoles = (token) => {
         isError: error
     }
 }
+
+export const usePair = (voterId) => {
+    const {data: qr, error} = useSWR(`${baseUrl}/voters/pair/${voterId}`, fetcher)
+
+    return {
+        qr,
+        isLoading: !error && !qr,
+        isError: error
+    }
+}

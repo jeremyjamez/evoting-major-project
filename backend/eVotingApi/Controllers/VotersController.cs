@@ -11,10 +11,14 @@ using eVotingApi.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using eVotingApi.Services;
+using System.Security.Cryptography;
+using Google.Authenticator;
+using System.Text;
+using eVotingApi.Models.DTO.Responses;
 
 namespace eVotingApi.Controllers
 {
-    [Authorize(Roles = "EDW,ECJ")]
+    [Authorize(Roles = "EDW,EOJ")]
     [Route("api/Voters")]
     [ApiController]
     public class VotersController : ControllerBase
@@ -28,15 +32,16 @@ namespace eVotingApi.Controllers
         }
 
         // GET: api/Voters
+        [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetVoters()
+        public async Task<ActionResult<IEnumerable<VoterDto>>> GetVoters()
         {
             return Ok(await _voterService.Get());
         }
 
         // GET: api/Voters/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetVoter(long id)
+        public async Task<IActionResult> GetVoter(string id)
         {
             var voter = await _voterService.GetById(id);
 
@@ -48,11 +53,11 @@ namespace eVotingApi.Controllers
             return Ok(voter);
         }
 
-        [Route("[action]/{constituencyId}")]
+        [Route("[action]/{constituencyName}")]
         [HttpGet]
-        public async Task<IActionResult> GetByConstituencyId(long constituencyId)
+        public async Task<IActionResult> GetByConstituency(string constituencyName)
         {
-            var constituency = await _voterService.GetByConstituencyId(constituencyId);
+            var constituency = await _voterService.GetByConstituency(constituencyName);
 
             if(constituency == null)
             {
@@ -60,6 +65,67 @@ namespace eVotingApi.Controllers
             }
 
             return Ok(constituency);
+        }
+
+        [AllowAnonymous]
+        [Route("[action]")]
+        [ActionName("IsRegistered")]
+        [HttpPost]
+        public async Task<ActionResult<RegisteredResponse>> IsVoterRegistered([FromBody]VoterDto voterDto)
+        {
+            return await _voterService.IsRegistered(voterDto);
+        }
+
+        [AllowAnonymous]
+        [Route("[action]/{pin}/{voterId}")]
+        [HttpGet]
+        public async Task<ActionResult<bool>> ValidatePin(string pin, string voterId)
+        {
+            var tfa = new TwoFactorAuthenticator();
+
+            string salt = await _voterService.GetSecretCodeSalt(voterId);
+
+            var hashedCode = ComputeHash(Encoding.UTF8.GetBytes(voterId.ToString()), Encoding.UTF8.GetBytes(salt));
+
+            bool isCorrect = tfa.ValidateTwoFactorPIN(hashedCode, pin);
+            return isCorrect;
+        }
+
+        [AllowAnonymous]
+        [Route("[action]/{voterId}")]
+        [HttpGet]
+        public async Task<ActionResult<PairingInfo>> Pair(long voterId)
+        {
+            var newSalt = GenerateSalt();
+            var manualCode = ComputeHash(Encoding.UTF8.GetBytes(voterId.ToString()), Encoding.UTF8.GetBytes(newSalt));
+
+            await _voterService.UpdateHashedSecretCode(newSalt, voterId);
+
+            var tfa = new TwoFactorAuthenticator();
+            var setupInfo = tfa.GenerateSetupCode("Jamaica Online E-Voting Prototype", voterId.ToString(), manualCode, false, 3);
+            var qr = setupInfo.QrCodeSetupImageUrl.Replace("http://", "https://");
+            PairingInfo pi = new PairingInfo { ManualSetupCode = setupInfo.ManualEntryKey, QR = qr };
+            return Ok(pi);
+        }
+
+        private string GenerateSalt()
+        {
+            var bytes = new byte[8];
+            var rng = new RNGCryptoServiceProvider();
+            rng.GetNonZeroBytes(bytes);
+            return Convert.ToBase64String(bytes);
+        }
+
+        private string ComputeHash(byte[] bytesToHash, byte[] salt)
+        {
+            var byteResult = new Rfc2898DeriveBytes(bytesToHash, salt, 10000);
+            return Convert.ToBase64String(byteResult.GetBytes(8));
+        }
+
+        public class PairingInfo
+        {
+            public string ManualSetupCode { get; set; }
+            public string QR { get; set; }
         }
 
         /*// GET: api/Voters

@@ -20,7 +20,6 @@ export default function Agreement() {
                             <li>Do not record the voting process.</li>
                             <li>Do not share your vote with anyone on social media (WhatsApp, Facebook, Instagram, etc) or in person.</li>
                             <li>Ensure you are in a space where the screen of your device cannot be seen by anyone while casting your vote.</li>
-                            <li>Lorem Ipsum</li>
                         </ol>
 
                         <Spacer y={1}/>

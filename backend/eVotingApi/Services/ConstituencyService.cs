@@ -25,12 +25,12 @@ namespace eVotingApi.Services
             return await _constituencies.Find(constituency => true).ToListAsync();
         }
 
-        public async Task<Constituency> Get(long id)
+        public async Task<Constituency> GetById(long id)
         {
             return await _constituencies.Find(constituency => constituency.ConstituencyId == id).FirstOrDefaultAsync();
         }
 
-        public async Task<Constituency> Get(string name)
+        public async Task<Constituency> GetByName(string name)
         {
             return await _constituencies.Find(constituency => constituency.Name.Equals(name)).FirstOrDefaultAsync();
         }

@@ -21,7 +21,7 @@ namespace eVotingApi.Controllers
             _context = context;
         }
 
-        // GET: api/Candidates
+        /*// GET: api/Candidates
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Candidate>>> GetCandidates()
         {
@@ -138,6 +138,6 @@ namespace eVotingApi.Controllers
         private bool CandidateExists(long id)
         {
             return _context.Candidates.Any(e => e.CandidateId == id);
-        }
+        }*/
     }
 }
