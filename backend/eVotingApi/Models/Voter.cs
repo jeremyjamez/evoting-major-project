@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,45 +9,80 @@ using System.Threading.Tasks;
 
 namespace eVotingApi.Models
 {
-    [Table("Voter")]
     public class Voter
     {
-        [Key]
-        public long VoterId { get; set; }
-        [Required]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+        [BsonRequired]
+        [BsonElement("voterId")]
+        public string VoterId { get; set; }
+
+        [BsonRequired]
+        [BsonElement("prefix")]
         public string Prefix { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("firstName")]
         public string FirstName { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("middleName")]
         public string MiddleName { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("lastName")]
         public string LastName { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("address")]
         public string Address { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("parish")]
         public string Parish { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("gender")]
         public string Gender { get; set; }
-        [Required]
-        public DateTime DateOfBirth { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("dateofBirth")]
+        public string DateOfBirth { get; set; }
+
+        [BsonRequired]
+        [BsonElement("telephone")]
         public string Telephone { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("occupation")]
         public string Occupation { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("mothersMaidenName")]
         public string MothersMaidenName { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("placeofBirth")]
         public string PlaceOfBirth { get; set; }
-        [Required]
+
+        [BsonRequired]
+        [BsonElement("mothersPlaceofBirth")]
         public string MothersPlaceOfBirth { get; set; }
-        [Required]
-        public string FathersPlaceOfBirth { get; set; }
-        [Required]
-        public long ConstituencyId { get; set; }
 
-        public string Role { get; set; }
+        [BsonRequired]
+        [BsonElement("maritalStatus")]
+        public string MaritalStatus { get; set; }
 
-        public virtual ICollection<Vote> Votes { get; set; }
-        public virtual Constituency Constituency { get; set; }
+        [BsonRequired]
+        [BsonElement("constituency")]
+        public string Constituency { get; set; }
+
+        [BsonElement("salt")]
+        public string Salt { get; set; }
+
+        [BsonElement("isTwoFactorEnabled")]
+        public bool isTwoFactorEnabled { get; set; }
     }
 }

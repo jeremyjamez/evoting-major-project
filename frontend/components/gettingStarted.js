@@ -1,14 +1,13 @@
-import { Button, Grid, Page, Text } from "@geist-ui/react"
+import { Button, Grid, Text } from "@geist-ui/react"
 
 const GettingStarted = (props) => {
     return (
         <>
             <Grid.Container>
                 <Grid>
-                    <Text h2>You will be asked two (2) security questions in order to verify your identity and your mobile phone number in order to receive
-                        the confirmation code at the end.
+                    <Text h2>You will be asked two (2) questions in order to verify your identity.
                     </Text>
-                    <Text type="error" h3>IMPORTANT: Ensure that your answers are spelt correctly and that the phone number you enter is the one you currently use.</Text>
+                    <Text type="error" h3>IMPORTANT: Ensure that your answers are spelt correctly.</Text>
                 </Grid>
             </Grid.Container>
             <Grid.Container justify="flex-end">

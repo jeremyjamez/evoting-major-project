@@ -1,82 +1,91 @@
 import { Avatar, Button, Card, Grid, Image, Page } from "@geist-ui/react"
 import CandidateCard from "../components/CandidateCardComponent"
 import Link from "next/link"
+import Layout from "../components/layout"
+import { parseCookies } from 'nookies'
+import jwt from 'jsonwebtoken'
+import moment from 'moment'
+import https from 'https'
 
-const SelectCandidate = () => {
+const candidates = [
+    {
+
+    }
+]
+
+const SelectCandidate = ({ exp }) => {
     return (
-        <>
-            <Page>
-                <Grid.Container gap={2}>
-                    <Grid xs={24}>
-                        <h1>Below are the candidates within your constituency</h1>
-                    </Grid>
+        <Layout expireTimestamp={exp}>
+            <Grid.Container gap={2}>
+                <Grid xs={24}>
+                    <h1>Below are the candidates within your constituency</h1>
+                </Grid>
 
-                    <Grid xs={24}>
-                        <CandidateCard />
-                        {/* <Card hoverable>
-                            <Grid.Container>
-                                <Grid xs={2}>
-                                    <div className="round">
-                                        <input type="checkbox" id="checkbox"/>
-                                        <label for="checkbox"/>
-                                    </div>
-                                    <style jsx>{`
-                                        .round {
-                                            position: relative;
-                                        }
-
-                                        .round label {
-                                            background-color: #fff;
-                                            border: 1px solid #ccc;
-                                            border-radius: 50%;
-                                            cursor: pointer;
-                                            height: 28px;
-                                            left: 0;
-                                            position: absolute;
-                                            top: 0;
-                                            width: 28px;
-                                        }
-
-                                        .round label:after {
-                                            border: 2px solid #fff;
-                                            border-top: none;
-                                            border-right: none;
-                                            content: "";
-                                            height: 6px;
-                                            left: 7px;
-                                            opacity: 0;
-                                            position: absolute;
-                                            top: 8px;
-                                            transform: rotate(-45deg);
-                                            width: 12px;
-                                        }
-
-                                        .round input[type="checkbox"] {
-                                            visibility: hidden;
-                                        }
-                                          
-                                        .round input[type="checkbox"]:checked + label {
-                                            background-color: #66bb6a;
-                                            border-color: #66bb6a;
-                                        }
-                                          
-                                        .round input[type="checkbox"]:checked + label:after {
-                                            opacity: 1;
-                                        }
-                                    `}</style>
-                                </Grid>
-                            </Grid.Container>
-                        </Card> */}
-                    </Grid>
-                </Grid.Container>
-                <Grid.Container justify="flex-end">
-                    <Grid>
-                        <Link href="confirmation"><Button type="secondary" size="large" auto shadow>Next</Button></Link>
-                    </Grid>
-                </Grid.Container>
-            </Page>
-        </>
+                <Grid xs={24}>
+                    <CandidateCard />
+                </Grid>
+            </Grid.Container>
+            <Grid.Container justify="flex-end">
+                <Grid>
+                    <Link href="confirmation"><Button type="secondary" size="large" auto shadow>Next</Button></Link>
+                </Grid>
+            </Grid.Container>
+        </Layout>
     )
+}
+
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context)
+    const token = cookies.token
+
+    const decodedToken = jwt.decode(token, { complete: true })
+    const dateNow = moment(moment().valueOf()).unix()
+
+    if (decodedToken !== null && decodedToken.payload.exp > dateNow) {
+
+        const tokenData = decodedToken.payload
+
+        const httpsAgent = new https.Agent({
+            rejectUnauthorized: false,
+        });
+
+        return {
+            props: {
+                exp: tokenData.exp
+            }
+        }
+
+        /* const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/voters/getquestions/${tokenData.Id}`,
+            {
+                agent: httpsAgent,
+                method: 'GET',
+                headers: new Headers({
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                })
+            })
+
+        if (res.ok) {
+            const data = await res.json()
+            const questions = data
+            const exp = tokenData.exp
+            return {
+                props: {
+                    questions,
+                    exp
+                }
+            }
+        } */
+    }
+
+    return {
+        redirect: {
+            destination: '/',
+            permanent: false
+        }
+    }
+
 }
 
 export default SelectCandidate

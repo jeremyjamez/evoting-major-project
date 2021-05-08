@@ -17,12 +17,7 @@ const navMenu = [
         icon: <Users />
     },
     {
-        label: "Members",
-        path: "/admin/members",
-        icon: <Users />
-    },
-    {
-        label: "Voters",
+        label: "Voters List",
         path: "/admin/voters",
         icon: <Users />
     },

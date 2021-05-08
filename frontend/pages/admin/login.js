@@ -67,7 +67,7 @@ const Login = ({csrfToken}) => {
                     })
 
                     setCookie(null, 'token', token.token, {
-                        maxAge: 60 * 60 * 1000,
+                        maxAge: 3600,
                         path: '/'
                     })
 

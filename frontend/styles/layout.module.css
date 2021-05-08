@@ -1,0 +1,8 @@
+.formError {
+  background-color: #ffe0e1;
+  border-left: #ca3435 solid 4px;
+  padding: 8px;
+  width: 100%;
+  font-weight: 600;
+}
+/*# sourceMappingURL=layout.module.css.map */

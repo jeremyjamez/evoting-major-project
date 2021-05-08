@@ -18,7 +18,7 @@ class CandidateCard extends Component {
                             <Grid xs={24} md lg xl>
                                 <div className="candidate-info">
                                     <div className="party-icon-container">
-                                        <img src="https://localhost:44387/wwwroot\uploads\bell.png"/>
+                                        <img src="https://localhost:5001/wwwroot\uploads\bell.png"/>
                                     </div>
                                     <h6>St. Andrew West Rural</h6>
                                     <h2>Andrew Holness</h2>
@@ -32,6 +32,7 @@ class CandidateCard extends Component {
                     <style jsx>{`
                                 .candidate-container {
                                     margin-bottom: 20px;
+                                    width: 100%;
                                 }
 
                                 .candidate:hover {
