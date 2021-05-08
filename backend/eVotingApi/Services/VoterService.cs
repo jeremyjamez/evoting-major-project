@@ -29,7 +29,6 @@ namespace eVotingApi.Services
         /// <returns>An enumerable of voters</returns>
         public async Task<IEnumerable<VoterDto>> Get()
         {
-            //var v = await _voters.AsQueryable().Select(x => VoterToDto(x)).ToListAsync();
             return await _voters.Find(voter => true).Project(x => VoterToDto(x)).ToListAsync();
         }
 
@@ -42,7 +41,7 @@ namespace eVotingApi.Services
         {
             return await _voters.AsQueryable().Where(voter => voter.VoterId == id).Select(voter => VoterToDto(voter)).FirstOrDefaultAsync();
         }
-        
+
         /// <summary>
         /// Checks if the voter which is specified by the ID and date of birth, is registered
         /// </summary>
@@ -57,7 +56,7 @@ namespace eVotingApi.Services
 
             RegisteredResponse registeredResponse;
 
-            if(result != null)
+            if (result != null)
             {
                 if (!result.isTwoFactorEnabled)
                 {
@@ -97,9 +96,12 @@ namespace eVotingApi.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns>SecurityQuestionsDTO</returns>
-        public async Task<SecurityQuestionsDTO> GetByVoterId(string id)
+        public async Task<SecurityQuestionsDTO> GetQuestions(string id)
         {
-            return await _voters.AsQueryable().Where(voter => voter.VoterId == id).Select(voter => QuestionsToDTO(voter)).FirstOrDefaultAsync();
+            var builder = Builders<Voter>.Filter;
+            var filter = builder.Eq("voterId", id);
+
+            return await _voters.Find(filter).Project(v => QuestionsToDTO(v)).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -109,10 +111,10 @@ namespace eVotingApi.Services
         /// <param name="hashedSecretCode"></param>
         /// <param name="voterId"></param>
         /// <returns></returns>
-        public async Task<UpdateResult> UpdateHashedSecretCode(string salt, long voterId)
+        public async Task<UpdateResult> UpdateHashedSecretCode(string salt, string voterId)
         {
             var filter = Builders<Voter>.Filter.Eq("voterId", voterId);
-            var update = Builders<Voter>.Update.Set("salt", salt).Set("isTwoFactorEnabled", true).CurrentDate("lastModified");
+            var update = Builders<Voter>.Update.Set("salt", salt).Set("isTwoFactorEnabled", true);
             var result = await _voters.UpdateOneAsync(filter, update);
 
             return result;
@@ -125,7 +127,8 @@ namespace eVotingApi.Services
         /// <returns></returns>
         public async Task<string> GetSecretCodeSalt(string voterId)
         {
-            return await _voters.AsQueryable().Where(voter => voter.VoterId == voterId).Select(voter => voter.Salt).FirstOrDefaultAsync();
+            var filter = Builders<Voter>.Filter.Eq("voterId", voterId);
+            return await _voters.Find(filter).Project(v => v.Salt).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -165,10 +168,11 @@ namespace eVotingApi.Services
             new SecurityQuestionsDTO
             {
                 Address = voter.Address,
-                DateOfBirth = voter.DateOfBirth,
                 Telephone = voter.Telephone,
                 Occupation = voter.Occupation,
-                MothersMaidenName = voter.MothersMaidenName
+                MothersMaidenName = voter.MothersMaidenName,
+                PlaceOfBirth = voter.PlaceOfBirth,
+                MothersPlaceOfBirth = voter.MothersPlaceOfBirth
             };
     }
 }

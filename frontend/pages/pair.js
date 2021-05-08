@@ -28,7 +28,7 @@ const Pair = () => {
                                     </Text>
                                 </Grid>
                                 <Grid>
-                                    <Button type="secondary" shadow onClick={() => router.push('/validatePin')}>Next</Button>
+                                    <Button type="secondary" shadow onClick={() => router.push({ pathname: '/validatePin', query: { voterId: router.query.voterId } })}>Next</Button>
                                 </Grid>
                             </>
                     }

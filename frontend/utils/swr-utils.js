@@ -83,15 +83,6 @@ export const usePollingStations = () => {
 
 }
 
-export const useSecurityQuestions = (voterId) => {
-    const { data: questions, error } = useSWR(`${baseUrl}/voters/GetSecurityQuestionsById/${voterId}`, fetcher)
-
-    return {
-        questions,
-        isError: error
-    }
-}
-
 export const useUsers = (token) => {
     const { data: users, error } = useSWR([`${baseUrl}/users`, token], fetcher)
 
@@ -113,7 +104,7 @@ export const useRoles = (token) => {
 }
 
 export const usePair = (voterId) => {
-    const {data: qr, error} = useSWR(`${baseUrl}/voters/pair/${voterId}`, fetcher)
+    const {data: qr, error} = useSWR(`${baseUrl}/voters/pair/${voterId}`, fetcher, {revalidateOnFocus: false})
 
     return {
         qr,

@@ -79,7 +79,10 @@ namespace eVotingApi.Models
         [BsonElement("constituency")]
         public string Constituency { get; set; }
 
+        [BsonElement("salt")]
         public string Salt { get; set; }
+
+        [BsonElement("isTwoFactorEnabled")]
         public bool isTwoFactorEnabled { get; set; }
     }
 }
