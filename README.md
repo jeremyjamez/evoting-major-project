@@ -1,10 +1,9 @@
 # TODO
 ## List of things to be done
-- [ ] Add Two-factor authentication (2FA) for voter login
-- [ ] Retrieve security questions for voter verification
+- [x] Add Two-factor authentication (2FA) for voter login
+- [x] Retrieve security questions for voter verification
 - [ ] Add voting page
     - [ ] Display list of candidates based on voter constituency
-- [ ] Add verification code confirmation (from 2FA)
 - [x] Setup user login
     - [ ] Allow admin to add new users of the system
     - [ ] Display role specific layout (Admin, EOJ worker, election day worker)
