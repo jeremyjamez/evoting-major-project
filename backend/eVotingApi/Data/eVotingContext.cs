@@ -19,7 +19,6 @@ namespace eVotingApi.Data
         public DbSet<PollingDivision> PollingDivisions { get; set; }
         public DbSet<PollingCentre> PollingCentres { get; set; }
         public DbSet<PollingStation> PollingStations { get; set; }
-        public DbSet<PoliticalParty> PoliticalParties { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

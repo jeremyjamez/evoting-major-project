@@ -61,11 +61,11 @@ namespace eVotingApi.Controllers
             return Ok(voter);
         }
 
-        [Route("[action]/{constituencyName}")]
+        [Route("[action]/{constituencyId}")]
         [HttpGet]
-        public async Task<IActionResult> GetByConstituency(string constituencyName)
+        public async Task<IActionResult> GetByConstituencyId(string constituencyId)
         {
-            var constituency = await _voterService.GetByConstituency(constituencyName);
+            var constituency = await _voterService.GetByConstituencyId(constituencyId);
 
             if(constituency == null)
             {
@@ -148,6 +148,11 @@ namespace eVotingApi.Controllers
             return temp;
         }
 
+        /// <summary>
+        /// Randomly selects two security questions from an array of the voter's information
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <returns>An object array containing two randomly selected questions</returns>
         private object[] SelectTwoQuestions(object[] arr)
         {
             int i = 0;
@@ -247,112 +252,5 @@ namespace eVotingApi.Controllers
             public string Token { get; set; }
             public bool IsCorrect { get; set; }
         }
-
-        /*// GET: api/Voters
-        [HttpGet]
-        public ActionResult<Task<IEnumerable<Voter>>> GetVoters()
-        {
-            return _voterService.Get();
-        }
-
-        // GET: api/Voters/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Voter>> GetVoter(long id)
-        {
-            var voter = await _context.Voters.FindAsync(id);
-
-            if (voter == null)
-            {
-                return NotFound();
-            }
-
-            return voter;
-        }
-
-        [Route("[action]/{constituencyId}")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Voter>>> GetByConstituencyId(long constituencyId)
-        {
-            return await _context.Voters
-                .Where(x => x.ConstituencyId == constituencyId)
-                .ToListAsync();
-        }
-
-        [Route("[action]/{votersId}")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<SecurityQuestionsDTO>>> GetSecurityQuestionsById(long votersId)
-        {
-            var questions = await _context.Voters.Where(x => x.VoterId == votersId).Select(x => QuestionsToDTO(x)).ToListAsync();
-
-            if(questions == null)
-            {
-                return NotFound();
-            }
-
-            return questions;
-        }
-
-        // PUT: api/Voters/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutVoter(long id, Voter voter)
-        {
-            if (id != voter.VoterId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(voter).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VoterExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Voters
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Voter>> PostVoter(Voter voter)
-        {
-            _context.Voters.Add(voter);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetVoter", new { id = voter.VoterId }, voter);
-        }
-
-        // DELETE: api/Voters/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVoter(long id)
-        {
-            var voter = await _context.Voters.FindAsync(id);
-            if (voter == null)
-            {
-                return NotFound();
-            }
-
-            _context.Voters.Remove(voter);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool VoterExists(long id)
-        {
-            return _context.Voters.Any(e => e.VoterId == id);
-        }*/
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,22 +12,28 @@ namespace eVotingApi.Models
 {
     public class Candidate
     {
-        public long CandidateId { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
 
-        public long ConstituencyId { get; set; }
+        [BsonElement("candidateId")]
+        public string CandidateId { get; set; }
 
-        public long ElectionId { get; set; }
+        [BsonElement("firstName")]
+        public string FirstName { get; set; }
 
-        
-        //public virtual Constituency Constituency { get; set; }
-        
-        //public virtual Election Election { get; set; }
-        
-        //public virtual Member Member { get; set; }
+        [BsonElement("lastName")]
+        public string LastName { get; set; }
 
-        //[JsonIgnore]
-        //public virtual ICollection<Vote> Votes { get; set; }
-        //[JsonIgnore]
-        //public virtual MemberOfParliament MemberOfParliament { get; set; }
+        [BsonElement("affiliation")]
+        public string Affiliation { get; set; }
+
+        [BsonElement("constituencyId")]
+        public string ConstituencyId { get; set; }
+
+        [BsonIgnore]
+        public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
+
+        //public long ElectionId { get; set; }
     }
 }

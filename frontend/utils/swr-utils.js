@@ -112,3 +112,13 @@ export const usePair = (voterId) => {
         isError: error
     }
 }
+
+export const useGetParty = (affiliation, token) => {
+    const {data: party, error} = useSWR([`${baseUrl}/politicalparties/${affiliation}`, token], fetcher, {revalidateOnFocus: false})
+
+    return {
+        party,
+        isLoading: !error && !party,
+        isError: error
+    }
+}

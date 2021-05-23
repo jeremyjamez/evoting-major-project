@@ -7,13 +7,8 @@ import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import https from 'https'
 
-const candidates = [
-    {
 
-    }
-]
-
-const SelectCandidate = ({ exp }) => {
+const SelectCandidate = ({ exp, candidates, token }) => {
     return (
         <Layout expireTimestamp={exp}>
             <Grid.Container gap={2}>
@@ -21,9 +16,13 @@ const SelectCandidate = ({ exp }) => {
                     <h1>Below are the candidates within your constituency</h1>
                 </Grid>
 
-                <Grid xs={24}>
-                    <CandidateCard />
-                </Grid>
+                {
+                    candidates.map((candidate) => {
+                        return <Grid xs={24} key={candidate.candidateId}>
+                            <CandidateCard candidate={candidate} token={token} />
+                        </Grid>
+                    })
+                }
             </Grid.Container>
             <Grid.Container justify="flex-end">
                 <Grid>
@@ -49,13 +48,7 @@ export async function getServerSideProps(context) {
             rejectUnauthorized: false,
         });
 
-        return {
-            props: {
-                exp: tokenData.exp
-            }
-        }
-
-        /* const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/voters/getquestions/${tokenData.Id}`,
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/candidates/${tokenData.Id}`,
             {
                 agent: httpsAgent,
                 method: 'GET',
@@ -68,15 +61,15 @@ export async function getServerSideProps(context) {
 
         if (res.ok) {
             const data = await res.json()
-            const questions = data
-            const exp = tokenData.exp
+            const candidates = data
             return {
                 props: {
-                    questions,
-                    exp
+                    candidates,
+                    token,
+                    exp: tokenData.exp
                 }
             }
-        } */
+        }
     }
 
     return {

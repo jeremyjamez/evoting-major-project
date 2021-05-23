@@ -11,6 +11,8 @@ namespace eVotingApi.Models
         public string DatabaseName { get; set; }
         public string VoterCollectionName { get; set; }
         public string ConstituencyCollectionName { get; set; }
+        public string CandidateCollectionName { get; set; }
+        public string PartyCollectionName { get; set; }
     }
 
     public interface IEVotingDatabaseSettings
@@ -19,5 +21,7 @@ namespace eVotingApi.Models
         string DatabaseName { get; set; }
         string VoterCollectionName { get; set; }
         string ConstituencyCollectionName { get; set; }
+        string CandidateCollectionName { get; set; }
+        string PartyCollectionName { get; set; }
     }
 }

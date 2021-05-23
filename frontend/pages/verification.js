@@ -1,10 +1,10 @@
-import { Col, Row, useCurrentState } from "@geist-ui/react"
-import { useEffect } from "react"
+import { Col, Row, useCurrentState, Modal, Text, useModal } from "@geist-ui/react"
+import { useEffect, useState } from "react"
 import { Strider, Step } from "react-strider"
 import GettingStarted from "../components/gettingStarted"
 import Layout from "../components/layout"
 import SecurityQuestion from "../components/SecurityQuestion"
-import { parseCookies } from 'nookies'
+import { parseCookies, destroyCookie } from 'nookies'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import https from 'https'
@@ -13,14 +13,24 @@ import { useRouter } from "next/router"
 
 const Verification = ({ questions, exp }) => {
 
-    const [correct, setCorrect] = useCurrentState(0)
+    const [correct, setAnswerCorrect, correctValueRef] = useCurrentState(0)
+    const [state, setState] = useState(false)
+    const {visible, setVisible, bindings} = useModal()
+
     const router = useRouter()
 
-    useEffect(() => {
-        if(correct === 2){
+    const pushAnswer = () => {
+        setAnswerCorrect((prev) => prev + 1)
+        if (correctValueRef.current === 2) {
             router.push('/selectCandidate')
         }
-    },[correct])
+    }
+
+    const pushAttempt = (attempt) => {
+        if (attempt === 0) {
+            setVisible(true)
+        }
+    }
 
     return (
         <Layout expireTimestamp={exp}>
@@ -34,12 +44,12 @@ const Verification = ({ questions, exp }) => {
                         </Step>
                         <Step>
                             {({ next, goTo, active, hiding, activeIndex }) => (
-                                <SecurityQuestion pushAnswer={() => setCorrect(correct + 1)} number={activeIndex} item={questions[activeIndex - 1]} next={next} />
+                                <SecurityQuestion triggerPushAnswer={pushAnswer} triggerPushAttempt={pushAttempt} number={activeIndex} item={questions[activeIndex - 1]} next={next} />
                             )}
                         </Step>
                         <Step>
                             {({ next, goTo, active, hiding, activeIndex }) => (
-                                <SecurityQuestion pushAnswer={() => setCorrect(correct + 1)} number={activeIndex} item={questions[activeIndex - 1]} next={next} />
+                                <SecurityQuestion triggerPushAnswer={pushAnswer} triggerPushAttempt={pushAttempt} number={activeIndex} item={questions[activeIndex - 1]} next={next} />
                             )}
                         </Step>
                     </Strider>
@@ -50,6 +60,18 @@ const Verification = ({ questions, exp }) => {
                     height: 100vh
                 }
             `}</style>
+            <Modal {...bindings} disableBackdropClick={true}>
+                <Modal.Title>
+                    <Text h4>3 failed security question attempts</Text>
+                </Modal.Title>
+                <Modal.Content>
+                    <Text h5>You have incorrectly answered the question using your 3 attempts. You will be redirected to the home page.</Text>
+                </Modal.Content>
+                <Modal.Action onClick={() => {
+                    destroyCookie(null, 'token')
+                    router.push('/')
+                    }}>OK</Modal.Action>
+            </Modal>
         </Layout>
     )
 }

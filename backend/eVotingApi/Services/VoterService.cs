@@ -86,9 +86,9 @@ namespace eVotingApi.Services
         /// </summary>
         /// <param name="constituencyId"></param>
         /// <returns>An enumerable of voters</returns>
-        public async Task<IEnumerable<Voter>> GetByConstituency(string constituency)
+        public async Task<IEnumerable<Voter>> GetByConstituencyId(string constituencyId)
         {
-            return await _voters.Find(voter => voter.Constituency == constituency).ToListAsync();
+            return await _voters.Find(voter => voter.ConstituencyId == constituencyId).ToListAsync();
         }
 
         /// <summary>
@@ -143,18 +143,6 @@ namespace eVotingApi.Services
                 FirstName = voter.FirstName,
                 MiddleName = voter.MiddleName,
                 LastName = voter.LastName,
-                DateofBirth = voter.DateOfBirth
-            };
-
-        /// <summary>
-        /// Data Transfer Object (DTO) which hides some properties of the Voter entity
-        /// </summary>
-        /// <param name="voter"></param>
-        /// <returns></returns>
-        private static VoterDto VoterToIDandDobDto(Voter voter) =>
-            new VoterDto
-            {
-                VoterId = voter.VoterId,
                 DateofBirth = voter.DateOfBirth
             };
 

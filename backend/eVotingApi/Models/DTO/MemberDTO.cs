@@ -43,6 +43,6 @@ namespace eVotingApi.Models.DTO
         [Required]
         public DateTime JoinDate { get; set; }
 
-        public virtual PoliticalParty PoliticalParty { get; set; }
+        public virtual Party PoliticalParty { get; set; }
     }
 }

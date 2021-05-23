@@ -35,7 +35,7 @@ namespace eVotingApi.Controllers
 
         // GET: api/Constituencies/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Constituency>> GetConstituency(int id)
+        public async Task<ActionResult<Constituency>> GetConstituency(string id)
         {
             var constituency = await _constituencyService.GetById(id);
 

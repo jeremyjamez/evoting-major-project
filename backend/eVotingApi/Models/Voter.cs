@@ -76,8 +76,8 @@ namespace eVotingApi.Models
         public string MaritalStatus { get; set; }
 
         [BsonRequired]
-        [BsonElement("constituency")]
-        public string Constituency { get; set; }
+        [BsonElement("constituencyId")]
+        public string ConstituencyId { get; set; }
 
         [BsonElement("salt")]
         public string Salt { get; set; }

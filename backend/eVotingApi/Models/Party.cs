@@ -10,19 +10,25 @@ using System.Threading.Tasks;
 
 namespace eVotingApi.Models
 {
-    public class Constituency
+    public class Party
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        [BsonElement("constituencyId")]
-        public string ConstituencyId { get; set; }
+        [BsonElement("partyId")]
+        public string PartyId { get; set; }
 
-        [BsonElement("name")]
-        public string Name { get; set; }
+        [BsonElement("longName")]
+        public string LongName { get; set; }
 
-        [BsonElement("parish")]
-        public string Parish { get; set; }
+        [BsonElement("shortName")]
+        public string ShortName { get; set; }
+
+        [BsonElement("colour")]
+        public string Colour { get; set; }
+
+        [BsonElement("icon")]
+        public string Icon { get; set; }
     }
 }

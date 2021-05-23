@@ -1,4 +1,14 @@
 import { Button, Grid, Input, Spacer, Text, useCurrentState } from "@geist-ui/react";
+import { useForm } from 'react-hook-form'
+import styles from '../styles/layout.module.css'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import { string } from "yup/lib/locale";
+import { useEffect, useState } from "react";
+
+const schema = yup.object().shape({
+    answer: yup.string().required('This is a required field.')
+})
 
 function camelPad(str) {
     return str
@@ -13,18 +23,55 @@ function camelPad(str) {
         .trim();
 }
 
-const SecurityQuestion = ({ item, pushAnswer, next, number }) => {
+const normalizeInput = (value, previousValue) => {
+    if (!value) return value;
+    const currentValue = value.replace(/[^\d]/g, '');
+    const cvLength = currentValue.length;
+
+    if (!previousValue || value.length > previousValue.length) {
+        if (cvLength < 4) return currentValue;
+        if (cvLength < 7) return `${currentValue.slice(0, 3)}-${currentValue.slice(3)}`;
+        return `${currentValue.slice(0, 3)}-${currentValue.slice(3, 6)}-${currentValue.slice(6, 10)}`;
+    }
+};
+
+const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, number }) => {
 
     const question = Object.keys(item)[0]
+    const [attempt, setAttempt, attemptRef] = useCurrentState(3)
+    const [answer, setAnswer] = useState('')
 
-    const [answer, setAnswer] = useCurrentState('')
+    const { register, setValue, errors, handleSubmit, setError } = useForm({
+        resolver: yupResolver(schema),
+        criteriaMode: 'all',
+        shouldFocusError: true
+    })
 
-    const handleNext = () => {
-        if (answer.toLowerCase() === item[question].toLowerCase()) {
-            pushAnswer()
+    
+
+    const handleAnswer = (e) => {
+        if(question === 'telephoneNumber'){
+            setAnswer(normalizeInput(e.target.value, answer))
+            setValue('answer', normalizeInput(e.target.value, answer))
+        } else {
+            setAnswer(e.target.value)
+            setValue('answer', e.target.value)
+        }
+    }
+
+    useEffect(() => {
+        register('answer', {required: true})
+    },[register])
+
+    const onSubmit = (data) => {
+        setAttempt((prev) => prev - 1)
+        triggerPushAttempt(attemptRef.current)
+        console.log(data.answer)
+        if (data.answer.toLowerCase() === item[question].toLowerCase()) {
+            triggerPushAnswer()
             next()
         } else {
-            console.log('not correct')
+            setError("answer", { type: 'manual', message: 'Your answer is incorrect. Please check the spelling or format of your response and try again.' })
         }
     }
 
@@ -35,13 +82,21 @@ const SecurityQuestion = ({ item, pushAnswer, next, number }) => {
                     <Text style={{ textAlign: 'center' }} h1>What is your {camelPad(question)}?</Text>
                 </Grid>
                 <Grid xs={24}>
-                    <Input style={{ fontSize: '1.5rem' }} onChange={(e) => setAnswer(e.target.value)} required placeholder="Type answer here" size="large" width="100%" status="secondary" clearable />
-                </Grid>
-            </Grid.Container>
-            <Spacer y={1} />
-            <Grid.Container justify="flex-end">
-                <Grid>
-                    <Button type="secondary" size="large" auto shadow onClick={handleNext}>Next</Button>
+                    <form onSubmit={handleSubmit(onSubmit)} style={{width: '100%'}}>
+                        <Grid.Container gap={1}>
+                            <Grid xs={24}>
+                                <Input style={{ fontSize: '1.5rem' }} onChange={handleAnswer} value={answer} name="answer" placeholder="Type answer here" size="large" width="100%" status="secondary" clearable />
+                            </Grid>
+                            <Grid xs={24}>
+                                {
+                                    errors.answer && <Text className={styles.formError} span>{errors.answer?.message}</Text>
+                                }
+                            </Grid>
+                            <Grid xs={24} justify="flex-end">
+                                <Button htmlType="submit" type="secondary" size="large" auto shadow>Next</Button>
+                            </Grid>
+                        </Grid.Container>
+                    </form>
                 </Grid>
             </Grid.Container>
         </>

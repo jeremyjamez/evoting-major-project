@@ -7,18 +7,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Data;
+using eVotingApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using eVotingApi.Models.DTO;
 
 namespace eVotingApi.Controllers
 {
+    [Authorize]
     [Route("api/Candidates")]
     [ApiController]
     public class CandidatesController : ControllerBase
     {
-        private readonly eVotingContext _context;
+        private readonly CandidateService _candidateService;
 
-        public CandidatesController(eVotingContext context)
+        public CandidatesController(CandidateService candidateService)
         {
-            _context = context;
+            _candidateService = candidateService;
+        }
+
+        // GET: api/Candidates/1234567
+        [HttpGet("{voterId}")]
+        public async Task<ActionResult<IEnumerable<CandidateDTO>>> GetCandidates(string voterId)
+        {
+            return Ok(await _candidateService.GetCandidates(voterId));
         }
 
         /*// GET: api/Candidates
