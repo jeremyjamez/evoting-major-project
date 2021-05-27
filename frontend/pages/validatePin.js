@@ -63,7 +63,7 @@ export default function ValidatePin() {
                                 setCookie(null, 'token', t.token, {
                                     maxAge: 3600
                                 })
-                                router.push('/agreement')
+                                router.push('/verification')
                             }
                         })
                 }

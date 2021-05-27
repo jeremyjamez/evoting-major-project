@@ -1,14 +1,14 @@
-import { Avatar, Grid, Loading } from "@geist-ui/react"
+import { Avatar, Grid, Loading, useCurrentState } from "@geist-ui/react"
 import { useGetParty } from "../utils/swr-utils"
 
 const CandidateCard = ({candidate, token}) => {
 
     const {party, isLoading} = useGetParty(candidate.affiliation, token)
-
+    
     if(isLoading){
         return <Loading/>
     }
-    
+
     return (
         <>
             <div className="candidate-container">
@@ -17,7 +17,7 @@ const CandidateCard = ({candidate, token}) => {
                         <Grid xs={24} md={6} lg={6} xl={7}>
                             <div className="candidate-image">
                                 <div className="rounded-img">
-                                    {/* <img src="https://jis.gov.jm/media/AndrewXHolnessX11x14XXOfficialXB-2.jpg" /> */}
+                                    <img src={candidate.photo} />
                                 </div>
                             </div>
                         </Grid>

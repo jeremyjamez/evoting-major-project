@@ -31,6 +31,9 @@ namespace eVotingApi.Models
         [BsonElement("constituencyId")]
         public string ConstituencyId { get; set; }
 
+        [BsonElement("photo")]
+        public string Photo { get; set; }
+
         [BsonIgnore]
         public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
 

@@ -1,4 +1,4 @@
-import { Grid, Modal, Page, Text } from '@geist-ui/react'
+import { Button, Grid, Modal, Page, Text } from '@geist-ui/react'
 import moment from 'moment'
 import Countdown from 'react-countdown'
 import { useRouter } from 'next/router'
@@ -29,10 +29,18 @@ const Layout = ({ children, expireTimestamp }) => {
         }
     }
 
+    const handleExit = () => {
+        destroyCookie(null, 'token')
+        router.push('/')
+    }
+
     return (
         <Page>
             <Grid.Container>
-                <Grid xs={24} justify="flex-end">
+                <Grid xs={12} justify="flex-start">
+                    <Button type="error-light" onClick={handleExit} auto size="large">Exit</Button>
+                </Grid>
+                <Grid xs={12} justify="flex-end">
                     {
                         expireTimestamp > 0 ? 
                         <Countdown 

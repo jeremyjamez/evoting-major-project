@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Grid, Image, Page } from "@geist-ui/react"
+import { Button, Grid, useCurrentState } from "@geist-ui/react"
 import CandidateCard from "../components/CandidateCardComponent"
 import Link from "next/link"
 import Layout from "../components/layout"
@@ -7,8 +7,22 @@ import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import https from 'https'
 
+const selectedStyle = {
+    border: '#0090ad solid 8px',
+    borderRadius: '16px'
+}
 
 const SelectCandidate = ({ exp, candidates, token }) => {
+
+    const [selected, setSelected, selectedRef] = useCurrentState()
+
+    /* const handleCandidateClick = (idx) => {
+        if(selectedRef.current !== candidates[idx]){
+            setSelected((prev) => prev = candidates[idx])
+            console.log(selectedRef.current)
+        }
+    } */
+
     return (
         <Layout expireTimestamp={exp}>
             <Grid.Container gap={2}>
@@ -17,9 +31,9 @@ const SelectCandidate = ({ exp, candidates, token }) => {
                 </Grid>
 
                 {
-                    candidates.map((candidate) => {
+                    candidates.map((candidate, idx) => {
                         return <Grid xs={24} key={candidate.candidateId}>
-                            <CandidateCard candidate={candidate} token={token} />
+                            <CandidateCard candidate={candidate} token={token}/>
                         </Grid>
                     })
                 }

@@ -48,6 +48,7 @@ namespace eVotingApi.Services
                 ConstituencyId = candidate.ConstituencyId,
                 FullName = candidate.FullName,
                 Affiliation = candidate.Affiliation,
+                Photo = candidate.Photo,
                 Parish = constituency.Parish,
                 ConstituencyName = constituency.Name
             };

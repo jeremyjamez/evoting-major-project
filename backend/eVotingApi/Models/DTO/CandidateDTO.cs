@@ -18,6 +18,8 @@ namespace eVotingApi.Models.DTO
 
         public string Affiliation { get; set; }
 
+        public string Photo { get; set; }
+
         public string ConstituencyName { get; set; }
 
         public string Parish { get; set; }
