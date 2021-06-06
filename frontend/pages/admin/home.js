@@ -6,9 +6,9 @@ import nookies from 'nookies'
 import jwt from 'jsonwebtoken'
 import { useElections } from "../../utils/swr-utils";
 
-export default function Home({ token }) {
+export default function Home(props) {
 
-    const { elections } = useElections(token)
+    const { elections } = useElections(props.token)
 
     const voterPopulationData = {
         labels: ['2020', '2019', '2018', '2017'],

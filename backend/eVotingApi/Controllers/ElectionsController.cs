@@ -10,6 +10,7 @@ using eVotingApi.Models.DTO;
 using eVotingApi.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using eVotingApi.Services;
 
 namespace eVotingApi.Controllers
 {
@@ -18,37 +19,54 @@ namespace eVotingApi.Controllers
     [ApiController]
     public class ElectionsController : ControllerBase
     {
-        private readonly eVotingContext _context;
+        private readonly ElectionService _electionService;
 
-        public ElectionsController(eVotingContext context)
+        public ElectionsController(ElectionService electionService)
         {
-            _context = context;
+            _electionService = electionService;
         }
 
         // GET: api/Elections
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ElectionDTO>>> GetElections()
+        public async Task<ActionResult<IEnumerable<Election>>> GetElections()
         {
-            return await _context.Elections
-                .Select(x => ElectionToDTO(x))
-                .ToListAsync();
+            var elections = await _electionService.GetElections();
+
+            if(elections == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(elections);
         }
 
         // GET: api/Elections/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ElectionDTO>> GetElection(long id)
+        public async Task<ActionResult<Election>> GetElection(string id)
         {
-            var election = await _context.Elections.FindAsync(id);
+            var election = await _electionService.GetElection(id);
 
             if (election == null)
             {
                 return NotFound();
             }
 
-            return ElectionToDTO(election);
+            return Ok(election);
         }
 
-        // PUT: api/Elections/5
+        // POST: api/Elections
+        [HttpPost]
+        public async Task<ActionResult<object>> PostElection(Election election)
+        {
+            var electionId = await _electionService.AddElection(election);
+
+            if (electionId == null)
+                return BadRequest();
+
+            return CreatedAtAction("GetElection", new { id = electionId }, election);
+        }
+
+  /*      // PUT: api/Elections/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutElection(long id, ElectionDTO electionDTO)
@@ -80,52 +98,20 @@ namespace eVotingApi.Controllers
             }
 
             return NoContent();
-        }
-
-        // POST: api/Elections
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Election>> PostElection(ElectionDTO electionDTO)
-        {
-            var election = new Election
-            {
-                ElectionType = electionDTO.ElectionType,
-                ElectionDate = electionDTO.ElectionDate
-            };
-
-            _context.Elections.Add(election);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetElection", new { id = election.ElectionId }, ElectionToDTO(election));
-        }
+        }*/
 
         // DELETE: api/Elections/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteElection(long id)
+        public async Task<IActionResult> DeleteElection(string id)
         {
-            var election = await _context.Elections.FindAsync(id);
-            if (election == null)
+            var deleteResult = await _electionService.Delete(id);
+
+            if (deleteResult.DeletedCount < 1)
             {
                 return NotFound();
             }
 
-            _context.Elections.Remove(election);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
-
-        private bool ElectionExists(long id)
-        {
-            return _context.Elections.Any(e => e.ElectionId == id);
-        }
-
-        private static ElectionDTO ElectionToDTO(Election election) =>
-            new ElectionDTO
-            {
-                ElectionId = election.ElectionId,
-                ElectionType = election.ElectionType,
-                ElectionDate = election.ElectionDate
-            };
     }
 }

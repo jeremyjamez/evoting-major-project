@@ -39,10 +39,11 @@ export const usePoliticalParties = (token) => {
     }
 };
 
-export const useVoters = (path,token) => {
-    const { data: voters, error } = useSWR([`${baseUrl}${path}`,token], fetcher)
+export const useVoters = (token) => {
+    const { data: voters, error } = useSWR([`${baseUrl}/voters`,token], fetcher)
     return {
         voters,
+        isLoading: !error && !voters,
         isError: error
     }
 };

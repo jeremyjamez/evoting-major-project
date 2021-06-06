@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,19 +8,22 @@ using System.Text.Json.Serialization;
 
 namespace eVotingApi.Models
 {
-    [Table("Election")]
     public class Election
     {
-        [Key]
-        public long ElectionId { get; set; }
-        [Required]
-        public string ElectionType { get; set; }
-        [Required]
-        public DateTime ElectionDate { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
 
-        [JsonIgnore]
-        public virtual ICollection<Vote> Votes { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<Candidate> Candidates { get; set; }
+        [BsonElement("type")]
+        public string Type { get; set; }
+
+        [BsonElement("date")]
+        public string Date { get; set; }
+
+        [BsonElement("startTime")]
+        public string StartTime { get; set; }
+
+        [BsonElement("endTime")]
+        public string EndTime { get; set; }
     }
 }

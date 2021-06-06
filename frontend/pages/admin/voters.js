@@ -1,9 +1,13 @@
-import React, { useState } from "react";
-import { Grid } from "@geist-ui/react";
-import DashboardLayout from "./layout";
-import DataTable from "react-data-table-component";
+import React, { useState } from "react"
+import { Grid } from "@geist-ui/react"
+import DashboardLayout from "./layout"
+import DataTable from "react-data-table-component"
+import { useVoters } from "../../utils/swr-utils"
+import moment from "moment"
+import nookies from 'nookies'
+import jwt from 'jsonwebtoken'
 
-export default function Voters() {
+export default function Voters({token}) {
 
     const columns = React.useMemo(() => [
         {
@@ -21,9 +25,11 @@ export default function Voters() {
         {
             name: 'Last Name',
             selector: 'lastName'
-        },
+        }
 
     ], []);
+
+    const { voters, isLoading, isError } = useVoters(token)
 
     const [telephone, setTelephone] = useState('');
 
@@ -46,13 +52,39 @@ export default function Voters() {
     return (
         <DashboardLayout>
             <Grid.Container style={{margin: '16px'}}>
-                <Grid xl={24}>
+                <Grid xs={24} style={{display: 'block'}}>
                     <DataTable
                         noHeader
+                        pagination
+                        highlightOnHover
+                        data={voters}
                         columns={columns}
                     />
                 </Grid>
             </Grid.Container>
         </DashboardLayout>
     )
+}
+
+export async function getServerSideProps(ctx) {
+    const cookies = nookies.get(ctx)
+
+    const token = cookies.token
+    const decodedToken = jwt.decode(token, { complete: true })
+    var dateNow = moment(moment().valueOf()).unix()
+
+    if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            token
+        }
+    }
 }

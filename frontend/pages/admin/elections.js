@@ -21,21 +21,31 @@ const Elections = ({ token }) => {
     const columns = React.useMemo(() => [
         {
             name: 'Election ID',
-            selector: 'electionId',
+            selector: 'id',
         },
         {
             name: 'Election Type',
-            selector: 'electionType'
+            selector: 'type'
         },
         {
             name: 'Election Date',
-            selector: 'electionDate',
-            format: row => moment(row.electionDate).format('DD/MM/YYYY')
+            selector: 'date',
+            format: row => moment(row.date * 1000).format('MM/DD/YYYY')
+        },
+        {
+            name: 'Start Time',
+            selector: 'startTime',
+            format: row => moment(row.startTime * 1000).format("hh:mm a")
+        },
+        {
+            name: 'End Time',
+            selector: 'endTime',
+            format: row => moment(row.endTime * 1000).format('hh:mm a')
         },
         {
             name: '',
             selector: '',
-            cell: row => <Button icon={<Trash2 />} size="small" auto type="error" onClick={() => handleDelete(row.electionId)}></Button>
+            cell: row => <Button icon={<Trash2 />} size="large" auto type="error" onClick={() => handleDelete(row.id)}></Button>
         }
     ], [])
 
@@ -61,39 +71,6 @@ const Elections = ({ token }) => {
         return <FilterComponent onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />;
     }, [filterText, resetPaginationToggle]);
 
-    async function addElectionClick() {
-        const httpsAgent = new https.Agent({
-            rejectUnauthorized: false,
-        });
-        fetch(`https://localhost:44387/api/Elections`, {
-            agent: httpsAgent,
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                "electionType": electionType,
-                "electionDate": moment(electionDate).toISOString()
-            })
-        })
-            .then(response => response.status)
-            .then(status => {
-                if (status === 201) {
-                    setToast({
-                        text: 'Successfully saved to database!',
-                        type: 'success'
-                    });
-                } else {
-                    console.log(status)
-                    setToast({
-                        text: 'Failed to save to database!',
-                        type: 'error'
-                    });
-                }
-            })
-            .catch(error => console.log(error))
-    };
 
     const handleDelete = (id) => {
         const httpsAgent = new https.Agent({
@@ -125,21 +102,9 @@ const Elections = ({ token }) => {
             })
     }
 
-    const selectHandler = (val) => {
-        setElectionType(val);
-    };
-
-    const electionDateHandler = (e) => {
-        setElectionDate(e.target.value);
-    };
-
-    const electionTimeHandler = (e) => {
-        setElectionTime(e.target.value);
-    }
-
     return (
         <DashboardLayout>
-            <Tabs initialValue="1" style={{margin: '16px'}}>
+            <Tabs initialValue="1" style={{ margin: '16px', width: '100%' }}>
                 <Tabs.Item label="all" value="1">
                     <DataTable
                         columns={columns}
@@ -150,36 +115,6 @@ const Elections = ({ token }) => {
                         subHeader
                         subHeaderComponent={subHeaderComponentMemo}
                     />
-                </Tabs.Item>
-                <Tabs.Item label="add" value="2">
-                    <Grid.Container gap={2}>
-                        <Grid xs={24} xl={6} alignContent="center">
-                            <Grid.Container gap={2}>
-                                <Grid xs={24} style={{display: 'block'}}>
-                                    Election Type
-                                    <Spacer y={.5} />
-                                    <Select placeholder="Election Type" size="large" width="100%" onChange={selectHandler}>
-                                        <Select.Option value="General Election">General Election</Select.Option>
-                                        <Select.Option value="Local Government Election">Local Government Election</Select.Option>
-                                        <Select.Option value="By-election">By-election</Select.Option>
-                                    </Select>
-                                </Grid>
-                                <Grid xs={24}>
-                                    <Input type="date" value={electionDate} onChange={electionDateHandler} size="large" width="100%" >Election Date</Input>
-                                </Grid>
-
-                                <Grid xs={12}>
-                                    <Input type="time" value={electionStartTime} size="large" width="100%" >Start</Input>
-                                </Grid>
-                                <Grid xs={12}>
-                                    <Input type="time" value={electionEndTime} size="large" width="100%" >End</Input>
-                                </Grid>
-                            </Grid.Container>
-                        </Grid>
-                        <Grid xs={24}>
-                            <Button type="secondary" shadow onClick={addElectionClick}>Save</Button>
-                        </Grid>
-                    </Grid.Container>
                 </Tabs.Item>
 
                 <Tabs.Item label="update" value="3">
@@ -196,6 +131,15 @@ export async function getServerSideProps(context) {
     const token = cookies.token
     const decodedToken = jwt.decode(token, { complete: true })
     var dateNow = moment(moment().valueOf()).unix()
+
+    if (token == null) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
 
     if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
         return {

@@ -17,9 +17,7 @@ const schema = yup.object().shape({
         }).required(),
 });
 
-const Login = ({csrfToken}) => {
-
-    console.log("token: " + csrfToken)
+const Login = () => {
     const { handleSubmit, register, errors } = useForm({
         resolver: yupResolver(schema)
     })
@@ -33,13 +31,13 @@ const Login = ({csrfToken}) => {
 
         setLoading(true)
 
-        /* const httpsAgent = new https.Agent({
+        const httpsAgent = new https.Agent({
             rejectUnauthorized: false,
-        }); */
+        });
 
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/authmanagement/login`,
             {
-                //agent: httpsAgent,
+                agent: httpsAgent,
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -83,15 +81,18 @@ const Login = ({csrfToken}) => {
                     <Grid xs={24} xl={12}>
                         <Card hoverable>
                             <h4>eVoting Prototype - Admin Login</h4>
-                            <form method="post" action="/api/auth/callback/credentials">
-                                <input name='csrfToken' type='hidden' defaultValue={csrfToken}/>
-                                <Grid.Container gap={2} justify="center">
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <Grid.Container justify="center">
                                     <Grid xs={24}>
                                         <Input name="username" width="100%" size="large" ref={register} disabled={isLoading}>Username</Input>
-                                        <p>{errors.username ? errors.message.username : ''}</p>
+                                    </Grid>
+                                    <Grid xs={24}>
+                                        <p>{errors.username ? errors.username?.message : ''}</p>
                                     </Grid>
                                     <Grid xs={24}>
                                         <Input.Password name="password" width="100%" size="large" ref={register} disabled={isLoading}>Password</Input.Password>
+                                    </Grid>
+                                    <Grid xs={24}>
                                         {
                                             errors.password ?
                                                 <Text type="error">
@@ -102,6 +103,9 @@ const Login = ({csrfToken}) => {
                                                 </Text> : ''
                                         }
                                     </Grid>
+                                </Grid.Container>
+                                <Spacer y={2}/>
+                                <Grid.Container justify="center">
                                     <Grid xs={12}>
                                         <Button htmlType="submit" type="secondary" shadow loading={isLoading}>Login</Button>
                                     </Grid>
@@ -129,15 +133,17 @@ export async function getServerSideProps(ctx) {
     var dateNow = moment(moment().valueOf()).unix()
 
     if (decodedToken !== null && decodedToken.payload.exp > dateNow) {
-        return {
-            redirect: {
-                destination: '/admin/home',
-                permanent: false
+        if (!Object.prototype.hasOwnProperty(decodedToken.payload, 'voterId')) {
+            return {
+                redirect: {
+                    destination: '/admin/home',
+                    permanent: false
+                }
             }
         }
     }
 
-    destroyCookie(ctx, 'token', {path: '/'})
+    destroyCookie(ctx, 'token', { path: '/' })
 
     return {
         props: {}

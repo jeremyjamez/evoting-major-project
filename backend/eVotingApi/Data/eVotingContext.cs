@@ -15,7 +15,6 @@ namespace eVotingApi.Data
 
         }
 
-        public DbSet<Election> Elections { get; set; }
         public DbSet<PollingDivision> PollingDivisions { get; set; }
         public DbSet<PollingCentre> PollingCentres { get; set; }
         public DbSet<PollingStation> PollingStations { get; set; }

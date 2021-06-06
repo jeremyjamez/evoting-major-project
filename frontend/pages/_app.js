@@ -17,7 +17,7 @@ function App({ Component, pageProps }) {
   return (
     <GeistProvider>
       <Head>
-        <title>Online eVoting Prototype</title>
+        <title>Online E-Voting Prototype</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <CssBaseline />
