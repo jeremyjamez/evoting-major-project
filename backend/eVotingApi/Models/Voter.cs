@@ -79,6 +79,10 @@ namespace eVotingApi.Models
         [BsonElement("constituencyId")]
         public string ConstituencyId { get; set; }
 
+        [BsonRequired]
+        [BsonElement("photoUrl")]
+        public string Photo { get; set; }
+
         [BsonElement("salt")]
         public string Salt { get; set; }
 

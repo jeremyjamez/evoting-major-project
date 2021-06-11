@@ -2,6 +2,9 @@
 using eVotingApi.Models.DTO;
 using eVotingApi.Models.DTO.Responses;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.CognitiveServices.Vision.Face;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System;
@@ -14,9 +17,12 @@ namespace eVotingApi.Services
     public class VoterService
     {
         private readonly IMongoCollection<Voter> _voters;
+        private readonly IConfiguration _config;
+        private const string RECOGNITION_MODEL4 = RecognitionModel.Recognition04;
 
-        public VoterService(IEVotingDatabaseSettings settings)
+        public VoterService(IEVotingDatabaseSettings settings, IConfiguration config)
         {
+            _config = config;
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
@@ -129,6 +135,53 @@ namespace eVotingApi.Services
         {
             var filter = Builders<Voter>.Filter.Eq("voterId", voterId);
             return await _voters.Find(filter).Project(v => v.Salt).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Authenticate the Face Client with the Azure Face API Subscription
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <param name="key"></param>
+        /// <returns>IFaceClient</returns>
+        private static IFaceClient Authenticate(string endpoint, string key)
+        {
+            return new FaceClient(new ApiKeyServiceClientCredentials(key)) { Endpoint = endpoint };
+        }
+
+        /// <summary>
+        /// Detects faces from the provided image url
+        /// </summary>
+        /// <param name="faceClient"></param>
+        /// <param name="url"></param>
+        /// <param name="recognition_model"></param>
+        /// <returns>List of detected faces</returns>
+        private static async Task<List<DetectedFace>> DetectFaceRecognize(IFaceClient faceClient, string url, string recognition_model)
+        {
+            IList<DetectedFace> detectedFaces = await faceClient.Face.DetectWithUrlAsync(url, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
+            return detectedFaces.ToList();
+        }
+
+        /// <summary>
+        /// Verifys the voters identity by comparing their photo stored in the system to the one they provide during verification
+        /// </summary>
+        /// <param name="voterId"></param>
+        /// <param name="sourceImgUrl"></param>
+        /// <returns>VerifyResult</returns>
+        public async Task<VerifyResult> VerifyVoterIdentity(string voterId, string sourceImgUrl)
+        {
+            IFaceClient client = Authenticate(_config.GetValue<string>("AzureFaceConfig:Endpoint"), _config.GetValue<string>("AzureFaceConfig:Key"));
+            var filter = Builders<Voter>.Filter.Eq("voterId", voterId);
+            var photoUrl = await _voters.Find(filter).Project(v => v.Photo).FirstOrDefaultAsync();
+
+            List<DetectedFace> targetDetectedFaces = await DetectFaceRecognize(client, photoUrl, RECOGNITION_MODEL4);
+            Guid targetFaceId = targetDetectedFaces[0].FaceId.Value;
+
+            List<DetectedFace> sourceDetectedFaces = await DetectFaceRecognize(client, sourceImgUrl, RECOGNITION_MODEL4);
+            Guid sourceFaceId = sourceDetectedFaces[0].FaceId.Value;
+
+            VerifyResult result = await client.Face.VerifyFaceToFaceAsync(sourceFaceId, targetFaceId);
+
+            return result;
         }
 
         /// <summary>
