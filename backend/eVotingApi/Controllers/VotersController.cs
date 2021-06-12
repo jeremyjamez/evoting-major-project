@@ -20,6 +20,11 @@ using eVotingApi.Config;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.KeyVault;
+using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace eVotingApi.Controllers
 {
@@ -28,7 +33,6 @@ namespace eVotingApi.Controllers
     [ApiController]
     public class VotersController : ControllerBase
     {
-        //private readonly eVotingContext _context;
         private readonly VoterService _voterService;
         private readonly JwtConfig _jwtConfig;
         private static Random _rng;
@@ -38,6 +42,14 @@ namespace eVotingApi.Controllers
             _voterService = voterService;
             _jwtConfig = optionsMonitor.CurrentValue;
             _rng = new Random();
+        }
+
+        [AllowAnonymous]
+        [Route("[action]")]
+        [HttpGet]
+        public async Task<IActionResult> GetPublicKey()
+        {
+            return StatusCode(200, _voterService.GetPublicKey());
         }
 
         // GET: api/Voters
@@ -79,8 +91,12 @@ namespace eVotingApi.Controllers
         [Route("[action]")]
         [ActionName("IsRegistered")]
         [HttpPost]
-        public async Task<ActionResult<RegisteredResponse>> IsVoterRegistered([FromBody]VoterDto voterDto)
+        public async Task<ActionResult<RegisteredResponse>> IsVoterRegistered([FromBody]string payload)
         {
+            var cert = await GetCertificateAsync();
+            var rsaCng = (RSACng)cert.PrivateKey;
+            var decryptedMessageJson = Encoding.UTF8.GetString(rsaCng.Decrypt(Convert.FromBase64String(payload), RSAEncryptionPadding.OaepSHA1));
+            VoterDto voterDto = JsonConvert.DeserializeObject<VoterDto>(decryptedMessageJson);
             return await _voterService.IsRegistered(voterDto);
         }
 
@@ -251,6 +267,18 @@ namespace eVotingApi.Controllers
         {
             public string Token { get; set; }
             public bool IsCorrect { get; set; }
+        }
+
+        private async Task<X509Certificate2> GetCertificateAsync()
+        {
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+            var secret = await keyVaultClient.GetSecretAsync("https://evoting-keys.vault.azure.net/secrets/certificate-base64/d471eebb69b94aae967136e6b2d37b82").ConfigureAwait(false);
+            var pfxBase64 = secret.Value;
+            var bytes = Convert.FromBase64String(pfxBase64);
+            var coll = new X509Certificate2Collection();
+            coll.Import(bytes, "QEk5$s2PrRcZrj4xHb", X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.MachineKeySet);
+            return coll[0];
         }
     }
 }

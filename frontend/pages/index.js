@@ -1,4 +1,4 @@
-import { Button, Card, Description, Divider, Grid, Image, Input, Link, Page, Row, Text } from '@geist-ui/react'
+import { Button, Card, Grid, Image, Input, Page, Row, Text } from '@geist-ui/react'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -7,13 +7,15 @@ import https from "https"
 import styles from '../styles/layout.module.css'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+//import JSEncrypt from "jsencrypt"
+import NodeRSA from 'node-rsa'
 
 const schema = yup.object().shape({
   voterId: yup.string().required('Voter ID is a required field.').length(7, 'Voter ID must be exactly 7 numbers.'),
   dob: yup.string().required('Date of Birth is a required field.')
 })
 
-export default function Home() {
+export default function Home({publicKey}) {
 
   const router = useRouter()
 
@@ -25,8 +27,17 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [fetchError, setFetchError] = useState('')
 
+  const key = new NodeRSA(publicKey)
+
   const onSubmit = (data) => {
     setLoading(true)
+
+    const payload = {
+      voterId: data.voterId,
+      DateofBirth: moment(data.dob).toISOString()
+    }
+
+    let encryptedPayload = key.encrypt(payload, 'base64')
 
     const httpsAgent = new https.Agent({
       rejectUnauthorized: false,
@@ -40,10 +51,7 @@ export default function Home() {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          voterId: data.voterId,
-          DateofBirth: moment(data.dob).toISOString()
-        })
+        body: JSON.stringify(encryptedPayload)
       })
       .then(res => {
         if (!res.ok) {
@@ -52,13 +60,14 @@ export default function Home() {
         return res.json()
       })
       .then(t => {
+        console.log(t)
         if (!t.isRegistered) {
           setRegistered(false)
           setLoading(false)
         } else {
           setRegistered(true)
           setLoading(false)
-          if (!t.isTwoFactorEnabled) {
+          /* if (!t.isTwoFactorEnabled) {
             router.push({
               pathname: '/pair',
               query: { voterId: data.voterId }
@@ -68,7 +77,7 @@ export default function Home() {
               pathname: '/validatePin',
               query: { voterId: data.voterId }
             })
-          }
+          } */
         }
       })
       .catch((error) => {
@@ -148,4 +157,28 @@ export default function Home() {
       `}</style>
     </Page>
   )
+}
+
+export async function getServerSideProps() {
+  const httpsAgent = new https.Agent({
+    rejectUnauthorized: false,
+  });
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/voters/getpublickey`,
+  {
+    agent: httpsAgent,
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
+
+  const publicKey = await res.json()
+
+  return {
+    props: {
+      publicKey
+    }
+  }
 }
