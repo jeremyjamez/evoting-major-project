@@ -137,8 +137,7 @@ export default function Home() {
               <li>Google Authenticator</li>
               <li>Microsoft Authenticator</li>
             </ul>
-            <li>Webcam enabled Laptop or Desktop computer</li>
-            <li>Verification Mobile Application</li>
+            <li>Webcam enabled device (Smartphone, Laptop or Desktop)</li>
           </ul>
         </Grid>
       </Grid.Container>
