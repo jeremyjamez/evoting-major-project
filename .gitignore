@@ -306,7 +306,7 @@ nunit-*.xml
 BenchmarkDotNet.Artifacts/
 
 # .NET Core
-**/appsettings.json
+*.Development.json
 
 # StyleCop
 StyleCopReport.xml
