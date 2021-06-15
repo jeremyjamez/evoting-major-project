@@ -9,6 +9,8 @@ import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import https from 'https'
 import { useRouter } from "next/router"
+import crypto, { privateDecrypt, publicEncrypt } from "crypto"
+import NodeRSA from "node-rsa"
 
 
 const Verification = ({ questions, exp }) => {
@@ -22,7 +24,7 @@ const Verification = ({ questions, exp }) => {
     const pushAnswer = () => {
         setAnswerCorrect((prev) => prev + 1)
         if (correctValueRef.current === 2) {
-            router.push('/selectCandidate')
+            router.push('/facial-verification')
         }
     }
 
@@ -83,9 +85,11 @@ export async function getServerSideProps(context) {
     const decodedToken = jwt.decode(token, { complete: true })
     const dateNow = moment(moment().valueOf()).unix()
 
-    if (decodedToken !== null && decodedToken.payload.exp > dateNow) {
+    if (token !== null && decodedToken.payload.exp > dateNow) {
 
         const tokenData = decodedToken.payload
+
+        const key = new NodeRSA(cookies.public_key)
 
         const httpsAgent = new https.Agent({
             rejectUnauthorized: false,
@@ -103,8 +107,18 @@ export async function getServerSideProps(context) {
             })
 
         if (res.ok) {
+            
             const data = await res.json()
-            const questions = data
+
+            const decryptedData = privateDecrypt({
+                key: cookies.private_key,
+                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                oaepHash: 'sha1',
+                passphrase: `${process.env.NEXT_PUBLIC_PRIVATE_KEY_PASS}`
+            }, Buffer.from(data, 'base64'))
+
+            const questions = JSON.parse(decryptedData.toString())
+
             const exp = tokenData.exp
             return {
                 props: {
@@ -112,6 +126,8 @@ export async function getServerSideProps(context) {
                     exp
                 }
             }
+        } else {
+            console.log(res.json())
         }
     }
 

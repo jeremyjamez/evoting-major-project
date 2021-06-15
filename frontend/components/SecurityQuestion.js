@@ -3,25 +3,11 @@ import { useForm } from 'react-hook-form'
 import styles from '../styles/layout.module.css'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { string } from "yup/lib/locale";
 import { useEffect, useState } from "react";
 
 const schema = yup.object().shape({
     answer: yup.string().required('This is a required field.')
 })
-
-function camelPad(str) {
-    return str
-        // Look for long acronyms and filter out the last letter
-        .replace(/([A-Z]+)([A-Z][a-z])/g, ' $1 $2')
-        // Look for lower-case letters followed by upper-case letters
-        .replace(/([a-z\d])([A-Z])/g, '$1 $2')
-        // Look for lower-case letters followed by numbers
-        .replace(/([a-zA-Z])(\d)/g, '$1 $2')
-        .replace(/^./, function (str) { return str.toUpperCase(); })
-        // Remove any white space left around the word
-        .trim();
-}
 
 const normalizeInput = (value, previousValue) => {
     if (!value) return value;
@@ -37,7 +23,6 @@ const normalizeInput = (value, previousValue) => {
 
 const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, number }) => {
 
-    const question = Object.keys(item)[0]
     const [attempt, setAttempt, attemptRef] = useCurrentState(3)
     const [answer, setAnswer] = useState('')
 
@@ -47,10 +32,8 @@ const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, n
         shouldFocusError: true
     })
 
-    
-
     const handleAnswer = (e) => {
-        if(question === 'telephoneNumber'){
+        if(item.Question === 'Telephone number'){
             setAnswer(normalizeInput(e.target.value, answer))
             setValue('answer', normalizeInput(e.target.value, answer))
         } else {
@@ -66,8 +49,7 @@ const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, n
     const onSubmit = (data) => {
         setAttempt((prev) => prev - 1)
         triggerPushAttempt(attemptRef.current)
-        console.log(data.answer)
-        if (data.answer.toLowerCase() === item[question].toLowerCase()) {
+        if (data.answer.toLowerCase() === item.Answer.toLowerCase()) {
             triggerPushAnswer()
             next()
         } else {
@@ -79,7 +61,7 @@ const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, n
         <>
             <Grid.Container gap={2} justify="center">
                 <Grid xs={24}>
-                    <Text style={{ textAlign: 'center' }} h1>What is your {camelPad(question)}?</Text>
+                    <Text style={{ textAlign: 'center' }} h1>What is your {item.Question}?</Text>
                 </Grid>
                 <Grid xs={24}>
                     <form onSubmit={handleSubmit(onSubmit)} style={{width: '100%'}}>

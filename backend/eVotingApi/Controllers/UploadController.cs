@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace eVotingApi.Controllers
 {
-    [Authorize(Roles = "Administrator,EOJ")]
+    [Authorize]
     [Route("api/upload")]
     [ApiController]
     public class UploadController : ControllerBase

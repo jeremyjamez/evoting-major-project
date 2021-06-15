@@ -12,5 +12,6 @@ namespace eVotingApi.Models.DTO
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public string DateofBirth { get; set; }
+        public string PublicKey { get; set; }
     }
 }

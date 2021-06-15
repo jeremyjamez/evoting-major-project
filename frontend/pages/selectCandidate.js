@@ -6,6 +6,7 @@ import { parseCookies } from 'nookies'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import https from 'https'
+import crypto, { privateDecrypt } from 'crypto'
 
 const selectedStyle = {
     border: '#0090ad solid 8px',
@@ -75,7 +76,16 @@ export async function getServerSideProps(context) {
 
         if (res.ok) {
             const data = await res.json()
-            const candidates = data
+
+            /* const decryptedData = privateDecrypt({
+                key: cookies.private_key,
+                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                oaepHash: 'sha1',
+                passphrase: `${process.env.NEXT_PUBLIC_PRIVATE_KEY_PASS}`
+            }, Buffer.from(data, 'base64')) */
+
+            const candidates = data.$values
+
             return {
                 props: {
                     candidates,

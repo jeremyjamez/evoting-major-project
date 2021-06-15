@@ -9,5 +9,6 @@ namespace eVotingApi.Models.DTO.Responses
     {
         public bool isRegistered { get; set; }
         public bool isTwoFactorEnabled { get; set; }
+        public string PublicKey { get; set; }
     }
 }

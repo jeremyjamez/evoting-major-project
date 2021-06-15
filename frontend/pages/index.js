@@ -7,15 +7,15 @@ import https from "https"
 import styles from '../styles/layout.module.css'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-//import JSEncrypt from "jsencrypt"
-import NodeRSA from 'node-rsa'
+import nookies, { destroyCookie, setCookie } from 'nookies'
+import { generateKeyPairSync } from 'crypto'
 
 const schema = yup.object().shape({
   voterId: yup.string().required('Voter ID is a required field.').length(7, 'Voter ID must be exactly 7 numbers.'),
   dob: yup.string().required('Date of Birth is a required field.')
 })
 
-export default function Home({publicKey}) {
+export default function Home({ publicKey }) {
 
   const router = useRouter()
 
@@ -27,17 +27,14 @@ export default function Home({publicKey}) {
   const [loading, setLoading] = useState(false)
   const [fetchError, setFetchError] = useState('')
 
-  const key = new NodeRSA(publicKey)
-
   const onSubmit = (data) => {
     setLoading(true)
 
     const payload = {
       voterId: data.voterId,
-      DateofBirth: moment(data.dob).toISOString()
+      DateofBirth: moment(data.dob).toISOString(),
+      publicKey: publicKey
     }
-
-    let encryptedPayload = key.encrypt(payload, 'base64')
 
     const httpsAgent = new https.Agent({
       rejectUnauthorized: false,
@@ -51,7 +48,7 @@ export default function Home({publicKey}) {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(encryptedPayload)
+        body: JSON.stringify(payload)
       })
       .then(res => {
         if (!res.ok) {
@@ -60,24 +57,15 @@ export default function Home({publicKey}) {
         return res.json()
       })
       .then(t => {
-        console.log(t)
         if (!t.isRegistered) {
           setRegistered(false)
           setLoading(false)
         } else {
           setRegistered(true)
           setLoading(false)
-          /* if (!t.isTwoFactorEnabled) {
-            router.push({
-              pathname: '/pair',
-              query: { voterId: data.voterId }
-            })
-          } else {
-            router.push({
-              pathname: '/validatePin',
-              query: { voterId: data.voterId }
-            })
-          } */
+          setCookie(null, 'public_key', t.publicKey)
+          localStorage.setItem('voterId', data.voterId)
+          router.push('/choose-option')
         }
       })
       .catch((error) => {
@@ -137,7 +125,7 @@ export default function Home({publicKey}) {
             </Grid>
           </Grid.Container>
         </Grid>
-        <Grid xl={12} style={{display: 'block'}}>
+        <Grid xl={12} style={{ display: 'block' }}>
           <Text h1>Requirements</Text>
           <Text h2>You will need the following in order to cast your vote:</Text>
           <ul>
@@ -159,26 +147,31 @@ export default function Home({publicKey}) {
   )
 }
 
-export async function getServerSideProps() {
-  const httpsAgent = new https.Agent({
-    rejectUnauthorized: false,
-  });
+export async function getServerSideProps(context) {
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/voters/getpublickey`,
-  {
-    agent: httpsAgent,
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+  const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+    modulusLength: 4096,
+    publicKeyEncoding: {
+      type: 'pkcs1',
+      format: 'pem'
+    },
+    privateKeyEncoding: {
+      type: 'pkcs1',
+      format: 'pem',
+      cipher: 'aes-256-cbc',
+      passphrase: `${process.env.NEXT_PUBLIC_PRIVATE_KEY_PASS}`
     }
   })
 
-  const publicKey = await res.json()
+  destroyCookie(context, 'private_key')
+
+  nookies.set(context, 'private_key', privateKey)
 
   return {
     props: {
       publicKey
     }
   }
+
+
 }

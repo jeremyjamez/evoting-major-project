@@ -5,7 +5,7 @@ import { usePair } from "../utils/swr-utils"
 const Pair = () => {
 
     var router = useRouter()
-    const { qr, isLoading, isError } = usePair(router.query.voterId)
+    const { qr, isLoading, isError } = usePair(localStorage.getItem('voterId'))
 
     return (
         <>
@@ -28,7 +28,7 @@ const Pair = () => {
                                     </Text>
                                 </Grid>
                                 <Grid>
-                                    <Button type="secondary" shadow onClick={() => router.push({ pathname: '/validatePin', query: { voterId: router.query.voterId } })}>Next</Button>
+                                    <Button type="secondary" shadow onClick={() => router.push('/choose-option')}>Next</Button>
                                 </Grid>
                             </>
                     }

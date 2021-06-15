@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using eVotingApi.Models;
 using eVotingApi.Models.DTO;
-using eVotingApi.Data;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using eVotingApi.Services;
 using System.Security.Cryptography;
 using Google.Authenticator;
@@ -20,11 +14,11 @@ using eVotingApi.Config;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Azure.Services.AppAuthentication;
-using Microsoft.Azure.KeyVault;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Diagnostics;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using System.IO;
 
 namespace eVotingApi.Controllers
 {
@@ -42,14 +36,6 @@ namespace eVotingApi.Controllers
             _voterService = voterService;
             _jwtConfig = optionsMonitor.CurrentValue;
             _rng = new Random();
-        }
-
-        [AllowAnonymous]
-        [Route("[action]")]
-        [HttpGet]
-        public async Task<IActionResult> GetPublicKey()
-        {
-            return StatusCode(200, _voterService.GetPublicKey());
         }
 
         // GET: api/Voters
@@ -91,12 +77,8 @@ namespace eVotingApi.Controllers
         [Route("[action]")]
         [ActionName("IsRegistered")]
         [HttpPost]
-        public async Task<ActionResult<RegisteredResponse>> IsVoterRegistered([FromBody]string payload)
+        public async Task<ActionResult<RegisteredResponse>> IsVoterRegistered([FromBody]VoterDto voterDto)
         {
-            var cert = await GetCertificateAsync();
-            var rsaCng = (RSACng)cert.PrivateKey;
-            var decryptedMessageJson = Encoding.UTF8.GetString(rsaCng.Decrypt(Convert.FromBase64String(payload), RSAEncryptionPadding.OaepSHA1));
-            VoterDto voterDto = JsonConvert.DeserializeObject<VoterDto>(decryptedMessageJson);
             return await _voterService.IsRegistered(voterDto);
         }
 
@@ -104,16 +86,17 @@ namespace eVotingApi.Controllers
         [Route("[action]")]
         [ActionName("Validate")]
         [HttpPost]
-        public async Task<ActionResult<ValidationResponse>> ValidatePin([FromBody]PinData pinData)
+        public async Task<ActionResult<ValidationResponse>> ValidatePin([FromBody]string payload)
         {
             var tfa = new TwoFactorAuthenticator();
+
+            var pinData = await new EncryptionConfig<PinData>().DecryptPayload(payload);
 
             string salt = await _voterService.GetSecretCodeSalt(pinData.VoterId);
 
             var hashedCode = ComputeHash(Encoding.UTF8.GetBytes(pinData.VoterId), Encoding.UTF8.GetBytes(salt));
 
             var response = GenerateJwtToken(tfa.ValidateTwoFactorPIN(hashedCode, pinData.Pin), pinData.VoterId);
-
             return response;
         }
 
@@ -141,7 +124,7 @@ namespace eVotingApi.Controllers
 
         [Route("[action]/{votersId}")]
         [HttpGet]
-        public async Task<ActionResult<object[]>> GetQuestions(string votersId)
+        public async Task<IActionResult> GetQuestions(string votersId)
         {
             var questions = await _voterService.GetQuestions(votersId);
 
@@ -150,18 +133,41 @@ namespace eVotingApi.Controllers
                 return NotFound();
             }
 
-            var q = new object[] {
-                new { address = questions.Address },
-                new { telephoneNumber = questions.Telephone },
-                new { occupation = questions.Occupation },
-                new { mothersMaidenName = questions.MothersMaidenName },
-                new { placeOfBirth = questions.PlaceOfBirth },
-                new { mothersPlaceOfBirth = questions.MothersPlaceOfBirth }
+            var q = new List<SecurityQuestion>() {
+                new SecurityQuestion { Question = "Address", Answer = questions.Address },
+                new SecurityQuestion { Question = "Telephone Number", Answer = questions.Telephone },
+                new SecurityQuestion { Question = "Occupation", Answer = questions.Occupation },
+                new SecurityQuestion { Question = "Mother's maiden name", Answer = questions.MothersMaidenName },
+                new SecurityQuestion { Question = "Parish of birth", Answer = questions.PlaceOfBirth },
+                new SecurityQuestion { Question = "Mother's parish of birth", Answer = questions.MothersPlaceOfBirth }
             };
 
-            object[] temp = SelectTwoQuestions(q);
+            List<SecurityQuestion> securityQuestions = SelectTwoQuestions(q);
 
-            return temp;
+            var serializedObj = JsonSerializer.Serialize(securityQuestions.ToArray(), securityQuestions.ToArray().GetType());
+
+            var encryptedJson = await new EncryptionConfig<List<SecurityQuestion>>().EncryptPayload(serializedObj, votersId);
+
+            return Ok(encryptedJson);
+        }
+
+        [AllowAnonymous]
+        [Route("[action]")]
+        [HttpPost]
+        public async Task<IActionResult> VerifyVoter([FromBody] VerificationRequest payload)
+        {
+            //var data = JsonSerializer.Deserialize<VerificationRequest>(payload);
+            //var decryptedData = await new EncryptionConfig<VerificationRequest>().DecryptPayload(payload);
+            var bytes = Convert.FromBase64String(payload.Photo);
+            string folderName = Path.Combine("wwwroot", "uploads");
+            string pathToFile = Path.Combine(Directory.GetCurrentDirectory(), $"{folderName}/temp_{payload.VoterId}.jpg");
+
+            var result = await _voterService.VerifyVoterIdentity(payload.VoterId, bytes);
+
+            if (result == null)
+                return BadRequest();
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -169,19 +175,19 @@ namespace eVotingApi.Controllers
         /// </summary>
         /// <param name="arr"></param>
         /// <returns>An object array containing two randomly selected questions</returns>
-        private object[] SelectTwoQuestions(object[] arr)
+        private List<SecurityQuestion> SelectTwoQuestions(List<SecurityQuestion> arr)
         {
             int i = 0;
-            object[] t = new object[2];
+            List<SecurityQuestion> t = new List<SecurityQuestion>();
 
-            for (int n = arr.Length; n > 1;)
+            for (int n = arr.Count; n > 1;)
             {
                 int k = _rng.Next(n);
 
                 if(!t.Contains(arr[k]))
                 {
                     --n;
-                    t[i] = arr[k];
+                    t.Add(arr[k]);
 
                     if (i == 1)
                         return t;
@@ -202,7 +208,7 @@ namespace eVotingApi.Controllers
         private ValidationResponse GenerateJwtToken(bool isCorrect, string voterId)
         {
             if (!isCorrect)
-                return new ValidationResponse() { IsCorrect = isCorrect };
+                return new ValidationResponse() { IsCorrect = false };
 
             // Now its time to define the jwt token which will be responsible of creating our tokens
             var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -263,22 +269,22 @@ namespace eVotingApi.Controllers
             public string VoterId { get; set; }
         }
 
+        public class VerificationRequest
+        {
+            public string VoterId { get; set; }
+            public string Photo { get; set; }
+        }
+
         public class ValidationResponse
         {
             public string Token { get; set; }
             public bool IsCorrect { get; set; }
         }
 
-        private async Task<X509Certificate2> GetCertificateAsync()
+        public class SecurityQuestion
         {
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-            var secret = await keyVaultClient.GetSecretAsync("https://evoting-keys.vault.azure.net/secrets/certificate-base64/d471eebb69b94aae967136e6b2d37b82").ConfigureAwait(false);
-            var pfxBase64 = secret.Value;
-            var bytes = Convert.FromBase64String(pfxBase64);
-            var coll = new X509Certificate2Collection();
-            coll.Import(bytes, "QEk5$s2PrRcZrj4xHb", X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.MachineKeySet);
-            return coll[0];
+            public string Question { get; set; }
+            public string Answer { get; set; }
         }
     }
 }

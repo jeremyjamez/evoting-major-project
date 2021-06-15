@@ -2,7 +2,10 @@ import '../styles/global.css'
 import Head from 'next/head'
 import { GeistProvider, CssBaseline } from '@geist-ui/react'
 if (typeof document === 'undefined') { //@ts-ignore 
-  global.document = { querySelector: function () {}, }; }
+  global.document = { querySelector: function () {},
+  createElement: function() {}
+ }; 
+}
 const myTheme = {
   "palette": {
     "selection": "#50aad9",

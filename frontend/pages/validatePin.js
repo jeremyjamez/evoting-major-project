@@ -3,8 +3,10 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import OtpInput from 'react-otp-input'
 import https from "https"
-import { setCookie } from 'nookies'
+import { parseCookies, setCookie } from 'nookies'
 import Layout from "../components/layout"
+import NodeRSA from 'node-rsa'
+import crypto, { publicEncrypt } from 'crypto'
 
 const inputStyle = {
     borderRadius: '4px',
@@ -19,7 +21,7 @@ const focusStyle = {
     border: '#2e2b2b solid 4px'
 }
 
-export default function ValidatePin() {
+export default function ValidatePin({public_key}) {
 
     const router = useRouter()
     const [, setToast] = useToasts()
@@ -28,7 +30,16 @@ export default function ValidatePin() {
 
     const handleOtpChange = e => setOtp(e)
 
-    const checkPin = () => {
+    const checkPin = async () => {
+
+        const payload = {
+            pin: otp,
+            voterId: localStorage.getItem('voterId')
+        }
+        
+        var key = new NodeRSA(public_key)
+        const encryptedPayload = key.encrypt(payload, 'base64')
+
         const httpsAgent = new https.Agent({
             rejectUnauthorized: false,
         });
@@ -41,10 +52,7 @@ export default function ValidatePin() {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    pin: otp,
-                    voterId: router.query.voterId
-                })
+                body: JSON.stringify(encryptedPayload)
             })
             .then(res => {
                 if (res.ok) {
@@ -97,4 +105,15 @@ export default function ValidatePin() {
             </Grid.Container>
         </Layout>
     )
+}
+
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context)
+    const public_key = cookies.public_key
+
+    return {
+        props: {
+            public_key
+        }
+    }
 }

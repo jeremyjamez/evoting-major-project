@@ -24,7 +24,7 @@ namespace eVotingApi.Services
             _constituencies = database.GetCollection<Constituency>(settings.ConstituencyCollectionName);
         }
 
-        public async Task<IEnumerable<CandidateDTO>> GetCandidates(string voterId)
+        public async Task<List<CandidateDTO>> GetCandidates(string voterId)
         {
             var voterBuilder = Builders<Voter>.Filter;
             var voterFilter = voterBuilder.Eq("voterId", voterId);

@@ -9,7 +9,12 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace eVotingApi.Services
@@ -69,12 +74,21 @@ namespace eVotingApi.Services
 
             if (result != null)
             {
+                string folderName = Path.Combine("wwwroot", "certs");
+                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                using(StreamWriter sw = new StreamWriter(Path.Combine(pathToSave, string.Format("{0}_publickey.pem", voterDto.VoterId))))
+                {
+                    await sw.WriteAsync(voterDto.PublicKey);
+                }
+
                 if (!result.isTwoFactorEnabled)
                 {
                     registeredResponse = new RegisteredResponse
                     {
                         isRegistered = true,
-                        isTwoFactorEnabled = false
+                        isTwoFactorEnabled = false,
+                        PublicKey = _config.GetValue<string>("PublicKey:Key")
                     };
                     return registeredResponse;
                 }
@@ -83,7 +97,8 @@ namespace eVotingApi.Services
                     registeredResponse = new RegisteredResponse
                     {
                         isRegistered = true,
-                        isTwoFactorEnabled = true
+                        isTwoFactorEnabled = true,
+                        PublicKey = _config.GetValue<string>("PublicKey:Key")
                     };
                     return registeredResponse;
                 }
@@ -160,10 +175,21 @@ namespace eVotingApi.Services
         /// <param name="url"></param>
         /// <param name="recognition_model"></param>
         /// <returns>List of detected faces</returns>
-        private static async Task<List<DetectedFace>> DetectFaceRecognize(IFaceClient faceClient, string url, string recognition_model)
+        private static async Task<List<DetectedFace>> DetectFaceRecognize(IFaceClient faceClient, byte[] imageBytes, string recognition_model)
         {
-            IList<DetectedFace> detectedFaces = await faceClient.Face.DetectWithUrlAsync(url, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
-            return detectedFaces.ToList();
+            try
+            {
+                using (var stream = new MemoryStream(imageBytes))
+                {
+                    IList<DetectedFace> detectedFaces = await faceClient.Face.DetectWithStreamAsync(stream, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03);
+                    return detectedFaces.ToList();
+                }
+            }
+            catch(APIErrorException e)
+            {
+                return null;
+            }
+            
         }
 
         /// <summary>
@@ -172,21 +198,32 @@ namespace eVotingApi.Services
         /// <param name="voterId"></param>
         /// <param name="sourceImgUrl"></param>
         /// <returns>VerifyResult</returns>
-        public async Task<VerifyResult> VerifyVoterIdentity(string voterId, string sourceImgUrl)
+        public async Task<VerifyResult> VerifyVoterIdentity(string voterId, byte[] sourceImgBytes)
         {
             IFaceClient client = Authenticate(_config.GetValue<string>("AzureFaceConfig:Endpoint"), _config.GetValue<string>("AzureFaceConfig:Key"));
             var filter = Builders<Voter>.Filter.Eq("voterId", voterId);
             var photoUrl = await _voters.Find(filter).Project(v => v.Photo).FirstOrDefaultAsync();
 
-            List<DetectedFace> targetDetectedFaces = await DetectFaceRecognize(client, photoUrl, RECOGNITION_MODEL4);
-            Guid targetFaceId = targetDetectedFaces[0].FaceId.Value;
+            List<DetectedFace> sourceDetectedFaces = await DetectFaceRecognize(client, sourceImgBytes, RECOGNITION_MODEL4);
 
-            List<DetectedFace> sourceDetectedFaces = await DetectFaceRecognize(client, sourceImgUrl, RECOGNITION_MODEL4);
+            if (sourceDetectedFaces == null)
+                return new VerifyResult(false, 0);
+
             Guid sourceFaceId = sourceDetectedFaces[0].FaceId.Value;
 
-            VerifyResult result = await client.Face.VerifyFaceToFaceAsync(sourceFaceId, targetFaceId);
+            using (var webClient = new WebClient())
+            {
+                byte[] imageBytes = webClient.DownloadData(photoUrl);
 
-            return result;
+                List<DetectedFace> targetDetectedFaces = await DetectFaceRecognize(client, imageBytes, RECOGNITION_MODEL4);
+
+                Guid targetFaceId = targetDetectedFaces[0].FaceId.Value;
+
+                VerifyResult result = await client.Face.VerifyFaceToFaceAsync(sourceFaceId, targetFaceId);
+
+                return result;
+
+            }            
         }
 
         /// <summary>

@@ -10,6 +10,8 @@ using eVotingApi.Data;
 using eVotingApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using eVotingApi.Models.DTO;
+using eVotingApi.Config;
+using System.Text.Json;
 
 namespace eVotingApi.Controllers
 {
@@ -27,9 +29,12 @@ namespace eVotingApi.Controllers
 
         // GET: api/Candidates/1234567
         [HttpGet("{voterId}")]
-        public async Task<ActionResult<IEnumerable<CandidateDTO>>> GetCandidates(string voterId)
+        public async Task<IActionResult> GetCandidates(string voterId)
         {
-            return Ok(await _candidateService.GetCandidates(voterId));
+            var candidates = await _candidateService.GetCandidates(voterId);
+            //var serializedObj = JsonSerializer.Serialize(candidates.ToArray(), candidates.ToArray().GetType());
+            //var encryptedResponse = await new EncryptionConfig<List<CandidateDTO>>().EncryptPayload(serializedObj, voterId);
+            return Ok(candidates);
         }
 
         /*// GET: api/Candidates
