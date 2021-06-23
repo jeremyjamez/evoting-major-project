@@ -1,43 +1,61 @@
-import { Avatar, Grid, Loading, useCurrentState } from "@geist-ui/react"
+import { Grid, Loading, useCurrentState } from "@geist-ui/react"
 import { useGetParty } from "../utils/swr-utils"
 
-const CandidateCard = ({candidate, token}) => {
+const selectedStyle = {
+    border: '#0090ad solid 8px',
+    borderRadius: '16px'
+}
 
-    const {party, isLoading} = useGetParty(candidate.affiliation, token)
-    
-    if(isLoading){
-        return <Loading/>
+const CandidateCard = ({ candidate, token, selected }) => {
+
+    const { party, isLoading } = useGetParty(candidate.affiliation, token)
+    const [selectedCandidateElem, setSelectedCandidateElem, selectedCandidateRef] = useCurrentState()
+    if (isLoading) {
+        return <Loading />
+    }
+
+    const handleCandidateClick = () => {
+        //const card = document.querySelector('.candidate-container')
+        /* setSelectedCandidateElem((prev) => {
+            if(prev !== e.target){
+                if(prev !== undefined){
+                    prev.style.border = 'none'
+                    prev.style.borderRadius = '10px'
+                }
+                console.log(e.target)
+                prev = e
+                e.style.border = selectedStyle.border
+                e.style.borderRadius = selectedStyle.borderRadius
+            } else {
+                prev.style.border = 'none'
+                prev.style.borderRadius = '10px'
+            }
+        }) */
+
+        selected((prev) => prev = candidate)
     }
 
     return (
         <>
-            <div className="candidate-container">
+            <div className="candidate-container" onClick={handleCandidateClick}>
                 <div className="candidate">
                     <Grid.Container>
-                        <Grid xs={24} md={6} lg={6} xl={7}>
+                        <Grid xs={3} alignItems="center">
                             <div className="candidate-image">
-                                <div className="rounded-img">
-                                    <img src={candidate.photo} />
-                                </div>
+                                <img src={party.icon} width="36" height="26" />
                             </div>
                         </Grid>
-                        <Grid xs={24} md lg xl>
+                        <Grid xs>
                             <div className="candidate-info">
-                                <div className="party-icon-container">
-                                    <img src={party.icon} />
-                                </div>
-                                <h6>{candidate.constituencyName} - {candidate.parish}</h6>
-                                <h2>{candidate.fullName}</h2>
-                                {/* <span className="candidate-title">Leader of the Jamaica Labour Party</span> */}
+                                <h2>{candidate.lastName}, {candidate.firstName}</h2>
+                                <h5>Candidate Address</h5>
                             </div>
                         </Grid>
                     </Grid.Container>
-
-
                 </div>
                 <style jsx>{`
                             .candidate-container {
-                                margin-bottom: 20px;
+                                margin-bottom: 10px;
                                 width: 100%;
                             }
 
@@ -53,7 +71,7 @@ const CandidateCard = ({candidate, token}) => {
                                 overflow: hidden;
                             }
 
-                            .candidate h6 {
+                            .candidate h5 {
                                 opacity: 0.6;
                                 margin: 0;
                                 letter-spacing: 1px;
@@ -66,39 +84,21 @@ const CandidateCard = ({candidate, token}) => {
                             }
 
                             .candidate-image {
-                                background-color: ${party.colour};
-                                padding: 30px;
                                 max-width: 100%;
-                            }
-
-                            .candidate-image .rounded-img {
-                                border-radius: 50%;
-                                width: 12rem;
-                                height: 12rem;
-                                overflow: hidden;
                                 margin: 0 auto;
+                                width: 2.5rem;
                             }
                             
                             .candidate-info {
                                 padding: 30px;
                                 position: relative;
                                 width: 100%;
+                                display: block;
                             }
 
                             .candidate-title {
                                 font-size: 1rem;
                                 opacity: 0.6;
-                            }
-
-                            .party-icon-container {
-                                position: absolute;
-                                top: 30px;
-                                right: 30px;
-                            }
-
-                            .party-icon-container img {
-                                width: 2rem;
-                                height: 2rem;
                             }
                         `}</style>
             </div>

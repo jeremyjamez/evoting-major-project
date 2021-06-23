@@ -18,12 +18,21 @@ namespace eVotingApi.Models
         public string Type { get; set; }
 
         [BsonElement("date")]
-        public string Date { get; set; }
+        public long Date { get; set; }
 
         [BsonElement("startTime")]
-        public string StartTime { get; set; }
+        public long StartTime { get; set; }
 
         [BsonElement("endTime")]
-        public string EndTime { get; set; }
+        public long EndTime { get; set; }
+
+        public string ElectionTitle
+        {
+            get
+            {
+                var dateFromMilli = DateTimeOffset.FromUnixTimeSeconds(Date).DateTime;
+                return string.Format("{0} {1}", dateFromMilli.Year, Type);
+            }
+        }
     }
 }

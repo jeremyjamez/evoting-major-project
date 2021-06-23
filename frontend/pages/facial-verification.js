@@ -8,6 +8,7 @@ import https from 'https'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import { useRouter } from "next/router"
+import NodeRSA from "node-rsa"
 
 const FacialVerification = ({ exp }) => {
     const [verifying, setVerifying] = useState(false)
@@ -123,6 +124,8 @@ export function WebcamVideo({ verifying }) {
     return (
         <>
         <form id="form" hidden></form>
+            <Text size="1.75rem" b>NOTE: Ensure your face is not covered or blocked and you are in a well lit area.</Text>
+            <Spacer y={2}/>
             <div className="camera-container">
                 <Webcam ref={webcamRef} audio={false} screenshotFormat="image/jpeg" videoConstraints={videoConstraints} style={cameraStyle} onUserMediaError={handleError} />
                 <button onClick={capture}><Camera size={36} /></button>
@@ -160,8 +163,6 @@ export function WebcamVideo({ verifying }) {
                 `}
                 </style>
             </div>
-            <Spacer y={2} />
-            <Text h3>NOTE: Ensure your face is not covered or blocked and you are in a well lit area.</Text>
         </>
     );
 }

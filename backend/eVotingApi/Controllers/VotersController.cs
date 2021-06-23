@@ -122,10 +122,11 @@ namespace eVotingApi.Controllers
             return BadRequest();
         }
 
-        [Route("[action]/{votersId}")]
-        [HttpGet]
-        public async Task<IActionResult> GetQuestions(string votersId)
+        [Route("[action]")]
+        [HttpPost]
+        public async Task<IActionResult> GetQuestions([FromBody]string payload)
         {
+            var votersId = await new EncryptionConfig<string>().DecryptPayload(payload);
             var questions = await _voterService.GetQuestions(votersId);
 
             if (questions == null)
@@ -134,7 +135,6 @@ namespace eVotingApi.Controllers
             }
 
             var q = new List<SecurityQuestion>() {
-                new SecurityQuestion { Question = "Address", Answer = questions.Address },
                 new SecurityQuestion { Question = "Telephone Number", Answer = questions.Telephone },
                 new SecurityQuestion { Question = "Occupation", Answer = questions.Occupation },
                 new SecurityQuestion { Question = "Mother's maiden name", Answer = questions.MothersMaidenName },
@@ -151,16 +151,12 @@ namespace eVotingApi.Controllers
             return Ok(encryptedJson);
         }
 
-        [AllowAnonymous]
         [Route("[action]")]
         [HttpPost]
         public async Task<IActionResult> VerifyVoter([FromBody] VerificationRequest payload)
         {
-            //var data = JsonSerializer.Deserialize<VerificationRequest>(payload);
             //var decryptedData = await new EncryptionConfig<VerificationRequest>().DecryptPayload(payload);
             var bytes = Convert.FromBase64String(payload.Photo);
-            string folderName = Path.Combine("wwwroot", "uploads");
-            string pathToFile = Path.Combine(Directory.GetCurrentDirectory(), $"{folderName}/temp_{payload.VoterId}.jpg");
 
             var result = await _voterService.VerifyVoterIdentity(payload.VoterId, bytes);
 
@@ -257,6 +253,7 @@ namespace eVotingApi.Controllers
             return Convert.ToBase64String(byteResult.GetBytes(8));
         }
 
+        #region Voter Specific POCO
         public class PairingInfo
         {
             public string ManualSetupCode { get; set; }
@@ -286,5 +283,6 @@ namespace eVotingApi.Controllers
             public string Question { get; set; }
             public string Answer { get; set; }
         }
+        #endregion
     }
 }

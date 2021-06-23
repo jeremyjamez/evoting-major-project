@@ -8,103 +8,73 @@ using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Data;
 using Microsoft.AspNetCore.Authorization;
+using eVotingApi.Services;
+using Google.Authenticator;
+using eVotingApi.Config;
+using System.Security.Cryptography;
+using System.Text;
+using eVotingApi.Models.DTO;
+using System.Text.Json;
 
 namespace eVotingApi.Controllers
 {
-    [Authorize(Roles = "EDW")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class VotesController : ControllerBase
     {
-        private readonly eVotingContext _context;
+        private readonly VoteService _voteService;
+        private readonly VoterService _voterService;
 
-        public VotesController(eVotingContext context)
+        public VotesController(VoteService voteService, VoterService voterService)
         {
-            _context = context;
+            _voteService = voteService;
+            _voterService = voterService;
         }
 
-        /*// GET: api/Votes
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vote>>> GetVotes()
-        {
-            return await _context.Votes.ToListAsync();
-        }
-
-        // GET: api/Votes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Vote>> GetVote(long id)
+        public async Task<IActionResult> GetVote(string id)
         {
-            var vote = await _context.Votes.FindAsync(id);
+            var vote = await _voteService.GetVote(id);
 
             if (vote == null)
-            {
                 return NotFound();
-            }
 
-            return vote;
+            //var serializedObj = JsonSerializer.Serialize(vote, vote.GetType());
+            //var encryptedVote = await new EncryptionConfig<VoteDto>().EncryptPayload(serializedObj, vote.VoterId);
+            return Ok(vote);
         }
 
-        // PUT: api/Votes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutVote(long id, Vote vote)
+        [HttpPost("{pin}")]
+        public async Task<IActionResult> PostVote(string pin, [FromBody]string payload)
         {
-            if (id != vote.VoteId)
-            {
-                return BadRequest();
-            }
+            var tfa = new TwoFactorAuthenticator();
 
-            _context.Entry(vote).State = EntityState.Modified;
+            var vote = await new EncryptionConfig<Vote>().DecryptPayload(payload);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VoteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            string salt = await _voterService.GetSecretCodeSalt(vote.VoterId);
 
-            return NoContent();
+            var hashedCode = ComputeHash(Encoding.UTF8.GetBytes(vote.VoterId), Encoding.UTF8.GetBytes(salt));
+
+            if(tfa.ValidateTwoFactorPIN(hashedCode, pin))
+            {
+                var insertResult = await _voteService.InsertVote(vote);
+
+                if (insertResult == string.Empty)
+                    return BadRequest();
+
+                return Ok(insertResult);
+            }
+            else
+            {
+                return BadRequest(new { IsCorrect = false });
+            }
         }
 
-        // POST: api/Votes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Vote>> PostVote(Vote vote)
+        private string ComputeHash(byte[] bytesToHash, byte[] salt)
         {
-            _context.Votes.Add(vote);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetVote", new { id = vote.VoteId }, vote);
+            var byteResult = new Rfc2898DeriveBytes(bytesToHash, salt, 10000);
+            return Convert.ToBase64String(byteResult.GetBytes(8));
         }
-
-        // DELETE: api/Votes/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVote(long id)
-        {
-            var vote = await _context.Votes.FindAsync(id);
-            if (vote == null)
-            {
-                return NotFound();
-            }
-
-            _context.Votes.Remove(vote);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool VoteExists(long id)
-        {
-            return _context.Votes.Any(e => e.VoteId == id);
-        }*/
     }
 }

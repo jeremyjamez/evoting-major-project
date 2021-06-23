@@ -1,47 +1,58 @@
-import { Button, Grid, useCurrentState } from "@geist-ui/react"
+import { Button, Grid, useCurrentState, Text } from "@geist-ui/react"
 import CandidateCard from "../components/CandidateCardComponent"
-import Link from "next/link"
 import Layout from "../components/layout"
-import { parseCookies } from 'nookies'
+import { parseCookies, setCookie } from 'nookies'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import https from 'https'
 import crypto, { privateDecrypt } from 'crypto'
+import { useRouter } from "next/router"
 
-const selectedStyle = {
-    border: '#0090ad solid 8px',
-    borderRadius: '16px'
-}
+
 
 const SelectCandidate = ({ exp, candidates, token }) => {
 
     const [selected, setSelected, selectedRef] = useCurrentState()
+    const router = useRouter()
 
-    /* const handleCandidateClick = (idx) => {
-        if(selectedRef.current !== candidates[idx]){
-            setSelected((prev) => prev = candidates[idx])
-            console.log(selectedRef.current)
+    const onNextClick = () => {
+        if(selectedRef.current){
+            setCookie(null, 'candidate', JSON.stringify(selectedRef.current))
+            router.push('/confirmation')
         }
-    } */
+    }
+
+    const handleCandidateSelect = (e) => {
+        console.log(e)
+    }
 
     return (
         <Layout expireTimestamp={exp}>
             <Grid.Container gap={2}>
                 <Grid xs={24}>
-                    <h1>Below are the candidates within your constituency</h1>
+                    <Text h2>Below are the {candidates.length} candidates for {candidates[0].constituencyName}. Choose ONLY ONE.</Text>
                 </Grid>
 
                 {
                     candidates.map((candidate, idx) => {
                         return <Grid xs={24} key={candidate.candidateId}>
-                            <CandidateCard candidate={candidate} token={token}/>
+                            <Grid.Container>
+                                <Grid xs={20}>
+                                    <CandidateCard candidate={candidate} token={token} selected={setSelected}/>
+                                </Grid>
+                                <Grid>
+                                    <input type="checkbox" onChange={handleCandidateSelect(candidate)}></input>
+                                </Grid>
+                            </Grid.Container>
                         </Grid>
                     })
                 }
             </Grid.Container>
             <Grid.Container justify="flex-end">
                 <Grid>
-                    <Link href="confirmation"><Button type="secondary" size="large" auto shadow>Next</Button></Link>
+                    <Button type="secondary" size="large" shadow onClick={onNextClick}>
+                        <Text h3>Vote</Text>
+                    </Button>
                 </Grid>
             </Grid.Container>
         </Layout>
@@ -84,7 +95,7 @@ export async function getServerSideProps(context) {
                 passphrase: `${process.env.NEXT_PUBLIC_PRIVATE_KEY_PASS}`
             }, Buffer.from(data, 'base64')) */
 
-            const candidates = data.$values
+            const candidates = data
 
             return {
                 props: {

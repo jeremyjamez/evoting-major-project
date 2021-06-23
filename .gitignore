@@ -609,3 +609,4 @@ thumb
 sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/aspnetcore,csharp,node,react
+backend/eVotingApi/appsettings.Development.json

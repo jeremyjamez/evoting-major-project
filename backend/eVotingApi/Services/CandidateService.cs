@@ -46,7 +46,8 @@ namespace eVotingApi.Services
             {
                 CandidateId = candidate.CandidateId,
                 ConstituencyId = candidate.ConstituencyId,
-                FullName = candidate.FullName,
+                FirstName = candidate.FirstName,
+                LastName = candidate.LastName,
                 Affiliation = candidate.Affiliation,
                 Photo = candidate.Photo,
                 Parish = constituency.Parish,

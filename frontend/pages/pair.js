@@ -28,7 +28,7 @@ const Pair = () => {
                                     </Text>
                                 </Grid>
                                 <Grid>
-                                    <Button type="secondary" shadow onClick={() => router.push('/choose-option')}>Next</Button>
+                                    <Button type="secondary" shadow size="large" onClick={() => router.push('/choose-option')}>Next</Button>
                                 </Grid>
                             </>
                     }

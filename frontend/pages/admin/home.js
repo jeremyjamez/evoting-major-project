@@ -28,7 +28,7 @@ export default function Home(props) {
 
     return (
         <DashboardLayout>
-            <div style={{ margin: '16px' }}>
+            <div style={{ margin: '16px', width: '100%' }}>
                 <Grid.Container gap={2} >
                     <Grid xs={24} xl={24}>
                         <Card type="dark" hoverable>
@@ -50,32 +50,6 @@ export default function Home(props) {
                         <Card shadow>
                             <h4></h4>
                         </Card>
-                    </Grid>
-
-                    <Grid xl={8}>
-                        <Card shadow>
-                            <h4>Registered Polling Centres</h4>
-                        </Card>
-                    </Grid>
-                    <Grid xl={8}>
-                        <Card shadow>
-                            <h4>Registered Polling Stations</h4>
-                        </Card>
-                    </Grid>
-                    <Grid xl={8}>
-                        <Card shadow>
-                            <h4>Registered Polling Stations</h4>
-                        </Card>
-                    </Grid>
-
-                    <Grid xs={24}>
-                        {/* <Table data={data}>
-                        <Table.Column prop={stationId} label="ID" />
-                        <Table.Column prop={parish} label="Location" />
-                        <Table.Column prop={divisionId} label="Division" />
-                        <Table.Column prop={centreId} label="Centre" />
-                        <Table.Column prop={status} label="Status" />
-                    </Table> */}
                     </Grid>
                 </Grid.Container>
             </div>

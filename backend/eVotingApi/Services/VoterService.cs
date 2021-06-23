@@ -22,6 +22,8 @@ namespace eVotingApi.Services
     public class VoterService
     {
         private readonly IMongoCollection<Voter> _voters;
+        private readonly IMongoCollection<Vote> _votes;
+        private readonly IMongoCollection<Election> _elections;
         private readonly IConfiguration _config;
         private const string RECOGNITION_MODEL4 = RecognitionModel.Recognition04;
 
@@ -32,6 +34,8 @@ namespace eVotingApi.Services
             var database = client.GetDatabase(settings.DatabaseName);
 
             _voters = database.GetCollection<Voter>(settings.VoterCollectionName);
+            _votes = database.GetCollection<Vote>(settings.VoteCollectionName);
+            _elections = database.GetCollection<Election>(settings.ElectionCollectionName);
         }
 
         public string GetPublicKey()
@@ -74,6 +78,23 @@ namespace eVotingApi.Services
 
             if (result != null)
             {
+                var voteBuilder = Builders<Vote>.Filter;
+
+                var electionId = await GetByTime(voterDto.CurrentTime);
+
+                var voteFilter = voteBuilder.And(voteBuilder.Eq("voterId", result.VoterId), voteBuilder.Eq("electionId", electionId));
+                var hasVoted = await _votes.Find(voteFilter).FirstOrDefaultAsync();
+
+                if(hasVoted != null)
+                {
+                    registeredResponse = new RegisteredResponse
+                    {
+                        IsRegistered = true,
+                        HasVoted = true
+                    };
+                    return registeredResponse;
+                }
+
                 string folderName = Path.Combine("wwwroot", "certs");
                 string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
@@ -86,8 +107,8 @@ namespace eVotingApi.Services
                 {
                     registeredResponse = new RegisteredResponse
                     {
-                        isRegistered = true,
-                        isTwoFactorEnabled = false,
+                        IsRegistered = true,
+                        IsTwoFactorEnabled = false,
                         PublicKey = _config.GetValue<string>("PublicKey:Key")
                     };
                     return registeredResponse;
@@ -96,15 +117,25 @@ namespace eVotingApi.Services
                 {
                     registeredResponse = new RegisteredResponse
                     {
-                        isRegistered = true,
-                        isTwoFactorEnabled = true,
+                        IsRegistered = true,
+                        IsTwoFactorEnabled = true,
                         PublicKey = _config.GetValue<string>("PublicKey:Key")
                     };
                     return registeredResponse;
                 }
             }
 
-            return new RegisteredResponse { isRegistered = false, isTwoFactorEnabled = false };
+            return new RegisteredResponse { IsRegistered = false, IsTwoFactorEnabled = false };
+        }
+
+        private async Task<string> GetByTime(long time)
+        {
+            var startTimeFilter = Builders<Election>.Filter.Lte("startTime", time);
+            var endTimeFilter = Builders<Election>.Filter.Gte("endTime", time);
+            var filter = Builders<Election>.Filter.And(startTimeFilter, endTimeFilter);
+            var electionId = await _elections.Find(filter).Project(e => e.Id).FirstOrDefaultAsync();
+
+            return electionId;
         }
 
         /// <summary>
@@ -129,6 +160,23 @@ namespace eVotingApi.Services
 
             return await _voters.Find(filter).Project(v => QuestionsToDTO(v)).FirstOrDefaultAsync();
         }
+
+        /*public async Task CheckAnswer(string answer, string voterId)
+        {
+            var builder = Builders<Voter>.IndexKeys;
+            var indexOptions = new CreateIndexOptions<Voter>();
+            indexOptions
+                .WildcardProjection
+                .Include("mothersMaidenName")
+                .Include("occupation")
+                .Include("telephoneNumber");
+            var indexModel = new CreateIndexModel<Voter>(builder.Wildcard("$**"), options: indexOptions);
+
+            await _voters.Indexes.CreateOneAsync(indexModel);
+            
+            var filter = builder.Eq("voterId", voterId);
+            builder.Text(answer, options: [])
+        }*/
 
         /// <summary>
         /// 

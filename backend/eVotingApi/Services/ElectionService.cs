@@ -33,6 +33,16 @@ namespace eVotingApi.Services
             return election;
         }
 
+        public async Task<string> GetByTime(long time)
+        {
+            var startTimeFilter = Builders<Election>.Filter.Lte("startTime", time);
+            var endTimeFilter = Builders<Election>.Filter.Gte("endTime", time);
+            var filter = Builders<Election>.Filter.And(startTimeFilter, endTimeFilter);
+            var electionId = await _elections.Find(filter).Project(e => e.Id).FirstOrDefaultAsync();
+
+            return electionId;
+        }
+
         public async Task<string> AddElection(Election election)
         {
             try

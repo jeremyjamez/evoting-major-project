@@ -7,8 +7,9 @@ namespace eVotingApi.Models.DTO.Responses
 {
     public class RegisteredResponse
     {
-        public bool isRegistered { get; set; }
-        public bool isTwoFactorEnabled { get; set; }
+        public bool IsRegistered { get; set; }
+        public bool IsTwoFactorEnabled { get; set; }
         public string PublicKey { get; set; }
+        public bool HasVoted { get; set; }
     }
 }

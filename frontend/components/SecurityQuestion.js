@@ -75,7 +75,9 @@ const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, n
                                 }
                             </Grid>
                             <Grid xs={24} justify="flex-end">
-                                <Button htmlType="submit" type="secondary" size="large" auto shadow>Next</Button>
+                                <Button htmlType="submit" type="secondary" size="large" shadow>
+                                    <Text h3>Next</Text>
+                                </Button>
                             </Grid>
                         </Grid.Container>
                     </form>

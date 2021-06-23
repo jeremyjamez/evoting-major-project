@@ -8,10 +8,12 @@ namespace eVotingApi.Models.DTO
 {
     public class ElectionDTO
     {
-        public long ElectionId { get; set; }
-        [Required]
+        public string ElectionId { get; set; }
+
         public string ElectionType { get; set; }
-        [Required]
+
         public DateTime ElectionDate { get; set; }
+
+        public string ElectionTitle { get => string.Format("{0} {1}", ElectionDate.Year, ElectionType); }
     }
 }

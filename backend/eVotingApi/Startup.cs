@@ -53,6 +53,7 @@ namespace eVotingApi
             services.AddSingleton<CandidateService>();
             services.AddSingleton<PartyService>();
             services.AddSingleton<ElectionService>();
+            services.AddSingleton<VoteService>();
 
             services.AddDbContext<eVotingContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("eVotingDatabase"))

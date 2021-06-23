@@ -35,10 +35,12 @@ const Layout = ({ children, expireTimestamp }) => {
     }
 
     return (
-        <Page>
+        <Page size="large">
             <Grid.Container style={{marginBottom: '16px'}}>
                 <Grid xs={12} justify="flex-start">
-                    <Button type="error-light" onClick={handleExit} auto size="large">Exit</Button>
+                    <Button type="error-light" onClick={handleExit} auto size="large">
+                        <Text h3>Exit</Text>
+                    </Button>
                 </Grid>
                 <Grid xs={12} justify="flex-end">
                     {

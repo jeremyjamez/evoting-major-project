@@ -1,4 +1,4 @@
-import { Button, Card, Grid, Image, Input, Page, Row, Text } from '@geist-ui/react'
+import { Button, Card, Grid, Image, Input, Page, Row, Text, Modal, useModal } from '@geist-ui/react'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -26,6 +26,7 @@ export default function Home({ publicKey }) {
   const [registered, setRegistered] = useState(true)
   const [loading, setLoading] = useState(false)
   const [fetchError, setFetchError] = useState('')
+  const { visible, setVisible, bindings } = useModal(false)
 
   const onSubmit = (data) => {
     setLoading(true)
@@ -33,7 +34,8 @@ export default function Home({ publicKey }) {
     const payload = {
       voterId: data.voterId,
       DateofBirth: moment(data.dob).toISOString(),
-      publicKey: publicKey
+      publicKey: publicKey,
+      currentTime: moment().valueOf()
     }
 
     const httpsAgent = new https.Agent({
@@ -63,9 +65,19 @@ export default function Home({ publicKey }) {
         } else {
           setRegistered(true)
           setLoading(false)
-          setCookie(null, 'public_key', t.publicKey)
-          localStorage.setItem('voterId', data.voterId)
-          router.push('/choose-option')
+
+          if (t.hasVoted) {
+            setVisible(true)
+          } else {
+            setCookie(null, 'public_key', t.publicKey)
+            localStorage.setItem('voterId', data.voterId)
+
+            if (!t.isTwoFactorEnabled) {
+              router.push('/pair')
+            } else {
+              router.push('/validatePin')
+            }
+          }
         }
       })
       .catch((error) => {
@@ -76,7 +88,7 @@ export default function Home({ publicKey }) {
   }
 
   return (
-    <Page>
+    <Page size="large">
       <Grid.Container gap={4}>
         <Grid xl={12}>
           <Grid.Container justify="center" gap={2}>
@@ -93,7 +105,9 @@ export default function Home({ publicKey }) {
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <Grid.Container gap={1} justify="center">
                     <Grid xs={24}>
-                      <Input width="100%" size="large" clearable ref={register({ required: true, maxLength: 7, minLength: 7 })} name="voterId">Voter ID</Input>
+                      <Input width="100%" size="large" clearable ref={register({ required: true, maxLength: 7, minLength: 7 })} name="voterId">
+                        <Text h3>Voter ID</Text>
+                      </Input>
                     </Grid>
                     <Grid xs={24}>
                       {
@@ -101,13 +115,17 @@ export default function Home({ publicKey }) {
                       }
                     </Grid>
                     <Grid xs={24}>
-                      <Input width="100%" size="large" type="date" ref={register({ required: true })} name="dob">Date of Birth</Input>
+                      <Input width="100%" size="large" type="date" ref={register({ required: true })} name="dob">
+                        <Text h3>Date of Birth</Text>
+                      </Input>
                     </Grid>
                     <Grid xs={24}>
                       {errors.dob && <Text className={styles.formError} span>{errors.dob?.message}</Text>}
                     </Grid>
                     <Grid>
-                      <Button htmlType="submit" type="secondary" size="large" loading={loading}>Next</Button>
+                      <Button htmlType="submit" type="secondary" size="large" loading={loading}>
+                        <Text h3>Next</Text>
+                      </Button>
                     </Grid>
                     <Grid xs={24}>
                       {
@@ -129,12 +147,12 @@ export default function Home({ publicKey }) {
           <Text h1>Requirements</Text>
           <Text h2>You will need the following in order to cast your vote:</Text>
           <ul>
-            <li>Authenticator Mobile Application (We recommend any of the following:)</li>
+            <li>Authenticator Mobile Application (We recommend any of the following)</li>
             <ul>
               <li>Google Authenticator</li>
               <li>Microsoft Authenticator</li>
             </ul>
-            <li>Webcam enabled device (Smartphone, Laptop or Desktop)</li>
+            <li>Camera enabled device (Smartphone, Laptop or Desktop)</li>
           </ul>
         </Grid>
       </Grid.Container>
@@ -143,6 +161,18 @@ export default function Home({ publicKey }) {
           font-size: 1.4rem;
         }
       `}</style>
+      <Modal {...bindings} disableBackdropClick={true}>
+        <Modal.Title>
+          <Text h4></Text>
+        </Modal.Title>
+        <Modal.Content>
+          <Text h5>You have already voted in this election.</Text>
+        </Modal.Content>
+        <Modal.Action onClick={() => {
+          destroyCookie(null, 'private_key')
+          router.push('/')
+        }}>OK</Modal.Action>
+      </Modal>
     </Page>
   )
 }

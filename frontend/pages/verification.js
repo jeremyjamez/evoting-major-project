@@ -4,7 +4,7 @@ import { Strider, Step } from "react-strider"
 import GettingStarted from "../components/gettingStarted"
 import Layout from "../components/layout"
 import SecurityQuestion from "../components/SecurityQuestion"
-import { parseCookies, destroyCookie } from 'nookies'
+import { parseCookies, destroyCookie, setCookie } from 'nookies'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import https from 'https'
@@ -95,15 +95,41 @@ export async function getServerSideProps(context) {
             rejectUnauthorized: false,
         });
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/voters/getquestions/${tokenData.Id}`,
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/elections/getbytime/${dateNow.toString()}`,
+        {
+            agent: httpsAgent,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(res => {
+            if (res.ok) {
+                res.json()
+                    .then(election => {
+                        console.log(election)
+                        setCookie(context, 'electionId', election)
+                    })
+            }
+        })
+        .catch(error => {
+            console.log(error)
+        })
+
+        const encryptedPayload = key.encrypt(tokenData.Id, 'base64')
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/voters/getquestions`,
             {
                 agent: httpsAgent,
-                method: 'GET',
+                method: 'POST',
                 headers: new Headers({
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + token
-                })
+                }),
+                body: JSON.stringify(encryptedPayload)
             })
 
         if (res.ok) {

@@ -14,7 +14,7 @@ using eVotingApi.Services;
 
 namespace eVotingApi.Controllers
 {
-    [Authorize(Roles = "ECJ,EDW,Administrator")]
+    [Authorize]
     [Route("api/Elections")]
     [ApiController]
     public class ElectionsController : ControllerBase
@@ -38,6 +38,20 @@ namespace eVotingApi.Controllers
             }
 
             return Ok(elections);
+        }
+
+        [Route("[action]/{time}")]
+        [HttpGet]
+        public async Task<IActionResult> GetByTime(string time)
+        {
+            var electionId = await _electionService.GetByTime(long.Parse(time));
+
+            if (electionId == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(electionId);
         }
 
         // GET: api/Elections/5
