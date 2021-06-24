@@ -1,6 +1,6 @@
-import { Archive, Check, CheckSquare, Home, Layout, MapPin, UserPlus, Users } from "@geist-ui/react-icons";
+import { Archive, CheckSquare, Home, MapPin, UserPlus, Users } from "@geist-ui/react-icons";
 
-const navMenu = [
+export const navMenu = [
     {
         label: "Home",
         path: "/admin/home",
@@ -37,5 +37,3 @@ const navMenu = [
         icon: <UserPlus/>
     }
 ];
-
-export default navMenu;
