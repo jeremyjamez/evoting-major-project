@@ -3,20 +3,22 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eVotingApi.Data;
 
 namespace eVotingApi.Migrations
 {
     [DbContext(typeof(eVotingContext))]
-    partial class eVotingContextModelSnapshot : ModelSnapshot
+    [Migration("20210209151347_Rename IsRevorked to IsRevoked")]
+    partial class RenameIsRevorkedtoIsRevoked
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.5")
+                .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -68,6 +70,71 @@ namespace eVotingApi.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -154,118 +221,20 @@ namespace eVotingApi.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("eVotingApi.Models.Auth.ApplicationUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastLoggedIn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TRN")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers");
-                });
-
             modelBuilder.Entity("eVotingApi.Models.Candidate", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Affiliation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CandidateId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConstituencyId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("ElectionId")
+                    b.Property<long>("CandidateId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("ConstituencyId")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("ElectionId")
+                        .HasColumnType("bigint");
 
-                    b.HasKey("Id");
+                    b.HasKey("CandidateId");
+
+                    b.HasIndex("ConstituencyId");
 
                     b.HasIndex("ElectionId");
 
@@ -274,19 +243,20 @@ namespace eVotingApi.Migrations
 
             modelBuilder.Entity("eVotingApi.Models.Constituency", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConstituencyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("ConstituencyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Parish")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ConstituencyId");
 
                     b.ToTable("Constituency");
                 });
@@ -308,6 +278,117 @@ namespace eVotingApi.Migrations
                     b.HasKey("ElectionId");
 
                     b.ToTable("Election");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.Member", b =>
+                {
+                    b.Property<long>("MemberId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateofBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("JoinDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MiddleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("PartyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Photo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Prefix")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Suffix")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telephone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MemberId");
+
+                    b.HasIndex("PartyId");
+
+                    b.ToTable("Member");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.MemberOfParliament", b =>
+                {
+                    b.Property<long>("ConstituencyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CandidateId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("MinisterOf")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ConstituencyId", "CandidateId");
+
+                    b.HasIndex("CandidateId")
+                        .IsUnique();
+
+                    b.HasIndex("ConstituencyId")
+                        .IsUnique();
+
+                    b.ToTable("MemberOfParliament");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.PoliticalParty", b =>
+                {
+                    b.Property<long>("PartyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Colour")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Founded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PartyId");
+
+                    b.ToTable("PoliticalParty");
                 });
 
             modelBuilder.Entity("eVotingApi.Models.PollingCentre", b =>
@@ -341,16 +422,13 @@ namespace eVotingApi.Migrations
                     b.Property<long>("ConstituencyId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("ConstituencyId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DivisionId");
 
-                    b.HasIndex("ConstituencyId1");
+                    b.HasIndex("ConstituencyId");
 
                     b.ToTable("PollingDivision");
                 });
@@ -375,6 +453,41 @@ namespace eVotingApi.Migrations
                     b.ToTable("PollingStation");
                 });
 
+            modelBuilder.Entity("eVotingApi.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JwtId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("eVotingApi.Models.Vote", b =>
                 {
                     b.Property<long>("VoteId")
@@ -385,89 +498,75 @@ namespace eVotingApi.Migrations
                     b.Property<long>("CandidateId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CandidateId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<long>("ElectionId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("VoterId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("VoterId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("VoteId");
 
-                    b.HasIndex("CandidateId1");
+                    b.HasIndex("CandidateId");
 
                     b.HasIndex("ElectionId");
 
-                    b.HasIndex("VoterId1");
+                    b.HasIndex("VoterId");
 
                     b.ToTable("Vote");
                 });
 
             modelBuilder.Entity("eVotingApi.Models.Voter", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<long>("VoterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ConstituencyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("ConstituencyId")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("DateOfBirth")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MaritalStatus")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MiddleName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MothersMaidenName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MothersPlaceOfBirth")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Occupation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Parish")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PlaceOfBirth")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Prefix")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Salt")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telephone")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VoterId")
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("VoterId");
 
-                    b.Property<bool>("isTwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
+                    b.HasIndex("ConstituencyId");
 
                     b.ToTable("Voter");
                 });
@@ -483,7 +582,7 @@ namespace eVotingApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("eVotingApi.Models.Auth.ApplicationUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -492,7 +591,7 @@ namespace eVotingApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("eVotingApi.Models.Auth.ApplicationUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -507,7 +606,7 @@ namespace eVotingApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("eVotingApi.Models.Auth.ApplicationUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -516,7 +615,7 @@ namespace eVotingApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("eVotingApi.Models.Auth.ApplicationUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -525,9 +624,59 @@ namespace eVotingApi.Migrations
 
             modelBuilder.Entity("eVotingApi.Models.Candidate", b =>
                 {
-                    b.HasOne("eVotingApi.Models.Election", null)
+                    b.HasOne("eVotingApi.Models.Member", "Member")
+                        .WithOne("Candidate")
+                        .HasForeignKey("eVotingApi.Models.Candidate", "CandidateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eVotingApi.Models.Constituency", "Constituency")
                         .WithMany("Candidates")
-                        .HasForeignKey("ElectionId");
+                        .HasForeignKey("ConstituencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eVotingApi.Models.Election", "Election")
+                        .WithMany("Candidates")
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Constituency");
+
+                    b.Navigation("Election");
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.Member", b =>
+                {
+                    b.HasOne("eVotingApi.Models.PoliticalParty", "PoliticalParty")
+                        .WithMany("Members")
+                        .HasForeignKey("PartyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PoliticalParty");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.MemberOfParliament", b =>
+                {
+                    b.HasOne("eVotingApi.Models.Candidate", "Candidate")
+                        .WithOne("MemberOfParliament")
+                        .HasForeignKey("eVotingApi.Models.MemberOfParliament", "CandidateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eVotingApi.Models.Constituency", "Constituency")
+                        .WithOne("MemberOfParliament")
+                        .HasForeignKey("eVotingApi.Models.MemberOfParliament", "ConstituencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Constituency");
                 });
 
             modelBuilder.Entity("eVotingApi.Models.PollingCentre", b =>
@@ -544,8 +693,10 @@ namespace eVotingApi.Migrations
             modelBuilder.Entity("eVotingApi.Models.PollingDivision", b =>
                 {
                     b.HasOne("eVotingApi.Models.Constituency", "Constituency")
-                        .WithMany()
-                        .HasForeignKey("ConstituencyId1");
+                        .WithMany("PollingDivisions")
+                        .HasForeignKey("ConstituencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Constituency");
                 });
@@ -561,11 +712,22 @@ namespace eVotingApi.Migrations
                     b.Navigation("PollingCentre");
                 });
 
+            modelBuilder.Entity("eVotingApi.Models.RefreshToken", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("eVotingApi.Models.Vote", b =>
                 {
                     b.HasOne("eVotingApi.Models.Candidate", "Candidate")
-                        .WithMany()
-                        .HasForeignKey("CandidateId1");
+                        .WithMany("Votes")
+                        .HasForeignKey("CandidateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("eVotingApi.Models.Election", "Election")
                         .WithMany("Votes")
@@ -574,8 +736,10 @@ namespace eVotingApi.Migrations
                         .IsRequired();
 
                     b.HasOne("eVotingApi.Models.Voter", "Voter")
-                        .WithMany()
-                        .HasForeignKey("VoterId1");
+                        .WithMany("Votes")
+                        .HasForeignKey("VoterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Candidate");
 
@@ -584,11 +748,50 @@ namespace eVotingApi.Migrations
                     b.Navigation("Voter");
                 });
 
+            modelBuilder.Entity("eVotingApi.Models.Voter", b =>
+                {
+                    b.HasOne("eVotingApi.Models.Constituency", "Constituency")
+                        .WithMany("Voters")
+                        .HasForeignKey("ConstituencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Constituency");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.Candidate", b =>
+                {
+                    b.Navigation("MemberOfParliament");
+
+                    b.Navigation("Votes");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.Constituency", b =>
+                {
+                    b.Navigation("Candidates");
+
+                    b.Navigation("MemberOfParliament");
+
+                    b.Navigation("PollingDivisions");
+
+                    b.Navigation("Voters");
+                });
+
             modelBuilder.Entity("eVotingApi.Models.Election", b =>
                 {
                     b.Navigation("Candidates");
 
                     b.Navigation("Votes");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.Member", b =>
+                {
+                    b.Navigation("Candidate");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.PoliticalParty", b =>
+                {
+                    b.Navigation("Members");
                 });
 
             modelBuilder.Entity("eVotingApi.Models.PollingCentre", b =>
@@ -599,6 +802,11 @@ namespace eVotingApi.Migrations
             modelBuilder.Entity("eVotingApi.Models.PollingDivision", b =>
                 {
                     b.Navigation("PollingCentres");
+                });
+
+            modelBuilder.Entity("eVotingApi.Models.Voter", b =>
+                {
+                    b.Navigation("Votes");
                 });
 #pragma warning restore 612, 618
         }

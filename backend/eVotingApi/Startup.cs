@@ -11,8 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +37,7 @@ namespace eVotingApi
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public async void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
@@ -63,11 +61,7 @@ namespace eVotingApi
 
             services.AddSpaStaticFiles(configuration: options => { options.RootPath = "wwwroot"; });
 
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-            var secret = await keyVaultClient.GetSecretAsync("https://evoting-keys.vault.azure.net/secrets/JwtSecret/0be98861347146eea059f3b434962ce6").ConfigureAwait(false);
-
-            var key = Encoding.ASCII.GetBytes(secret.Value);
+            var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
 
             var tokenValidationParams = new TokenValidationParameters
             {
@@ -100,7 +94,7 @@ namespace eVotingApi
                 jwt.TokenValidationParameters = tokenValidationParams;
             });
 
-            services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<eVotingContext>();
 
@@ -117,16 +111,6 @@ namespace eVotingApi
             });
 
             services.AddControllers();
-
-            services.AddSwaggerGen(config =>
-            {
-                config.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-                {
-                    Title = "EvotingPrototype",
-                    Version = "v1"
-                });
-            });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
