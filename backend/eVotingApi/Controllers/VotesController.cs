@@ -45,36 +45,17 @@ namespace eVotingApi.Controllers
             return Ok(vote);
         }
 
-        [HttpPost("{pin}")]
-        public async Task<IActionResult> PostVote(string pin, [FromBody]string payload)
+        [HttpPost]
+        public async Task<IActionResult> PostVote([FromBody]string payload)
         {
-            var tfa = new TwoFactorAuthenticator();
-
             var vote = await new EncryptionConfig<Vote>().DecryptPayload(payload);
 
-            string salt = await _voterService.GetSecretCodeSalt(vote.VoterId);
+            var insertResult = await _voteService.InsertVote(vote);
 
-            var hashedCode = ComputeHash(Encoding.UTF8.GetBytes(vote.VoterId), Encoding.UTF8.GetBytes(salt));
+            if (insertResult == string.Empty || insertResult == null)
+                return BadRequest();
 
-            if(tfa.ValidateTwoFactorPIN(hashedCode, pin))
-            {
-                var insertResult = await _voteService.InsertVote(vote);
-
-                if (insertResult == string.Empty)
-                    return BadRequest();
-
-                return Ok(insertResult);
-            }
-            else
-            {
-                return BadRequest(new { IsCorrect = false });
-            }
-        }
-
-        private string ComputeHash(byte[] bytesToHash, byte[] salt)
-        {
-            var byteResult = new Rfc2898DeriveBytes(bytesToHash, salt, 10000);
-            return Convert.ToBase64String(byteResult.GetBytes(8));
+            return Ok(insertResult);
         }
     }
 }

@@ -1,11 +1,13 @@
 import { Button, Code, Grid, Loading, Page, Text } from "@geist-ui/react"
 import { useRouter } from "next/router"
+import { parseCookies } from "nookies"
 import { usePair } from "../utils/swr-utils"
 
 const Pair = () => {
 
-    var router = useRouter()
-    const { qr, isLoading, isError } = usePair(localStorage.getItem('voterId'))
+    const router = useRouter()
+    const cookies = parseCookies(null)
+    const { qr, isLoading, isError } = usePair(cookies.voterId)
 
     return (
         <>

@@ -1,4 +1,4 @@
-import { Button, Grid, useCurrentState, Text } from "@geist-ui/react"
+import { Button, Grid, Text, Modal, useModal, useCurrentState } from "@geist-ui/react"
 import CandidateCard from "../components/CandidateCardComponent"
 import Layout from "../components/layout"
 import { parseCookies, setCookie } from 'nookies'
@@ -7,24 +7,87 @@ import moment from 'moment'
 import https from 'https'
 import crypto, { privateDecrypt } from 'crypto'
 import { useRouter } from "next/router"
+import { useForm } from "react-hook-form"
+import NodeRSA from 'node-rsa'
+import { useCallback } from "react"
 
 
 
 const SelectCandidate = ({ exp, candidates, token }) => {
-
-    const [selected, setSelected, selectedRef] = useCurrentState()
     const router = useRouter()
+    const { register, handleSubmit } = useForm({
+        criteriaMode: 'all',
+        shouldFocusError: true
+    })
 
-    const onNextClick = () => {
-        if(selectedRef.current){
-            setCookie(null, 'candidate', JSON.stringify(selectedRef.current))
-            router.push('/confirmation')
+    const { visible, setVisible, bindings } = useModal(false)
+
+    const [,setState, stateRef] = useCurrentState()
+
+    const cookies = parseCookies(null)
+
+    const onSubmit = (data) => {
+        if (data.candidate) {
+            setState(prev => prev = data.candidate)
+            setVisible(true)
         }
     }
 
-    const handleCandidateSelect = (e) => {
-        console.log(e)
-    }
+    const onYesClick = useCallback(() => {
+        const payload = {
+            voterId: cookies.voterId,
+            candidateId: candidates[stateRef.current].candidateId,
+            electionId: cookies.electionId,
+            constituencyId: candidates[stateRef.current].constituencyId,
+            ballotTime: moment().valueOf().toString()
+        }
+        var key = new NodeRSA(public_key)
+        const encryptedPayload = key.encrypt(payload, 'base64')
+
+        const httpsAgent = new https.Agent({
+            rejectUnauthorized: false,
+        });
+
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/votes`,
+            {
+                agent: httpsAgent,
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(encryptedPayload)
+            })
+            .then(res => {
+                if (res.ok) {
+                    res.json()
+                        .then(voteId => {
+                            if (!voteId) {
+                                setToast({
+                                    text: 'Failed to cast vote. Please wait and try again.',
+                                    type: 'error'
+                                })
+                            } else {
+                                setToast({
+                                    text: 'Vote successfully cast.',
+                                    type: 'success'
+                                })
+                                setCookie(null, 'voteId', voteId)
+                                router.push('/vote-result')
+                            }
+                        })
+                }
+            })
+            .catch(error => {
+                setToast({
+                    text: 'Failed to cast vote. Please wait and try again.',
+                    type: 'error'
+                })
+                console.log(error)
+            })
+            setVisible(false)
+    }, [])
 
     return (
         <Layout expireTimestamp={exp}>
@@ -33,28 +96,91 @@ const SelectCandidate = ({ exp, candidates, token }) => {
                     <Text h2>Below are the {candidates.length} candidates for {candidates[0].constituencyName}. Choose ONLY ONE.</Text>
                 </Grid>
 
-                {
-                    candidates.map((candidate, idx) => {
-                        return <Grid xs={24} key={candidate.candidateId}>
-                            <Grid.Container>
-                                <Grid xs={20}>
-                                    <CandidateCard candidate={candidate} token={token} selected={setSelected}/>
-                                </Grid>
-                                <Grid>
-                                    <input type="checkbox" onChange={handleCandidateSelect(candidate)}></input>
-                                </Grid>
-                            </Grid.Container>
-                        </Grid>
-                    })
-                }
-            </Grid.Container>
-            <Grid.Container justify="flex-end">
-                <Grid>
-                    <Button type="secondary" size="large" shadow onClick={onNextClick}>
-                        <Text h3>Vote</Text>
-                    </Button>
+                <Grid xs={24} style={{ display: 'block' }}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        {
+                            candidates.map((candidate, idx) => {
+                                return <label className="radio-container" key={candidate.candidateId}>
+                                    <CandidateCard candidate={candidate} token={token} />
+                                    <input type="radio" name="candidate" ref={register} value={idx}></input>
+                                    <span className="x"></span>
+                                </label>
+                            })
+                        }
+                        <Grid.Container justify="flex-end">
+                            <Grid>
+                                <Button htmlType="submit" type="secondary" size="large" shadow>
+                                    <Text h3>Vote</Text>
+                                </Button>
+                            </Grid>
+                        </Grid.Container>
+                    </form>
                 </Grid>
             </Grid.Container>
+
+            <Modal {...bindings} disableBackdropClick={true}>
+                <Modal.Title>
+                    <Text h2>Confirm Vote?</Text>
+                </Modal.Title>
+                <Modal.Content>
+                    <Text h3>Ensure you have selected the candidate you wish to vote for. You can click No to double check your selection OR Yes to confirm your vote.</Text>
+                    <Text type="error" h3>IMPORTANT: You will NOT be able to change your selection after clicking Yes.</Text>
+                </Modal.Content>
+                <Modal.Action passive onClick={() => setVisible(false)} style={{ fontSize: '1.45rem', fontWeight: '800' }}>No</Modal.Action>
+                <Modal.Action style={{ fontSize: '1.45rem', fontWeight: '800' }} onClick={onYesClick}>Yes</Modal.Action>
+            </Modal>
+            <style jsx>{`
+                .radio-container {
+                    display: block;
+                    position: relative;
+                    width: 100%;
+                    cursor: pointer;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                    margin-bottom: 12px;
+                }
+
+                .radio-container input {
+                    position: absolute;
+                    opacity: 0;
+                    cursor: pointer;
+                }
+
+                .x {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    height: 50px;
+                    width: 50px;
+                    border: 2px solid black;
+                }
+
+                /* On mouse-over, add a grey background color */
+                .radio-container:hover input ~ .x {
+                    background-color: #ccc;
+                }
+
+                /* Create the indicator (the X - hidden when not checked) */
+                .x:after {
+                    content: "X";
+                    position: absolute;
+                    display: none;
+                }
+
+                /* Show the indicator (X) when checked */
+                .radio-container input:checked ~ .x:after {
+                    display: block;
+                }
+
+                /* Style the indicator (dot/circle) */
+                .radio-container .x:after {
+                    font-size: 2.5rem;
+                    top: 0;
+                    left: 10px;
+                }
+            `}</style>
         </Layout>
     )
 }

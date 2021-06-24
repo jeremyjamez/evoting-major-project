@@ -1,4 +1,4 @@
-import { Button, Grid, Page, Spacer, Text, useToasts } from "@geist-ui/react"
+import { Button, Grid, Spacer, Text, useToasts } from "@geist-ui/react"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import OtpInput from 'react-otp-input'
@@ -6,8 +6,6 @@ import https from "https"
 import { parseCookies, setCookie } from 'nookies'
 import Layout from "../components/layout"
 import NodeRSA from 'node-rsa'
-import crypto, { publicEncrypt } from 'crypto'
-import moment from "moment"
 
 const inputStyle = {
     borderRadius: '4px',
@@ -22,7 +20,7 @@ const focusStyle = {
     border: '#2e2b2b solid 4px'
 }
 
-export default function ValidatePin({public_key}) {
+export default function ValidatePin({public_key, voterId}) {
 
     const router = useRouter()
     const [, setToast] = useToasts()
@@ -38,7 +36,7 @@ export default function ValidatePin({public_key}) {
 
         const payload = {
             pin: otp,
-            voterId: localStorage.getItem('voterId')
+            voterId: voterId
         }
         
         var key = new NodeRSA(public_key)
@@ -120,10 +118,12 @@ export default function ValidatePin({public_key}) {
 export async function getServerSideProps(context) {
     const cookies = parseCookies(context)
     const public_key = cookies.public_key
+    const voterId = cookies.voterId
 
     return {
         props: {
-            public_key
+            public_key,
+            voterId
         }
     }
 }

@@ -1,48 +1,21 @@
 import { Grid, Loading, useCurrentState } from "@geist-ui/react"
 import { useGetParty } from "../utils/swr-utils"
 
-const selectedStyle = {
-    border: '#0090ad solid 8px',
-    borderRadius: '16px'
-}
-
-const CandidateCard = ({ candidate, token, selected }) => {
+const CandidateCard = ({ candidate, token }) => {
 
     const { party, isLoading } = useGetParty(candidate.affiliation, token)
-    const [selectedCandidateElem, setSelectedCandidateElem, selectedCandidateRef] = useCurrentState()
     if (isLoading) {
         return <Loading />
     }
 
-    const handleCandidateClick = () => {
-        //const card = document.querySelector('.candidate-container')
-        /* setSelectedCandidateElem((prev) => {
-            if(prev !== e.target){
-                if(prev !== undefined){
-                    prev.style.border = 'none'
-                    prev.style.borderRadius = '10px'
-                }
-                console.log(e.target)
-                prev = e
-                e.style.border = selectedStyle.border
-                e.style.borderRadius = selectedStyle.borderRadius
-            } else {
-                prev.style.border = 'none'
-                prev.style.borderRadius = '10px'
-            }
-        }) */
-
-        selected((prev) => prev = candidate)
-    }
-
     return (
         <>
-            <div className="candidate-container" onClick={handleCandidateClick}>
+            <div className="candidate-container">
                 <div className="candidate">
                     <Grid.Container>
                         <Grid xs={3} alignItems="center">
                             <div className="candidate-image">
-                                <img src={party.icon} width="36" height="26" />
+                                <img src={party.icon} width="36" height="32" />
                             </div>
                         </Grid>
                         <Grid xs>
@@ -53,10 +26,11 @@ const CandidateCard = ({ candidate, token, selected }) => {
                         </Grid>
                     </Grid.Container>
                 </div>
-                <style jsx>{`
+            </div>
+            <style jsx>{`
                             .candidate-container {
                                 margin-bottom: 10px;
-                                width: 100%;
+                                width: 90%;
                             }
 
                             .candidate:hover {
@@ -101,7 +75,6 @@ const CandidateCard = ({ candidate, token, selected }) => {
                                 opacity: 0.6;
                             }
                         `}</style>
-            </div>
         </>
     )
 }

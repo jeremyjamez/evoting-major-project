@@ -1,4 +1,4 @@
-import { Button, Grid, Input, Spacer, Text, useCurrentState } from "@geist-ui/react";
+import { Button, Grid, Input, Select, Text, useCurrentState } from "@geist-ui/react";
 import { useForm } from 'react-hook-form'
 import styles from '../styles/layout.module.css'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -33,7 +33,7 @@ const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, n
     })
 
     const handleAnswer = (e) => {
-        if(item.Question === 'Telephone number'){
+        if(item.Question === 'Telephone Number'){
             setAnswer(normalizeInput(e.target.value, answer))
             setValue('answer', normalizeInput(e.target.value, answer))
         } else {
@@ -42,11 +42,18 @@ const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, n
         }
     }
 
+    const handleParishChange = (e) => {
+        setValue('answer', e)
+        setAnswer(e)
+    }
+
     useEffect(() => {
         register('answer', {required: true})
-    },[register])
+        register('parish', {required: true})
+    },[register, register])
 
     const onSubmit = (data) => {
+        console.log(data)
         setAttempt((prev) => prev - 1)
         triggerPushAttempt(attemptRef.current)
         if (data.answer.toLowerCase() === item.Answer.toLowerCase()) {
@@ -61,13 +68,63 @@ const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, n
         <>
             <Grid.Container gap={2} justify="center">
                 <Grid xs={24}>
-                    <Text style={{ textAlign: 'center' }} h1>What is your {item.Question}?</Text>
+                    <Text style={{ textAlign: 'center' }} h1>What is your {item.Question.toLowerCase()}?</Text>
                 </Grid>
                 <Grid xs={24}>
                     <form onSubmit={handleSubmit(onSubmit)} style={{width: '100%'}}>
                         <Grid.Container gap={1}>
                             <Grid xs={24}>
-                                <Input style={{ fontSize: '1.5rem' }} onChange={handleAnswer} value={answer} name="answer" placeholder="Type answer here" size="large" width="100%" status="secondary" clearable />
+                                {
+                                    item.Question.toLowerCase().includes("parish") ?
+                                    <Select name="parish" onChange={handleParishChange} placeholder="Parish" size="large" width="100%">
+                                        <Select.Option value="Hanover">
+                                            <Text h3>Hanover</Text>
+                                        </Select.Option>
+                                        <Select.Option value="Kingston">
+                                            <Text h3>Kingston</Text>
+                                        </Select.Option>
+                                        <Select.Option value="St. Catherine">
+                                            <Text h3>St. Catherine</Text>
+                                        </Select.Option>
+                                        <Select.Option value="Clarendon">
+                                            <Text h3>Clarendon</Text>
+                                        </Select.Option>
+                                        <Select.Option value="Manchester">
+                                            <Text h3>Manchester</Text>
+                                        </Select.Option>
+                                        <Select.Option value="St. Elizabeth">
+                                            <Text h3>St. Elizabeth</Text>
+                                        </Select.Option>
+                                        <Select.Option value="St. James">
+                                            <Text h3>St. James</Text>
+                                        </Select.Option>
+                                        <Select.Option value="St. Andrew">
+                                            <Text h3>St. Andrew</Text>
+                                        </Select.Option>
+                                        <Select.Option value="St. Thomas">
+                                            <Text h3>St. Thomas</Text>
+                                        </Select.Option>
+                                        <Select.Option value="St. Ann">
+                                            <Text h3>St. Ann</Text>
+                                        </Select.Option>
+                                        <Select.Option value="Westmoreland">
+                                            <Text h3>Westmoreland</Text>
+                                        </Select.Option>
+                                        <Select.Option value="Portland">
+                                            <Text h3>Portland</Text>
+                                        </Select.Option>
+                                        <Select.Option value="Trelawny">
+                                            <Text h3>Trelawny</Text>
+                                        </Select.Option>
+                                        <Select.Option value="St. Mary">
+                                            <Text h3>St. Mary</Text>
+                                        </Select.Option>
+                                    </Select>
+                                    :
+                                    <Input style={{ fontSize: '1.5rem' }} onChange={handleAnswer} value={answer} name="answer" 
+                                        placeholder="Type answer here" size="large" width="100%" status="secondary" clearable />
+                                }
+                                
                             </Grid>
                             <Grid xs={24}>
                                 {

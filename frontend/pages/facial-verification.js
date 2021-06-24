@@ -60,12 +60,12 @@ export function WebcamVideo({ verifying }) {
 
         var block = imgSrc.split(";");
                 // Get the content type
-                var contentType = block[0].split(":")[1];// In this case "image/gif"
+                var contentType = block[0].split(":")[1];// In this case "image/jpeg"
                 // get the real base64 content of the file
                 var realData = block[1].split(",")[1];
 
         const payload = {
-            voterId: localStorage.getItem('voterId'),
+            voterId: cookies.voterId,
             photo: realData
         }
 

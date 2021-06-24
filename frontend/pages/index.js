@@ -70,7 +70,7 @@ export default function Home({ publicKey }) {
             setVisible(true)
           } else {
             setCookie(null, 'public_key', t.publicKey)
-            localStorage.setItem('voterId', data.voterId)
+            setCookie(null, 'voterId', data.voterId)
 
             if (!t.isTwoFactorEnabled) {
               router.push('/pair')
