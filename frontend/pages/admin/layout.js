@@ -1,8 +1,7 @@
 import { Grid, Text, Tooltip, Link, Button, useModal, Modal, Select, Spacer, Input, useToasts, useCurrentState } from "@geist-ui/react"
-import {navMenu} from './components/navMenu'
 import { default as NextLink } from 'next/link'
 import { withRouter } from "next/router"
-import { Plus } from "@geist-ui/react-icons"
+import { Plus, Archive, CheckSquare, Home, MapPin, UserPlus, Users } from "@geist-ui/react-icons"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -14,6 +13,44 @@ import { parseCookies } from "nookies"
 const schema = yup.object().shape({
 
 })
+
+const navMenu = [
+    {
+        label: "Home",
+        path: "/admin/home",
+        icon: <Home />
+    },
+    {
+        label: "Elections",
+        path: "/admin/elections",
+        icon: <Archive />
+    },
+    {
+        label: "Candidates",
+        path: "/admin/candidates",
+        icon: <Users />
+    },
+    {
+        label: "Voters List",
+        path: "/admin/voters",
+        icon: <Users />
+    },
+    {
+        label: "Constituency",
+        path: "/admin/constituencies",
+        icon: <MapPin/>
+    },
+    {
+        label: 'Political Parties',
+        path: "/admin/political-parties",
+        icon: <CheckSquare/>
+    },
+    {
+        label: 'Users',
+        path: '/admin/users',
+        icon: <UserPlus/>
+    }
+]
 
 const DashboardLayout = (props) => {
 
