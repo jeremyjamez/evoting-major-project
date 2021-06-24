@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Button, Grid, Input, Select, Spacer, Spinner, Tabs, Tooltip, useToasts } from "@geist-ui/react";
+import { Button, Grid, Input, Select, Spacer, Tabs, useToasts } from "@geist-ui/react";
 import { Trash2 } from "@geist-ui/react-icons";
 import DashboardLayout from "./layout";
 import https from "https";
@@ -7,33 +7,45 @@ import DataTable from "react-data-table-component";
 import moment from "moment";
 import FilterComponent from "../../components/FilterComponent";
 import { useElections } from "../../utils/swr-utils";
+import jwt from 'jsonwebtoken'
+import { parseCookies } from 'nookies'
 
-const Elections = () => {
+const Elections = ({ token }) => {
     const [electionDate, setElectionDate] = useState();
     const [electionStartTime, setElectionStartTime] = useState();
     const [electionEndTime, setElectionEndTime] = useState();
     const [electionType, setElectionType] = useState();
 
-    const { elections } = useElections('/Elections');
+    const { elections } = useElections(token);
 
     const columns = React.useMemo(() => [
         {
             name: 'Election ID',
-            selector: 'electionId',
+            selector: 'id',
         },
         {
             name: 'Election Type',
-            selector: 'electionType'
+            selector: 'type'
         },
         {
             name: 'Election Date',
-            selector: 'electionDate',
-            format: row => moment(row.electionDate).format('DD/MM/YYYY')
+            selector: 'date',
+            format: row => moment(row.date * 1000).format('MM/DD/YYYY')
+        },
+        {
+            name: 'Start Time',
+            selector: 'startTime',
+            format: row => moment(row.startTime * 1000).format("hh:mm a")
+        },
+        {
+            name: 'End Time',
+            selector: 'endTime',
+            format: row => moment(row.endTime * 1000).format('hh:mm a')
         },
         {
             name: '',
             selector: '',
-            cell: row => <Button icon={<Trash2 />} size="small" auto type="error" onClick={() => handleDelete(row.electionId)}></Button>
+            cell: row => <Button icon={<Trash2 />} size="large" auto type="error" onClick={() => handleDelete(row.id)}></Button>
         }
     ], [])
 
@@ -59,39 +71,6 @@ const Elections = () => {
         return <FilterComponent onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />;
     }, [filterText, resetPaginationToggle]);
 
-    async function addElectionClick() {
-        const httpsAgent = new https.Agent({
-            rejectUnauthorized: false,
-        });
-        fetch(`https://localhost:44387/api/Elections`, {
-            agent: httpsAgent,
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                "electionType": electionType,
-                "electionDate": moment(electionDate).toISOString()
-            })
-        })
-            .then(response => response.status)
-            .then(status => {
-                if (status === 201) {
-                    setToast({
-                        text: 'Successfully saved to database!',
-                        type: 'success'
-                    });
-                } else {
-                    console.log(status)
-                    setToast({
-                        text: 'Failed to save to database!',
-                        type: 'error'
-                    });
-                }
-            })
-            .catch(error => console.log(error))
-    };
 
     const handleDelete = (id) => {
         const httpsAgent = new https.Agent({
@@ -123,79 +102,59 @@ const Elections = () => {
             })
     }
 
-    const selectHandler = (val) => {
-        setElectionType(val);
-    };
-
-    const electionDateHandler = (e) => {
-        setElectionDate(e.target.value);
-    };
-
-    const electionTimeHandler = (e) => {
-        setElectionTime(e.target.value);
-    }
-
     return (
         <DashboardLayout>
-            <Grid.Container gap={2}>
-                <Grid xs={24}>
-                    <Tabs initialValue="1">
-                        <Tabs.Item label="all" value="1">
-                            <DataTable
-                                columns={columns}
-                                data={filterText === '' ? elections : filteredElections}
-                                pagination
-                                highlightOnHover
-                                subHeader
-                                subHeaderComponent={subHeaderComponentMemo}
-                            />
-                        </Tabs.Item>
-                        <Tabs.Item label="add" value="2">
-                            <Grid.Container >
-                                <Grid xs={24} xl={6} alignContent="center">
-                                    <Grid.Container gap={2}>
-                                        <Grid xs={24}>
-                                            Election Type
-                                            <Spacer y={.5} />
-                                            <Select placeholder="Election Type" size="large" width="100%" onChange={selectHandler}>
-                                                <Select.Option value="General Election">General Election</Select.Option>
-                                                <Select.Option value="Local Government Election">Local Government Election</Select.Option>
-                                                <Select.Option value="By-election">By-election</Select.Option>
-                                            </Select>
-                                        </Grid>
-                                        <Grid xs={24}>
-                                            <Input type="date" value={electionDate} onChange={electionDateHandler} size="large" width="100%" >
-                                                Election Date
-                                            </Input>
-                                        </Grid>
+            <Tabs initialValue="1" style={{ margin: '16px', width: '100%' }}>
+                <Tabs.Item label="all" value="1">
+                    <DataTable
+                        columns={columns}
+                        data={filterText === '' ? elections : filteredElections}
+                        pagination
+                        highlightOnHover
+                        noHeader
+                        subHeader
+                        subHeaderComponent={subHeaderComponentMemo}
+                    />
+                </Tabs.Item>
 
-                                        <Grid xs={12}>
-                                            <Input type="time" value={electionStartTime} size="large" width="100%" >
-                                                Start
-                                            </Input>
-                                        </Grid>
-                                        <Grid xs={12}>
-                                            <Input type="time" value={electionEndTime} size="large" width="100%" >
-                                                End
-                                            </Input>
-                                        </Grid>
-                                    </Grid.Container>
+                <Tabs.Item label="update" value="3">
 
-                                    <Spacer y={2} />
-
-                                    <Button type="secondary" ghost onClick={addElectionClick}>Save</Button>
-                                </Grid>
-                            </Grid.Container>
-                        </Tabs.Item>
-
-                        <Tabs.Item label="update" value="3">
-
-                        </Tabs.Item>
-                    </Tabs>
-                </Grid>
-            </Grid.Container>
+                </Tabs.Item>
+            </Tabs>
         </DashboardLayout>
     )
+}
+
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context)
+
+    const token = cookies.token
+    const decodedToken = jwt.decode(token, { complete: true })
+    var dateNow = moment(moment().valueOf()).unix()
+
+    if (token == null) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
+
+    if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            token
+        }
+    }
 }
 
 export default Elections;

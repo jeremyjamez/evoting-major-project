@@ -1,24 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\eVotingApi.csproj": {}
+    "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\eVotingApi.csproj": {
+    "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\eVotingApi.csproj",
+        "projectUniqueName": "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj",
         "projectName": "eVotingApi",
-        "projectPath": "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\eVotingApi.csproj",
+        "projectPath": "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj",
         "packagesPath": "C:\\Users\\romar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\romar\\source\\repos\\eVotingApi\\eVotingApi\\obj\\",
+        "outputPath": "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
           "C:\\Users\\romar\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -45,59 +47,95 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "GoogleAuthenticator": {
+              "target": "Package",
+              "version": "[2.1.1, )"
+            },
+            "Microsoft.AspNetCore.ApiAuthorization.IdentityServer": {
+              "target": "Package",
+              "version": "[5.0.7, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[5.0.2, )",
+              "version": "[5.0.7, )",
               "noWarn": [
                 "NU1605"
               ]
             },
             "Microsoft.AspNetCore.Authentication.OpenIdConnect": {
               "target": "Package",
-              "version": "[5.0.2, )",
+              "version": "[5.0.7, )",
               "noWarn": [
                 "NU1605"
               ]
             },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[5.0.7, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[5.0.7, )"
+            },
             "Microsoft.AspNetCore.SpaServices.Extensions": {
               "target": "Package",
-              "version": "[5.0.2, )"
+              "version": "[5.0.7, )"
+            },
+            "Microsoft.Azure.CognitiveServices.Vision.Face": {
+              "target": "Package",
+              "version": "[2.7.0-preview.1, )"
+            },
+            "Microsoft.Azure.KeyVault": {
+              "target": "Package",
+              "version": "[3.0.5, )"
+            },
+            "Microsoft.Azure.Services.AppAuthentication": {
+              "target": "Package",
+              "version": "[1.6.1, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[5.0.2, )"
+              "version": "[5.0.7, )"
             },
             "Microsoft.EntityFrameworkCore.Proxies": {
               "target": "Package",
-              "version": "[5.0.2, )"
+              "version": "[5.0.7, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[5.0.2, )"
+              "version": "[5.0.7, )"
             },
             "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
-              "version": "[5.0.2, )"
+              "version": "[5.0.7, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[5.0.2, )"
+              "version": "[5.0.7, )"
+            },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.10.13, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
-              "version": "[5.0.1, )"
+              "version": "[5.0.2, )"
             },
-            "Newtonsoft.Json": {
+            "MongoDB.Driver": {
               "target": "Package",
-              "version": "[12.0.3, )"
+              "version": "[2.12.4, )"
+            },
+            "Select.HtmlToPdf.NetCore": {
+              "target": "Package",
+              "version": "[21.1.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[5.6.3, )"
+              "version": "[6.1.4, )"
             }
           },
           "imports": [
@@ -118,7 +156,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.204\\RuntimeIdentifierGraph.json"
         }
       }
     }

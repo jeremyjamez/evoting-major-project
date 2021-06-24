@@ -7,32 +7,43 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Models.DTO;
+using eVotingApi.Data;
+using eVotingApi.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVotingApi.Controllers
 {
+    [Authorize]
     [Route("api/PoliticalParties")]
     [ApiController]
     public class PoliticalPartiesController : ControllerBase
     {
-        private readonly eVotingContext _context;
+        private readonly PartyService _partyService;
 
-        public PoliticalPartiesController(eVotingContext context)
+        public PoliticalPartiesController(PartyService partyService)
         {
-            _context = context;
+            _partyService = partyService;
         }
 
         // GET: api/PoliticalParties
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PoliticalParty>>> GetPoliticalParties()
+        public async Task<ActionResult<IEnumerable<Party>>> GetPoliticalParties()
         {
-            return await _context.PoliticalParties.ToListAsync();
+            var parties = await _partyService.GetParties();
+
+            if(parties == null)
+            {
+                return BadRequest(parties);
+            }
+
+            return Ok(parties);
         }
 
         // GET: api/PoliticalParties/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<PoliticalParty>> GetPoliticalParty(long id)
+        public async Task<ActionResult<Party>> GetPoliticalParty(string id)
         {
-            var politicalParty = await _context.PoliticalParties.FindAsync(id);
+            var politicalParty = await _partyService.GetParty(id);
 
             if (politicalParty == null)
             {
@@ -41,85 +52,5 @@ namespace eVotingApi.Controllers
 
             return politicalParty;
         }
-
-        // PUT: api/PoliticalParties/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPoliticalParty(long id, PoliticalParty politicalParty)
-        {
-            if (id != politicalParty.PartyId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(politicalParty).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PoliticalPartyExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/PoliticalParties
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<PoliticalPartyDTO>> PostPoliticalParty(PoliticalPartyDTO politicalPartyDTO)
-        {
-            var politicalParty = new PoliticalParty
-            {
-                Name = politicalPartyDTO.Name,
-                Colour = politicalPartyDTO.Colour,
-                Founded = politicalPartyDTO.Founded,
-                Icon = politicalPartyDTO.Icon
-            };
-
-            _context.PoliticalParties.Add(politicalParty);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPoliticalParty", new { id = politicalParty.PartyId }, PoliticalPartyToDTO(politicalParty));
-        }
-
-        // DELETE: api/PoliticalParties/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePoliticalParty(long id)
-        {
-            var politicalParty = await _context.PoliticalParties.FindAsync(id);
-            if (politicalParty == null)
-            {
-                return NotFound();
-            }
-
-            _context.PoliticalParties.Remove(politicalParty);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool PoliticalPartyExists(long id)
-        {
-            return _context.PoliticalParties.Any(e => e.PartyId == id);
-        }
-
-        private static PoliticalPartyDTO PoliticalPartyToDTO(PoliticalParty politicalParty) =>
-            new PoliticalPartyDTO
-            {
-                Name = politicalParty.Name,
-                Colour = politicalParty.Colour,
-                Founded = politicalParty.Founded,
-                Icon = politicalParty.Icon
-            };
     }
 }

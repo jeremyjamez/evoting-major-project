@@ -1,4 +1,5 @@
 ﻿using eVotingApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace eVotingApi.Controllers
 {
+    [Authorize]
     [Route("api/upload")]
     [ApiController]
     public class UploadController : ControllerBase

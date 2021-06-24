@@ -11,12 +11,14 @@ namespace eVotingApi.Models.DTO
         [Required]
         public string Address { get; set; }
         [Required]
-        public DateTime DateOfBirth { get; set; }
-        [Required]
         public string Telephone { get; set; }
         [Required]
         public string Occupation { get; set; }
         [Required]
         public string MothersMaidenName { get; set; }
+        [Required]
+        public string PlaceOfBirth { get; set; }
+        [Required]
+        public string MothersPlaceOfBirth { get; set; }
     }
 }

@@ -6,21 +6,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
+using eVotingApi.Data;
+using eVotingApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using eVotingApi.Models.DTO;
+using eVotingApi.Config;
+using System.Text.Json;
 
 namespace eVotingApi.Controllers
 {
+    [Authorize]
     [Route("api/Candidates")]
     [ApiController]
     public class CandidatesController : ControllerBase
     {
-        private readonly eVotingContext _context;
+        private readonly CandidateService _candidateService;
 
-        public CandidatesController(eVotingContext context)
+        public CandidatesController(CandidateService candidateService)
         {
-            _context = context;
+            _candidateService = candidateService;
         }
 
-        // GET: api/Candidates
+        // GET: api/Candidates/1234567
+        [HttpGet("{voterId}")]
+        public async Task<IActionResult> GetCandidates(string voterId)
+        {
+            var candidates = await _candidateService.GetCandidates(voterId);
+            //var serializedObj = JsonSerializer.Serialize(candidates.ToArray(), candidates.ToArray().GetType());
+            //var encryptedResponse = await new EncryptionConfig<List<CandidateDTO>>().EncryptPayload(serializedObj, voterId);
+            return Ok(candidates);
+        }
+
+        /*// GET: api/Candidates
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Candidate>>> GetCandidates()
         {
@@ -137,6 +154,6 @@ namespace eVotingApi.Controllers
         private bool CandidateExists(long id)
         {
             return _context.Candidates.Any(e => e.CandidateId == id);
-        }
+        }*/
     }
 }

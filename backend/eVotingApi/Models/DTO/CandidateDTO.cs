@@ -10,14 +10,17 @@ namespace eVotingApi.Models.DTO
 {
     public class CandidateDTO
     {
-        public long CandidateId { get; set; }
-        public long ConstituencyId { get; set; }
+        public string CandidateId { get; set; }
 
-        public string FullName { get; set; }
+        public string ConstituencyId { get; set; }
 
-        public string Position { get; set; }
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
 
         public string Affiliation { get; set; }
+
+        public string Photo { get; set; }
 
         public string ConstituencyName { get; set; }
 

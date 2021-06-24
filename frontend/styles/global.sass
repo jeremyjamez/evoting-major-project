@@ -1,5 +1,15 @@
-$background-colour: #FEE853
+$background-colour: #fff8d2
+@font-face
+    font-family: 'Quicksand'
+    font-weight: 400
+    src: local('Quicksand'), url(/fonts/Quicksand.ttf) format('ttf')
 
-body 
+body, html 
+    height: 100%
     background-color: $background-colour !important
-    height: 100vh
+    font-family: 'Quicksand', sans-serif !important
+
+#__next
+    display: flex
+    flex-flow: column
+    height: 100%

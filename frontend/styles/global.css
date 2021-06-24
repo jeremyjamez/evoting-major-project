@@ -1,35 +1,23 @@
-body {
-  background-color: #FEE853 !important;
-  height: 100vh;
+@font-face {
+  font-family: 'Quicksand';
+  font-weight: 400;
+  src: local("Quicksand"), url(/fonts/Quicksand.ttf) format("ttf");
 }
 
-/*===== VARIABLES CSS =====*/
-:root{
-  --header-height: 3rem;
-  --nav-width: 68px;
-
-  /*===== Colors =====*/
-  --first-color: #4723D9;
-  --first-color-light: #AFA5D9;
-  --white-color: #F7F6FB;
-  
-  /*===== Font and typography =====*/
-  --body-font: 'Nunito', sans-serif;
-  --normal-font-size: 1rem;
-  
-  /*===== z index =====*/
-  --z-fixed: 100;
+body, html {
+  height: 100%;
+  background-color: #fff8d2 !important;
+  font-family: 'Quicksand', sans-serif !important;
 }
 
-/*===== BASE =====*/
-*,::before,::after{
-  box-sizing: border-box;
-}
-
-@media screen and (min-width: 768px){
-  body{
-    margin: calc(var(--header-height) + 1rem) 0 0 0;
-    padding-left: calc(var(--nav-width) + 2rem);
-  }
+#__next {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: column;
+          flex-flow: column;
+  height: 100%;
 }
 /*# sourceMappingURL=global.css.map */

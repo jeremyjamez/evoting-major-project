@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { Grid, Input, Select, Spacer, Tabs, Button } from "@geist-ui/react";
-import DashboardLayout from "./layout";
-import https from "https";
-import DataTable from "react-data-table-component";
-import { Save } from "@geist-ui/react-icons";
-import { useVoters } from "../../utils/swr-utils";
+import React, { useState } from "react"
+import { Grid } from "@geist-ui/react"
+import DashboardLayout from "./layout"
+import DataTable from "react-data-table-component"
+import { useVoters } from "../../utils/swr-utils"
+import moment from "moment"
+import nookies from 'nookies'
+import jwt from 'jsonwebtoken'
 
-export default function Voters({ constituencyData }) {
-    const voters = useVoters('/Voters');
+export default function Voters({token}) {
+
     const columns = React.useMemo(() => [
         {
             name: 'Voter ID',
@@ -24,9 +25,11 @@ export default function Voters({ constituencyData }) {
         {
             name: 'Last Name',
             selector: 'lastName'
-        },
+        }
 
     ], []);
+
+    const { voters, isLoading, isError } = useVoters(token)
 
     const [telephone, setTelephone] = useState('');
 
@@ -42,132 +45,46 @@ export default function Voters({ constituencyData }) {
         }
     };
 
-    const handleTelephoneChange = (e) =>{
+    const handleTelephoneChange = (e) => {
         setTelephone(normalizeInput(e.target.value, telephone))
     };
 
     return (
         <DashboardLayout>
-            <Tabs initialValue="1">
-                <Tabs.Item label="Voters List" value="1">
+            <Grid.Container style={{margin: '16px'}}>
+                <Grid xs={24} style={{display: 'block'}}>
                     <DataTable
-                        columns={columns}
+                        noHeader
+                        pagination
+                        highlightOnHover
                         data={voters}
+                        columns={columns}
                     />
-                </Tabs.Item>
-                <Tabs.Item label="add" value="2">
-                    <Spacer y={1} />
-                    <Grid.Container gap={2} justify="center">
-                        <Grid xl={3}>
-                            Prefix
-                            <Spacer y={.5} />
-                            <Select placeholder="Mr/Mrs/Ms" width="100%" size="large">
-                                <Select.Option value="Mr">Mr</Select.Option>
-                                <Select.Option value="Mrs">Mrs</Select.Option>
-                                <Select.Option value="Ms">Ms</Select.Option>
-                            </Select>
-                        </Grid>
-                        <Grid xl={3}>
-                            <Input placeholder="First Name" width="100%" size="large">
-                                First Name
-                            </Input>
-                        </Grid>
-                        <Grid xl={3}>
-                            <Input placeholder="Middle Name" width="100%" size="large">
-                                Middle Name
-                            </Input>
-                        </Grid>
-                        <Grid xl={3}>
-                            <Input placeholder="Last Name" width="100%" size="large">
-                                Last Name
-                            </Input>
-                        </Grid>
-
-                        <Grid xl={12}>
-                            <Input placeholder="Address" width="100%" size="large">
-                                Address
-                            </Input>
-                        </Grid>
-
-                        <Grid xl={4}>
-                            <Input type="date" width="100%" size="large">
-                                Date of Birth
-                            </Input>
-                        </Grid>
-
-                        <Grid xl={5}>
-                            <Input placeholder="Occupation" width="100%" size="large">
-                                Occupation
-                            </Input>
-                        </Grid>
-
-                        <Grid xl={5}>
-                            <Input placeholder="Mother's maiden name" width="100%" size="large">
-                                Mother's maiden name
-                            </Input>
-                        </Grid>
-
-                        <Grid xl={5}>
-                            <Input placeholder="Telephone" value={telephone} width="100%" size="large" onChange={handleTelephoneChange} required>
-                                Telephone
-                            </Input>
-                        </Grid>
-
-                        <Grid xl={5}>
-                            Constituency
-                            <Spacer y={.5} />
-                            <Select placeholder="Select Constituency" width="100%" size="large">
-                                {
-                                    constituencyData.map(constituency => {
-                                        return (
-                                            <Select.Option key={`${constituency.constituencyId}`} value={`${constituency.constituencyId}`}>{constituency.name}</Select.Option>
-                                        )
-                                    })
-                                }
-                            </Select>
-                        </Grid>
-
-                        <Grid xl={5}>
-                            <Input placeholder="Place of birth" width="100%" size="large">
-                                Place of birth
-                            </Input>
-                        </Grid>
-
-                        <Grid xl={5}>
-                            <Input placeholder="Mother's place of birth" width="100%" size="large">
-                                Mother's place of birth
-                            </Input>
-                        </Grid>
-
-                        <Grid xl={5}>
-                            <Input placeholder="Father's place of birth" width="100%" size="large">
-                                Father's place of birth
-                            </Input>
-                        </Grid>
-
-                        <Grid>
-                            <Button icon={<Save/>} type="secondary" ghost>Save</Button>
-                        </Grid>
-                    </Grid.Container>
-                </Tabs.Item>
-                <Tabs.Item label="update" value="3"></Tabs.Item>
-            </Tabs>
+                </Grid>
+            </Grid.Container>
         </DashboardLayout>
     )
 }
 
-export async function getStaticProps() {
-    const httpsAgent = new https.Agent({
-        rejectUnauthorized: false,
-    });
+export async function getServerSideProps(ctx) {
+    const cookies = nookies.get(ctx)
 
-    const [constituencyData] = await Promise.all([
-        fetch(`${process.env.apiUrl}/Constituencies`, { agent: httpsAgent }).then(r => r.json())
-    ]);
+    const token = cookies.token
+    const decodedToken = jwt.decode(token, { complete: true })
+    var dateNow = moment(moment().valueOf()).unix()
+
+    if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
 
     return {
         props: {
-            constituencyData
+            token
         }
     }
 }

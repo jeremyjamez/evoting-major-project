@@ -1,4 +1,4 @@
-import { Archive, Check, CheckSquare, Home, Layout, MapPin, Users } from "@geist-ui/react-icons";
+import { Archive, Check, CheckSquare, Home, Layout, MapPin, UserPlus, Users } from "@geist-ui/react-icons";
 
 const navMenu = [
     {
@@ -17,12 +17,7 @@ const navMenu = [
         icon: <Users />
     },
     {
-        label: "Members",
-        path: "/admin/members",
-        icon: <Users />
-    },
-    {
-        label: "Voters",
+        label: "Voters List",
         path: "/admin/voters",
         icon: <Users />
     },
@@ -35,6 +30,11 @@ const navMenu = [
         label: 'Political Parties',
         path: "/admin/political-parties",
         icon: <CheckSquare/>
+    },
+    {
+        label: 'Users',
+        path: '/admin/users',
+        icon: <UserPlus/>
     }
 ];
 

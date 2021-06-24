@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using eVotingApi.Models;
 using eVotingApi.Models.DTO;
+using eVotingApi.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVotingApi.Controllers
 {
+    [Authorize(Roles = "Administrator,ECJ")]
     [Route("api/Members")]
     [ApiController]
     public class MembersController : ControllerBase
@@ -21,7 +24,7 @@ namespace eVotingApi.Controllers
             _context = context;
         }
 
-        // GET: api/Members
+        /*// GET: api/Members
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDTO>>> GetMembers()
         {
@@ -43,9 +46,9 @@ namespace eVotingApi.Controllers
             }
 
             return MemberToDTO(member);
-        }
+        }*/
 
-        // PUT: api/Members/5
+        /*// PUT: api/Members/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMember(long id, MemberDTO memberDTO)
@@ -126,12 +129,12 @@ namespace eVotingApi.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
+        }*/
 
-        private bool MemberExists(long id)
+        /*private bool MemberExists(long id)
         {
             return _context.Members.Any(e => e.MemberId == id);
-        }
+        }*/
 
         private static MemberDTO MemberToDTO(Member member) =>
             new MemberDTO
@@ -149,8 +152,7 @@ namespace eVotingApi.Controllers
                 DateofBirth = member.DateofBirth,
                 PartyId = member.PartyId,
                 Position = member.Position,
-                JoinDate = member.JoinDate,
-                PoliticalParty = member.PoliticalParty
+                JoinDate = member.JoinDate
             };
     }
 }

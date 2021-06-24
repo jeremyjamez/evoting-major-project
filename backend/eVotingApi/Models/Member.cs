@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace eVotingApi.Models
 {
-    [Table(name: "Member")]
     public class Member
     {
         [Key]
@@ -48,8 +47,8 @@ namespace eVotingApi.Models
         public DateTime JoinDate { get; set; }
 
         //[JsonIgnore]
-        public virtual PoliticalParty PoliticalParty { get; set; }
-        [JsonIgnore]
-        public virtual Candidate Candidate { get; set; }
+        //public virtual PoliticalParty PoliticalParty { get; set; }
+       // [JsonIgnore]
+        //public virtual Candidate Candidate { get; set; }
     }
 }
