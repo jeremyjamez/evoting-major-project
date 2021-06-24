@@ -1,5 +1,5 @@
 import { Grid, Text, Tooltip, Link, Button, useModal, Modal, Select, Spacer, Input, useToasts, useCurrentState } from "@geist-ui/react"
-import menuItems from './components/navMenu'
+import {navMenu} from './components/navMenu'
 import { default as NextLink } from 'next/link'
 import { withRouter } from "next/router"
 import { Plus } from "@geist-ui/react-icons"
@@ -114,7 +114,7 @@ const DashboardLayout = (props) => {
                         paddingRight: "8px"
                     }}>
                     <div className="sideMenu" style={{ position: 'fixed', display: 'grid' }}>
-                        {menuItems.map((item) => (
+                        {navMenu.map((item) => (
                             <Tooltip
                                 key={item.path}
                                 text={item.label}
