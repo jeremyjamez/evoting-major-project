@@ -90,7 +90,10 @@ export default function Home({ publicKey }) {
   return (
     <Page size="large">
       <Grid.Container gap={4}>
-        <Grid xl={12}>
+        <Grid xl={14} style={{ display: 'block' }}>
+          <Text h2>Watch the video below on how to cast your vote before starting.</Text>
+        </Grid>
+        <Grid xl={10}>
           <Grid.Container justify="center" gap={2}>
             <Grid xs={24}>
               <Card shadow>
@@ -142,18 +145,6 @@ export default function Home({ publicKey }) {
               }
             </Grid>
           </Grid.Container>
-        </Grid>
-        <Grid xl={12} style={{ display: 'block' }}>
-          <Text h1>Requirements</Text>
-          <Text h2>You will need the following in order to cast your vote:</Text>
-          <ul>
-            <li>Authenticator Mobile Application (We recommend any of the following)</li>
-            <ul>
-              <li>Google Authenticator</li>
-              <li>Microsoft Authenticator</li>
-            </ul>
-            <li>Camera enabled device (Smartphone, Laptop or Desktop)</li>
-          </ul>
         </Grid>
       </Grid.Container>
       <style jsx>{`

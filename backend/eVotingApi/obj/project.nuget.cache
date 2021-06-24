@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "V5ylQTEgw5NO5k1hu2KcEZk9/uJD2I5bGMqhJ7uC1rAF9NmkF01QDmjHS8ooMglHCOoBE9RYFvbeFm2x7EcHiw==",
+  "dgSpecHash": "cm5JG+W+5Gc1jYx3lUzIBqRDAg8uqGEeU3uo4HT0hZA+cF3FZarkK8MbO++LmQR5cy//6IswYjO2vrBrR65Sxg==",
   "success": true,
   "projectFilePath": "C:\\Users\\romar\\OneDrive\\Documents\\Utech\\Year 4\\Major Project\\eVoting\\evoting\\backend\\eVotingApi\\eVotingApi.csproj",
   "expectedPackageFiles": [
@@ -83,6 +83,7 @@
     "C:\\Users\\romar\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
     "C:\\Users\\romar\\.nuget\\packages\\microsoft.rest.clientruntime\\2.3.20\\microsoft.rest.clientruntime.2.3.20.nupkg.sha512",
     "C:\\Users\\romar\\.nuget\\packages\\microsoft.rest.clientruntime.azure\\3.3.18\\microsoft.rest.clientruntime.azure.3.3.18.nupkg.sha512",
+    "C:\\Users\\romar\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.10.13\\microsoft.visualstudio.azure.containers.tools.targets.1.10.13.nupkg.sha512",
     "C:\\Users\\romar\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration\\5.0.2\\microsoft.visualstudio.web.codegeneration.5.0.2.nupkg.sha512",
     "C:\\Users\\romar\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.contracts\\5.0.2\\microsoft.visualstudio.web.codegeneration.contracts.5.0.2.nupkg.sha512",
     "C:\\Users\\romar\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.core\\5.0.2\\microsoft.visualstudio.web.codegeneration.core.5.0.2.nupkg.sha512",
