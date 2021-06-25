@@ -38,11 +38,6 @@ namespace eVotingApi.Services
             _elections = database.GetCollection<Election>(settings.ElectionCollectionName);
         }
 
-        public string GetPublicKey()
-        {
-            return _config.GetValue<string>("PublicKey:Key");
-        }
-
         /// <summary>
         /// Returns a list of all voters
         /// </summary>

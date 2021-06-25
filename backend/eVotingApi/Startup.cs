@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -115,8 +116,8 @@ namespace eVotingApi
                     builder
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowCredentials()
-                    .WithOrigins("https://evoting-major-project.vercel.app/");
+                    .AllowAnyOrigin()
+                    .WithOrigins("https://evoting-major-project.vercel.app", "http://localhost:3000");
                 });
             });
 
@@ -152,7 +153,7 @@ namespace eVotingApi
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireCors("AllowAll");
                 endpoints.MapSwagger("swagger/{documentName}/swagger.json");
                 endpoints.MapSwagger("swagger/{documentName}/swaggerv2.json", c =>
                 {
@@ -175,10 +176,27 @@ namespace eVotingApi
         public static void SeedData(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             SeedRoles(roleManager);
+            SeedUsers(userManager);
         }
 
-        public static void SeedUsers(UserManager<ApplicationUser> userManager)
+        public static async void SeedUsers(UserManager<ApplicationUser> userManager)
         {
+            var user = new ApplicationUser
+            {
+                UserName = "john@example.com",
+                NormalizedUserName = "john@example.com",
+                Email = "john@example.com",
+                NormalizedEmail = "john@example.com",
+                EmailConfirmed = true,
+                LockoutEnabled = false,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+
+            if(!userManager.Users.Any(u => u.UserName == user.UserName))
+            {
+                await userManager.CreateAsync(user, "Password@123");
+                await userManager.AddToRoleAsync(user, "EOJ");
+            }
         }
 
         public static void SeedRoles(RoleManager<IdentityRole> roleManager)

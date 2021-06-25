@@ -115,7 +115,7 @@ const Login = () => {
                     </Grid>
                     <Grid xl={24}>
                         <Text blockquote style={{ backgroundColor: '#232323', color: 'white', border: 'none', margin: '0 auto' }}>
-                            <strong>Username:</strong> john <br />
+                            <strong>Username:</strong> john@example.com <br />
                             <strong>Password:</strong> Password@123
                         </Text>
                     </Grid>
