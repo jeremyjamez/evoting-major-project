@@ -104,6 +104,7 @@ namespace eVotingApi.Controllers
             });
         }
 
+        [NonAction]
         private static UserDto UserToDto(ApplicationUser user) =>
             new UserDto()
             {

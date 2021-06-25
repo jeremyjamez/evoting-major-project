@@ -11,7 +11,7 @@ const ChooseOption = () => {
         <Layout>
             <Grid.Container gap={4}>
                 <Grid xs={24}>
-                    <Text h2>If you have already setup your One-Time Password, select the Vote button if you wish to vote. Otherwise, select the Exit button to </Text>
+                    <Text h2>If you have already setup your One-Time Password, select the Vote button if you wish to vote. Otherwise, select the Exit button to come back later.</Text>
                 </Grid>
                 <Grid xs={12} style={{display: 'block', textAlign: 'center'}} justify="center">
                     <Link href="/pair">

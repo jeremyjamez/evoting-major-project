@@ -18,6 +18,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Linq;
@@ -39,7 +40,16 @@ namespace eVotingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            services.AddControllers();
+            services.AddSwaggerGen(config =>
+            {
+                config.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Online E-Voting Prototype",
+                    Version = "v1"
+                });
+            });
+
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
             services.Configure<EVotingDatabaseSettings>(
@@ -100,17 +110,16 @@ namespace eVotingApi
 
             services.AddCors(options =>
             {
-                options.AddPolicy("NextJsCorsPolicy", builder =>
+                options.AddPolicy("AllowAll", builder =>
                 {
                     builder
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials()
-                    .WithOrigins("http://localhost:3000");
+                    .WithOrigins("https://evoting-major-project.vercel.app/");
                 });
             });
 
-            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -125,7 +134,7 @@ namespace eVotingApi
 
             app.UseRouting();
 
-            app.UseCors("NextJsCorsPolicy");
+            app.UseCors("AllowAll");
 
             app.UseStaticFiles();
 
@@ -144,6 +153,19 @@ namespace eVotingApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapSwagger("swagger/{documentName}/swagger.json");
+                endpoints.MapSwagger("swagger/{documentName}/swaggerv2.json", c =>
+                {
+                    c.SerializeAsV2 = true;
+                });
+            });
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.RoutePrefix = "";
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Online E-Voting Prototype API V1");
             });
         }
     }

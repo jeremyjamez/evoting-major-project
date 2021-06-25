@@ -96,6 +96,7 @@ namespace eVotingApi.Controllers
             });
         }
 
+        [NonAction]
         private AuthResult GenerateJwtToken(ApplicationUser user)
         {
             // Now its time to define the jwt token which will be responsible of creating our tokens

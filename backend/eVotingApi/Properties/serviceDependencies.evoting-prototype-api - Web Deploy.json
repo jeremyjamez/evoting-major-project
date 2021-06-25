@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/evotingdatabaseserver/databases/eVotingDatabaseAuth",
+      "type": "mssql.azure",
+      "connectionId": "eVotingDatabaseAuth",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}
