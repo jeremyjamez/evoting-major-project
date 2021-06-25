@@ -80,40 +80,6 @@ namespace eVotingApi.Controllers
             return CreatedAtAction("GetElection", new { id = electionId }, election);
         }
 
-  /*      // PUT: api/Elections/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutElection(long id, ElectionDTO electionDTO)
-        {
-            if (id != electionDTO.ElectionId)
-            {
-                return BadRequest();
-            }
-
-            var election = await _context.Elections.FindAsync(id);
-
-            if(election == null)
-            {
-                return NotFound();
-            }
-
-            election.ElectionType = electionDTO.ElectionType;
-            election.ElectionDate = electionDTO.ElectionDate;
-
-            _context.Entry(election).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException) when (!ElectionExists(id))
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }*/
-
         // DELETE: api/Elections/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteElection(string id)

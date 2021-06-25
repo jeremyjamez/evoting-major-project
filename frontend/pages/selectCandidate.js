@@ -1,4 +1,4 @@
-import { Button, Grid, Text, Modal, useModal, useCurrentState } from "@geist-ui/react"
+import { Button, Grid, Text, Modal, useModal, useCurrentState, useToasts } from "@geist-ui/react"
 import CandidateCard from "../components/CandidateCardComponent"
 import Layout from "../components/layout"
 import { parseCookies, setCookie } from 'nookies'
@@ -13,7 +13,7 @@ import { useCallback } from "react"
 
 
 
-const SelectCandidate = ({ exp, candidates, token }) => {
+const SelectCandidate = ({ exp, candidates, token, public_key }) => {
     const router = useRouter()
     const { register, handleSubmit } = useForm({
         criteriaMode: 'all',
@@ -21,7 +21,7 @@ const SelectCandidate = ({ exp, candidates, token }) => {
     })
 
     const { visible, setVisible, bindings } = useModal(false)
-
+    const [,setToast] = useToasts()
     const [,setState, stateRef] = useCurrentState()
 
     const cookies = parseCookies(null)
@@ -227,7 +227,8 @@ export async function getServerSideProps(context) {
                 props: {
                     candidates,
                     token,
-                    exp: tokenData.exp
+                    exp: tokenData.exp,
+                    public_key: cookies.public_key
                 }
             }
         }

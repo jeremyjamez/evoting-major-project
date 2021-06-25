@@ -171,6 +171,7 @@ namespace eVotingApi.Controllers
         /// </summary>
         /// <param name="arr"></param>
         /// <returns>An object array containing two randomly selected questions</returns>
+        [NonAction]
         private List<SecurityQuestion> SelectTwoQuestions(List<SecurityQuestion> arr)
         {
             int i = 0;
@@ -201,6 +202,7 @@ namespace eVotingApi.Controllers
         /// <param name="isCorrect"></param>
         /// <param name="voterId"></param>
         /// <returns>ValidationResponse</returns>
+        [NonAction]
         private ValidationResponse GenerateJwtToken(bool isCorrect, string voterId)
         {
             if (!isCorrect)
@@ -239,6 +241,7 @@ namespace eVotingApi.Controllers
             };
         }
 
+        [NonAction]
         private string GenerateSalt()
         {
             var bytes = new byte[8];
@@ -247,6 +250,7 @@ namespace eVotingApi.Controllers
             return Convert.ToBase64String(bytes);
         }
 
+        [NonAction]
         private string ComputeHash(byte[] bytesToHash, byte[] salt)
         {
             var byteResult = new Rfc2898DeriveBytes(bytesToHash, salt, 10000);

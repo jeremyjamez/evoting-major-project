@@ -153,15 +153,13 @@ export default function Home({ publicKey }) {
         }
       `}</style>
       <Modal {...bindings} disableBackdropClick={true}>
-        <Modal.Title>
-          <Text h4></Text>
-        </Modal.Title>
         <Modal.Content>
-          <Text h5>You have already voted in this election.</Text>
+          <Text h3>You have already voted in this election.</Text>
         </Modal.Content>
         <Modal.Action onClick={() => {
           destroyCookie(null, 'private_key')
           router.push('/')
+          setVisible(false)
         }}>OK</Modal.Action>
       </Modal>
     </Page>
