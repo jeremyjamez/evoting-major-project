@@ -179,23 +179,29 @@ namespace eVotingApi
             SeedUsers(userManager);
         }
 
-        public static async void SeedUsers(UserManager<ApplicationUser> userManager)
+        public static void SeedUsers(UserManager<ApplicationUser> userManager)
         {
-            var user = new ApplicationUser
+            if(userManager.FindByNameAsync("john@example.com").Result == null)
             {
-                UserName = "john@example.com",
-                NormalizedUserName = "john@example.com",
-                Email = "john@example.com",
-                NormalizedEmail = "john@example.com",
-                EmailConfirmed = true,
-                LockoutEnabled = false,
-                SecurityStamp = Guid.NewGuid().ToString()
-            };
+                var user = new ApplicationUser
+                {
+                    UserName = "john@example.com",
+                    NormalizedUserName = "john@example.com",
+                    Email = "john@example.com",
+                    NormalizedEmail = "john@example.com",
+                    EmailConfirmed = true,
+                    LockoutEnabled = false,
+                    Address = "Some address",
+                    FirstName = "John",
+                    LastName = "Brown",
+                    TRN = "124678",
+                    Role = "EOJ",
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
 
-            if(!userManager.Users.Any(u => u.UserName == user.UserName))
-            {
-                await userManager.CreateAsync(user, "Password@123");
-                await userManager.AddToRoleAsync(user, "EOJ");
+                var result = userManager.CreateAsync(user, "Password@123").Result;
+                if(result.Succeeded)
+                    userManager.AddToRoleAsync(user, "EOJ").Wait();
             }
         }
 

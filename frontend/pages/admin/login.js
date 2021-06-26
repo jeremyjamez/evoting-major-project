@@ -106,8 +106,10 @@ const Login = () => {
                                 </Grid.Container>
                                 <Spacer y={2}/>
                                 <Grid.Container justify="center">
-                                    <Grid xs={12}>
-                                        <Button htmlType="submit" type="secondary" shadow loading={isLoading}>Login</Button>
+                                    <Grid>
+                                        <Button htmlType="submit" type="secondary" size="large" shadow loading={isLoading}>
+                                            <Text h3>Login</Text>
+                                        </Button>
                                     </Grid>
                                 </Grid.Container>
                             </form>

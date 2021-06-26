@@ -92,8 +92,8 @@ export default function Home({ publicKey }) {
       <Grid.Container gap={4}>
         <Grid xl={14} style={{ display: 'block' }}>
           <Text h2>Watch the video below on how to cast your vote before starting.</Text>
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/WVwHFpSpGKY" title="YouTube video player" 
-          frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe width="100%" height="315" src="https://www.youtube.com/embed/WVwHFpSpGKY" title="YouTube video player" 
+          frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
         </Grid>
         <Grid xl={10}>
           <Grid.Container justify="center" gap={2}>

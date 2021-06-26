@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace eVotingApi.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator,EOJ")]
     [Route("api/Users")]
     [ApiController]
     public class UsersController : ControllerBase
