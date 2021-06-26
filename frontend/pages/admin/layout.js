@@ -1,14 +1,14 @@
 import { Grid, Text, Tooltip, Link, Button, useModal, Modal, Select, Spacer, Input, useToasts, useCurrentState } from "@geist-ui/react"
 import { default as NextLink } from 'next/link'
-import { withRouter } from "next/router"
-import { Plus, Archive, CheckSquare, Home, MapPin, UserPlus, Users } from "@geist-ui/react-icons"
+import { useRouter, withRouter } from "next/router"
+import { Plus, Archive, CheckSquare, Home, MapPin, UserPlus, Users, LogOut } from "@geist-ui/react-icons"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from "yup"
 import moment from "moment"
 import https from "https"
-import { parseCookies } from "nookies"
+import { destroyCookie, parseCookies } from "nookies"
 
 const schema = yup.object().shape({
 
@@ -60,6 +60,7 @@ const DashboardLayout = (props) => {
     const { setVisible, bindings } = useModal()
 
     const token = parseCookies(null, 'token').token
+    const router = useRouter()
 
     const [, setToast] = useToasts()
 
@@ -174,8 +175,18 @@ const DashboardLayout = (props) => {
                     <Grid.Container>
                         <Grid xs={24}>
                             <Grid.Container style={{ margin: '16px' }} justify="space-between">
-                                <Grid justify="flex-end">
-                                    <Text h3>Online E-Voting Prototype - Admin</Text>
+                                <Grid>
+                                    <Grid.Container gap={2}>
+                                        <Grid>
+                                            <Text h3>Online E-Voting Prototype - Admin</Text>
+                                        </Grid>
+                                        <Grid>
+                                            <Button icon={<LogOut />} onClick={() => {
+                                                destroyCookie(null, "token")
+                                                router.push('/admin/login')
+                                            }} auto shadow type="secondary" size="large">Log Out</Button>
+                                        </Grid>
+                                    </Grid.Container>
                                 </Grid>
                                 <Grid>
                                     <Button icon={<Plus />} onClick={() => setVisible(true)} auto shadow type="secondary" size="large">New Election</Button>
