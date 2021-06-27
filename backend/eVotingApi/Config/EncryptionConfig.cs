@@ -21,7 +21,7 @@ namespace eVotingApi.Config
             string folderName = Path.Combine("wwwroot", "certs");
             string pathToFile = Path.Combine(Directory.GetCurrentDirectory(), $"{folderName}/{voterId}_publickey.pem");
 
-            using(RSACng rsa = new())
+            using(var rsa = RSA.Create())
             {
                 using (StreamReader sr = new StreamReader(pathToFile))
                 {
@@ -38,8 +38,8 @@ namespace eVotingApi.Config
         public async Task<T> DecryptPayload(string payload)
         {
             var cert = await GetCertificateAsync();
-            var rsaCng = (RSACng)cert.PrivateKey;
-            var decryptedMessageJson = Encoding.UTF8.GetString(rsaCng.Decrypt(Convert.FromBase64String(payload), RSAEncryptionPadding.OaepSHA1));
+            var rsa = cert.GetRSAPrivateKey();
+            var decryptedMessageJson = Encoding.UTF8.GetString(rsa.Decrypt(Convert.FromBase64String(payload), RSAEncryptionPadding.OaepSHA1));
             return JsonConvert.DeserializeObject<T>(decryptedMessageJson);
         }
 

@@ -75,10 +75,7 @@ namespace eVotingApi.Controllers
                 }
 
                 var jwtToken = GenerateJwtToken(existingUser);
-
-                string zoneId = "Eastern Standard Time";
-                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById(zoneId);
-                DateTime result = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tzi);
+                DateTime result = DateTime.UtcNow;
 
                 existingUser.LastLoggedIn = result;
 
