@@ -8,7 +8,7 @@ import https from 'https'
 
 const VoteResult = ({exp, voteDetails}) => {
 
-    const date = voteDetails.ballotTime * 1000
+    const date = voteDetails.ballotTime
     return (
         <Layout expireTimestamp={exp}>
             <Grid.Container>
