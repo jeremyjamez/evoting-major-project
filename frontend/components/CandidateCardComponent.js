@@ -1,4 +1,4 @@
-import { Grid, Loading, useCurrentState } from "@geist-ui/react"
+import { Grid, Loading } from "@geist-ui/react"
 import { useGetParty } from "../utils/swr-utils"
 
 const CandidateCard = ({ candidate, token }) => {
@@ -13,15 +13,15 @@ const CandidateCard = ({ candidate, token }) => {
             <div className="candidate-container">
                 <div className="candidate">
                     <Grid.Container>
-                        <Grid xs={3} alignItems="center">
-                            <div className="candidate-image">
-                                <img src={party.icon} width="36" height="32" />
-                            </div>
-                        </Grid>
-                        <Grid xs>
+                        <Grid xs={12}>
                             <div className="candidate-info">
                                 <h2>{candidate.lastName}, {candidate.firstName}</h2>
                                 <h5>Candidate Address</h5>
+                            </div>
+                        </Grid>
+                        <Grid xs={3} alignItems="center">
+                            <div className="candidate-image">
+                                <img src={party.icon} width="36" height="32" />
                             </div>
                         </Grid>
                     </Grid.Container>
@@ -30,7 +30,7 @@ const CandidateCard = ({ candidate, token }) => {
             <style jsx>{`
                             .candidate-container {
                                 margin-bottom: 10px;
-                                width: 90%;
+                                width: 100%;
                             }
 
                             .candidate:hover {
