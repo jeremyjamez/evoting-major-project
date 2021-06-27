@@ -12,14 +12,14 @@ const CandidateCard = ({ candidate, token }) => {
         <>
             <div className="candidate-container">
                 <div className="candidate">
-                    <Grid.Container>
-                        <Grid xs={12}>
+                    <Grid.Container gap={4} justify="flex-start">
+                        <Grid>
                             <div className="candidate-info">
                                 <h2>{candidate.lastName}, {candidate.firstName}</h2>
                                 <h5>Candidate Address</h5>
                             </div>
                         </Grid>
-                        <Grid xs={3} alignItems="center">
+                        <Grid alignItems="center">
                             <div className="candidate-image">
                                 <img src={party.icon} width="36" height="32" />
                             </div>
