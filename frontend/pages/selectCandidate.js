@@ -150,8 +150,8 @@ const SelectCandidate = ({ exp, candidates, token, public_key }) => {
 
                 .x {
                     position: absolute;
-                    top: 0;
-                    right: 0;
+                    top: 50%;
+                    right: 20px;
                     height: 50px;
                     width: 50px;
                     border: 2px solid black;

@@ -109,7 +109,6 @@ export async function getServerSideProps(context) {
             if (res.ok) {
                 res.json()
                     .then(election => {
-                        console.log(election)
                         setCookie(context, 'electionId', election)
                     })
             }
@@ -152,8 +151,6 @@ export async function getServerSideProps(context) {
                     exp
                 }
             }
-        } else {
-            console.log(res.json())
         }
     }
 

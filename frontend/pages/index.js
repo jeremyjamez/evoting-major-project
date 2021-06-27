@@ -185,6 +185,7 @@ export async function getServerSideProps(context) {
   })
 
   destroyCookie(context, 'private_key')
+  destroyCookie(context, 'token')
 
   nookies.set(context, 'private_key', privateKey)
 

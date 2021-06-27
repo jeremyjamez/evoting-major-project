@@ -9,8 +9,8 @@ import NodeRSA from 'node-rsa'
 
 const inputStyle = {
     borderRadius: '4px',
-    width: '60px',
-    height: '60px',
+    width: '30px',
+    height: '50px',
     margin: '8px',
     fontSize: '1.25rem',
     border: 'gray solid 1px'
@@ -82,7 +82,6 @@ export default function ValidatePin({public_key, voterId}) {
             })
             .catch(error => {
                 setValidating(false)
-                console.log(error)
             })
     }
 
