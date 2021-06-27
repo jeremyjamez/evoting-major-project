@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace eVotingApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/PoliticalParties")]
     [ApiController]
     public class PoliticalPartiesController : ControllerBase

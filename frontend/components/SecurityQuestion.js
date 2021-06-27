@@ -53,7 +53,6 @@ const SecurityQuestion = ({ item, triggerPushAnswer, triggerPushAttempt, next, n
     },[register, register])
 
     const onSubmit = (data) => {
-        console.log(data)
         setAttempt((prev) => prev - 1)
         triggerPushAttempt(attemptRef.current)
         if (data.answer.toLowerCase() === item.Answer.toLowerCase()) {
