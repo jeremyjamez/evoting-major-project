@@ -14,5 +14,7 @@ namespace eVotingApi.Models.DTO.Requests
         public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
+
+        public DateTime LastLoggedIn { get; set; }
     }
 }

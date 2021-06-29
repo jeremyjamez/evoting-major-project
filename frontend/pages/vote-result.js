@@ -6,16 +6,16 @@ import Layout from "../components/layout"
 import jwt from 'jsonwebtoken'
 import https from 'https'
 
-const VoteResult = ({exp, voteDetails}) => {
+const VoteResult = ({exp, voteDetails, electionTitle}) => {
 
-    const date = voteDetails.ballotTime
+    const date = voteDetails.ballotTime * 1000
     return (
         <Layout expireTimestamp={exp}>
             <Grid.Container>
                 <Grid style={{display: 'block'}}>
-                    <Text h1>{voteDetails.election}</Text>
-                    <Text h3 >{voteDetails.id}</Text>
-                    <Text h4>Ballot was cast {moment(date).format('DD/MM/YYYY hh:mm a')}</Text>
+                    <Text h1>Thank you for voting in the {electionTitle}.</Text>
+                    <Text h3>The ID of your vote is {voteDetails.voteId}</Text>
+                    <Text h3>Your ballot was cast {moment(date).format('DD/MM/YYYY hh:mm a')}</Text>
                 </Grid>
             </Grid.Container>
         </Layout>
@@ -39,7 +39,9 @@ export async function getServerSideProps(context) {
             rejectUnauthorized: false,
         });
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/votes/${cookies.voteId}`,
+        const voteDetails = JSON.parse(cookies.data)
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/elections/${voteDetails.electionId}`,
             {
                 agent: httpsAgent,
                 method: 'GET',
@@ -55,7 +57,8 @@ export async function getServerSideProps(context) {
         return {
             props: {
                 exp: tokenData.exp,
-                voteDetails: data
+                voteDetails,
+                electionTitle: data.electionTitle
             }
         }
     }

@@ -225,7 +225,7 @@ l-1.7-3.4l-3.3-0.7l-0.6,2.4l-2.5,1.1l-0.6-5.2l-1.7-1.6l-0.1-5.8l-6.9-2.7l-4.4,2.
 l2.5-0.8l0.6-9.3l2.4-0.1l1.4,1.7l6.4-1.3l5.7,0.1l4.4-2.3l3.8,0.1l4.7,2.7l-1-2.7l3.1-5.5l1.8,4.5l-1.4,1.1l1.8,2.4l1.3,4.2
 l3.7,0.8l3.3-0.4l2.8-1.8l-1.6-2.1l-3,0.6l0.7-3.5l-1-3l1.3-2.5l3,3.7l0.6-5.4L563.9,221.1z"/>
 
-<path id="path4339" name="St. Andrew West" inkscape:connector-curvature="0" class="st0" d="M631.6,280.1l1.6-1.9l-0.9-0.8l0.3-1.5l-0.7-1.5l0.9-2.3V270
+<path id="path4339" name="St. Andrew Western" inkscape:connector-curvature="0" class="st0" d="M631.6,280.1l1.6-1.9l-0.9-0.8l0.3-1.5l-0.7-1.5l0.9-2.3V270
 l-1,0.1l0.1-1.2l-1.4-0.6l-3.4-0.1l-0.8-0.8l2.1-2.2l-0.6-0.5l0.3-0.7l2.6-0.6l0.9-0.8l-2.1-1l-0.8-0.7l-1.9,0.2l-1.6-1.8l-0.6-0.8
 l-0.8,0.2L623,258l-1,0.4l-1.2-0.4l-0.3-0.8l-1.2,0.3l-0.6-1.2l-1.3-0.3l-0.9,0.4h-0.9l-0.4-0.8l-2.4-1l-1.9,9.4l1.4,0.9l1.5,1.4
 l1,2.1l0.6,0.6l1.4-0.1l1.5,1.4l1.2-0.3l1.2-0.1l0.7,1.1l0.8-0.5l1.5,0.3l0.7,1.4l-0.1,1.2l0.8,1.2l0.1,1.9l1.5,0.4l-0.1,2.8
@@ -252,7 +252,7 @@ l0.1-1.4l0.8-0.6l-0.6-0.6l-1.9-1.4l0.1-1.4l0.9-0.7V268.5z"/>
 M647.2,293.1l2,0.4l0.5,0l1.1,0l1.6-0.3l1.1-0.3l-0.1-0.5v-2l-0.8,0.3l-0.6-0.5v-1.4h0.8l0.4-0.7l0.7-0.1l0.5,0.3l1,0.1l0.3-1.9
 l-3.4-0.2l0.1-1.2l-1.5,0.1l-0.9-0.8l-2.8-0.5l0.5,0.6l-0.1,1.4l0.7,0.6l-0.5,5.6L647.2,293.1z"/>
 
-<path id="path4353" name="St. Andrew South East" inkscape:connector-curvature="0" class="st0" d="M645.1,274.4l3.2-1.9l3.7-2.1l3-0.1l0.6,0.3l-0.8,0.6v2.3
+<path id="path4353" name="St. Andrew South Eastern" inkscape:connector-curvature="0" class="st0" d="M645.1,274.4l3.2-1.9l3.7-2.1l3-0.1l0.6,0.3l-0.8,0.6v2.3
 l-0.1,1.4l2.1,7.6l1.1,1.1l0.5,1.9l-2.8,0.8l-3.4-0.2l0.1-1.2l-1.5,0.1l-0.9-0.8l-2.8-0.5l0.8-1.5l0.3-2.1l-1.4-1.8l-0.1-2l-2.1-1.4
 L645.1,274.4z"/>
 
@@ -263,16 +263,16 @@ l-1,0.9l-0.2-0.2l1-0.9l0.9,0.5l1.9,2.3l2.9-0.4l1.8-0.1l2,1.5h2.3l5.2,1.7l1.3-1.3
 l2.6,0.9l2.5-1.1l3.5,0.6l-2.3-3.1l-2.3-2.3l-1.9-0.7l-1.1-0.8l-1.7-1l-1.9-0.9l-1.3-0.1l-0.7-0.1l-0.8,0.4l-1.4-0.1l-0.1,0.6
 l-1.4,0.2l-0.8-0.6l-1.4,0.6l-2.2,0.1v-2l-0.8,0.3l-0.6-0.5v-1.4h0.8l0.4-0.7l0.7-0.1l0.5,0.3l1,0.1l0.3-1.9L658.4,285.7z"/>
 
-<path id="path4359" name="St. Andrew East" inkscape:connector-curvature="0" class="st0" d="M655.6,270.7l1.4-0.7l0.5-1.2l2.8-1.8l0.6-1.2l0.9-0.4l1.1,0.6
+<path id="path4359" name="St. Andrew Eastern" inkscape:connector-curvature="0" class="st0" d="M655.6,270.7l1.4-0.7l0.5-1.2l2.8-1.8l0.6-1.2l0.9-0.4l1.1,0.6
 l2.3-0.1l2.1,0.7l0.1,1l0.7,1.1l-0.8,0.1v1.2l-0.9,0.5l0.6,1.2l-0.5,1.5l1.2,2v2.8l-0.8,1l0.2,1.2l1.4,1.7l0.5,3.4l1.2,1.6h0.7
 l0.6,1.2l-0.1,1.3l-11.1-3.9l-2,0l-0.5-1.9l-1.1-1.1l-2.1-7.6l0.1-1.4v-2.3L655.6,270.7z"/>
 
-<path id="path4361" name="St. Andrew North West" inkscape:connector-curvature="0" class="st0" d="M628.7,261l0.5-0.6v-1.2l-1.1-0.1l-1.2,0.4l-0.5-0.5l0.7-1
+<path id="path4361" name="St. Andrew North Western" inkscape:connector-curvature="0" class="st0" d="M628.7,261l0.5-0.6v-1.2l-1.1-0.1l-1.2,0.4l-0.5-0.5l0.7-1
 l1.6,0.7l1.8-2l0.9-0.2l0.6,1.1l0.8,0.4l1.1-0.8l0.4-1.2l-0.8-0.1l0.5-1.9l0.9-0.2l0.8-0.7l2.6,2.1l0.8,0.4l0.3-2l1-0.3l2.3-0.3
 l0,2.1l-0.4,1.3l0.3,2.1l1.3,2.9l-2,1.1l-3.1-0.4l0.1,1.1l0.9,2.5l-0.8,0.6l-0.5,1.6l-2.1,0.8l-4.5,0.4l-1.4-0.6l-3.4-0.1l-0.8-0.8
 l2.1-2.2l-0.6-0.5l0.3-0.7l2.6-0.6l0.9-0.8l-2.1-1L628.7,261z"/>
 
-<path id="path4363" name="St. Andrew North East" inkscape:connector-curvature="0" class="st0" d="M642.8,268l0.6-1.3l1.1-1.1l0.5-0.7l1,0.1l0.5,0.7l1.8-0.9
+<path id="path4363" name="St. Andrew North Eastern" inkscape:connector-curvature="0" class="st0" d="M642.8,268l0.6-1.3l1.1-1.1l0.5-0.7l1,0.1l0.5,0.7l1.8-0.9
 l0.9-2.1l0.7-2.6l1.2-1.1l0.2-1.2l2-1.4l0.7-1.3l-0.4-0.9l0.7-0.6l-0.8-1.3l-0.2-1l0.8-0.8l0.7,0.6l1-0.9l0.3-0.5l1.2,0.5l1.4-0.4
 l1.4,1.1l1.2,0.9l0.9,0l0.4-0.5l1.2,0.4l-0.4,1.8l0.4,0.8l-0.3,0.6l-0.1,1.6h-0.7l-0.4-0.8l-2.1,0.4l1.2,0.7l-1,1.9v1.1l1.7,1.1
 l0.4,1.9l1.3,2.1l0.8,0.1l0.9,1l-2.3,0.1l-1.1-0.6l-0.9,0.4l-0.6,1.2l-2.8,1.8L657,270l-1.4,0.7l-0.6-0.3l-3,0.1l-3.7,2.1l-3.2,1.9
@@ -306,7 +306,7 @@ l-3.4-4.2l-1.1-2.8l-2-2.2l-0.2-5l-1.2,0.5l-3.2,4.3l0.1,1.1l1,1.1l-0.6,2.9l-1.3,1
 l0,2.2l1.2,0.5l1.4-0.4l2.6,2l0.9,0l0.4-0.5l1.2,0.4l-0.4,1.8l0.4,0.8l-0.3,0.6l-0.1,1.6h-0.7l-0.4-0.8l-2.1,0.4l1.2,0.7l-1,1.9v1.1
 l1.7,1.1l0.4,1.9l1.3,2.1l0.8,0.1l0.9,1l2.1,0.7l0.1,1l0.7,1.1l-0.8,0.1v1.2l-0.9,0.5l0.6,1.2l-0.5,1.5l1.2,2v2.8l-0.8,1l0.2,1.2
 l1.4,1.7l0.5,3.4l1.2,1.6h0.7l0.6,1.2l-0.1,1.3l1.7,0.3l0.3,3l-1.2,3.7L673,299.8z"/>
-<path id="path4403" name="St. Catherine South East" inkscape:connector-curvature="0" sodipodi:nodetypes="cccccccccccccccccc" class="st0" d="M608.1,292.7l4.7-3.8
+<path id="path4403" name="St. Catherine South Eastern" inkscape:connector-curvature="0" sodipodi:nodetypes="cccccccccccccccccc" class="st0" d="M608.1,292.7l4.7-3.8
 l-3.5-1.3l3.1-4.8l4,2.3l-0.8-6.6l5.4-1.6l4.5-0.5l1.5,0.4l-0.1,2.8l-2.4,3.2l-2.7,2.7l-0.9,3.5l-0.1,3.1l-1,3.3l-2.1,5.9l-7.8-6.1
 L608.1,292.7z"/>
 <path id="path4405" name="St. Catherine East Central" inkscape:connector-curvature="0" class="st0" d="M592.7,283.3l6.1-0.3l3.1-2.7l1.6-4.2l5.9-3.3l5.4-4.6l0.6,0.6
@@ -388,10 +388,6 @@ class ConstituencyMap extends React.Component {
     componentDidMount() {
         require("@svgdotjs/svg.panzoom.js")
         const draw = SVG(rawSvg).addTo('#map').panZoom({ zoomMin: 1.5, zoomMax: 10, zoomFactor: 1 })
-
-        draw.on('zoom', (ev) => {
-            console.log(ev.detail.level)
-        })
 
         if (this.state.selected == null) {
             //this.props.colsize(0)

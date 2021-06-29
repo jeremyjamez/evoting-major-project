@@ -64,7 +64,7 @@ const Login = () => {
                         type: 'success'
                     })
 
-                    setCookie(null, 'token', token.token, {
+                    setCookie(null, 'to', token.token, {
                         maxAge: 3600,
                         path: '/'
                     })
@@ -130,12 +130,12 @@ const Login = () => {
 export async function getServerSideProps(ctx) {
     const cookies = nookies.get(ctx)
 
-    const token = cookies.token
+    const token = cookies.to
     const decodedToken = jwt.decode(token, { complete: true })
     var dateNow = moment(moment().valueOf()).unix()
 
     if (decodedToken !== null && decodedToken.payload.exp > dateNow) {
-        if (!Object.prototype.hasOwnProperty(decodedToken.payload, 'voterId')) {
+        if (!Object.prototype.hasOwnProperty(decodedToken.payload, 'Id')) {
             return {
                 redirect: {
                     destination: '/admin/home',
@@ -145,7 +145,7 @@ export async function getServerSideProps(ctx) {
         }
     }
 
-    destroyCookie(ctx, 'token', { path: '/' })
+    destroyCookie(ctx, 'to', { path: '/' })
 
     return {
         props: {}

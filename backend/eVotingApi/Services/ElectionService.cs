@@ -1,4 +1,5 @@
 ﻿using eVotingApi.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace eVotingApi.Services
         public async Task<Election> GetElection(string electionId)
         {
             var builder = Builders<Election>.Filter;
-            var filter = builder.Eq("_id", electionId);
+            var filter = builder.Eq("_id", ObjectId.Parse(electionId));
             var election = await _elections.Find(filter).FirstOrDefaultAsync();
             return election;
         }

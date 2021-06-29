@@ -22,8 +22,8 @@ namespace eVotingApi.Services
     public class VoterService
     {
         private readonly IMongoCollection<Voter> _voters;
-        private readonly IMongoCollection<Vote> _votes;
         private readonly IMongoCollection<Election> _elections;
+        private readonly IMongoCollection<Voter_Election> _voter_elections;
         private readonly IConfiguration _config;
         private const string RECOGNITION_MODEL4 = RecognitionModel.Recognition04;
 
@@ -34,8 +34,8 @@ namespace eVotingApi.Services
             var database = client.GetDatabase(settings.DatabaseName);
 
             _voters = database.GetCollection<Voter>(settings.VoterCollectionName);
-            _votes = database.GetCollection<Vote>(settings.VoteCollectionName);
             _elections = database.GetCollection<Election>(settings.ElectionCollectionName);
+            _voter_elections = database.GetCollection<Voter_Election>(settings.Voter_ElectionCollectionName);
         }
 
         /// <summary>
@@ -73,12 +73,12 @@ namespace eVotingApi.Services
 
             if (result != null)
             {
-                var voteBuilder = Builders<Vote>.Filter;
+                var voter_electionBuilder = Builders<Voter_Election>.Filter;
 
                 var electionId = await GetByTime(voterDto.CurrentTime);
 
-                var voteFilter = voteBuilder.And(voteBuilder.Eq("voterId", result.VoterId), voteBuilder.Eq("electionId", electionId));
-                var hasVoted = await _votes.Find(voteFilter).FirstOrDefaultAsync();
+                var voter_electionFilter = voter_electionBuilder.And(voter_electionBuilder.Eq("voterId", result.VoterId), voter_electionBuilder.Eq("electionId", electionId));
+                var hasVoted = await _voter_elections.Find(voter_electionFilter).FirstOrDefaultAsync();
 
                 if(hasVoted != null)
                 {
@@ -104,6 +104,7 @@ namespace eVotingApi.Services
                     {
                         IsRegistered = true,
                         IsTwoFactorEnabled = false,
+                        ElectionId = electionId,
                         PublicKey = _config.GetValue<string>("PublicKey:Key")
                     };
                     return registeredResponse;
@@ -114,6 +115,7 @@ namespace eVotingApi.Services
                     {
                         IsRegistered = true,
                         IsTwoFactorEnabled = true,
+                        ElectionId = electionId,
                         PublicKey = _config.GetValue<string>("PublicKey:Key")
                     };
                     return registeredResponse;

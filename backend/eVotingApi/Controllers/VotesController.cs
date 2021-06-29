@@ -24,12 +24,10 @@ namespace eVotingApi.Controllers
     public class VotesController : ControllerBase
     {
         private readonly VoteService _voteService;
-        private readonly VoterService _voterService;
 
-        public VotesController(VoteService voteService, VoterService voterService)
+        public VotesController(VoteService voteService)
         {
             _voteService = voteService;
-            _voterService = voterService;
         }
 
         [HttpGet("{id}")]
@@ -48,14 +46,29 @@ namespace eVotingApi.Controllers
         [HttpPost]
         public async Task<IActionResult> PostVote([FromBody]string payload)
         {
-            var vote = await new EncryptionConfig<Vote>().DecryptPayload(payload);
+            var voteDto = await new EncryptionConfig<VoteDto>().DecryptPayload(payload);
 
-            var insertResult = await _voteService.InsertVote(vote);
+            var insertResult = await _voteService.InsertVote(voteDto);
 
-            if (insertResult == string.Empty || insertResult == null)
+            if (insertResult == null)
                 return BadRequest();
 
             return Ok(insertResult);
+        }
+
+        //[AllowAnonymous]
+        [Route("[action]/{electionId}")]
+        [HttpGet]
+        public async Task<IActionResult> CountVotes(string electionId)
+        {
+            var countedVotes = await _voteService.CountVotes(electionId);
+
+            if(countedVotes == null || countedVotes.Count == 0)
+            {
+                return NotFound(new { Error = "No votes" });
+            }
+
+            return Ok(countedVotes);
         }
     }
 }

@@ -57,7 +57,7 @@ const PoliticalParties = ({ token }) => {
         },
         {
             name: 'Name',
-            selector: 'name'
+            selector: 'longName'
         },
         {
             name: 'Icon',
@@ -67,19 +67,6 @@ const PoliticalParties = ({ token }) => {
         {
             name: 'Colour',
             cell: row => <span style={{ backgroundColor: row.colour, borderRadius: '50%', height: '40px', width: '40px' }}></span>
-        },
-        {
-            name: 'Founded',
-            selector: row => moment(row.founded).format("DD/MM/YYYY")
-        },
-        {
-            name: 'Member Count',
-            cell: row => <p>{!members ? 0 : members.filter(item => item.partyId === row.partyId).length}</p>
-        },
-        {
-            name: '',
-            selector: '',
-            cell: row => <Button icon={<Trash2 />} size="small" auto type="error" onClick={() => handleDelete(row.partyId)}></Button>
         }
     ])
 
@@ -252,10 +239,7 @@ const PoliticalParties = ({ token }) => {
                                     }
 
                                 </Grid>
-                                <Grid xl={12}>
-                                    <Input width="100%" type="date" name="foundedDate" ref={register} size="large">Founded</Input>
-                                </Grid>
-                                <Grid xl={12} style={{ display: 'block' }}>
+                                <Grid xl={24} style={{ display: 'block' }}>
                                     Party Colour
                                 <Spacer y={.5} />
                                     <Popover trigger="hover" content={<HexColorPicker color={colour} onChange={handleColourChange} />}>
@@ -291,7 +275,7 @@ const PoliticalParties = ({ token }) => {
 export async function getServerSideProps(context) {
     const cookies = parseCookies(context)
 
-    const token = cookies.token
+    const token = cookies.to
     const decodedToken = jwt.decode(token, { complete: true })
     var dateNow = moment(moment().valueOf()).unix()
 

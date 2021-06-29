@@ -11,5 +11,6 @@ namespace eVotingApi.Models.DTO.Responses
         public bool IsTwoFactorEnabled { get; set; }
         public string PublicKey { get; set; }
         public bool HasVoted { get; set; }
+        public string ElectionId { get; set; }
     }
 }

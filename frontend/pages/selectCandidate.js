@@ -39,7 +39,7 @@ const SelectCandidate = ({ exp, candidates, token, public_key }) => {
             candidateId: candidates[stateRef.current].candidateId,
             electionId: cookies.electionId,
             constituencyId: candidates[stateRef.current].constituencyId,
-            ballotTime: moment().valueOf().toString()
+            ballotTime: Math.trunc(moment().valueOf() / 1000).toString()
         }
         var key = new NodeRSA(public_key)
         const encryptedPayload = key.encrypt(payload, 'base64')
@@ -62,8 +62,8 @@ const SelectCandidate = ({ exp, candidates, token, public_key }) => {
             .then(res => {
                 if (res.ok) {
                     res.json()
-                        .then(voteId => {
-                            if (!voteId) {
+                        .then(data => {
+                            if (!data.voteId) {
                                 setToast({
                                     text: 'Failed to cast vote. Please wait and try again.',
                                     type: 'error'
@@ -73,7 +73,7 @@ const SelectCandidate = ({ exp, candidates, token, public_key }) => {
                                     text: 'Vote successfully cast.',
                                     type: 'success'
                                 })
-                                setCookie(null, 'voteId', voteId)
+                                setCookie(null, 'data', JSON.stringify(data))
                                 router.push('/vote-result')
                             }
                         })
@@ -84,7 +84,6 @@ const SelectCandidate = ({ exp, candidates, token, public_key }) => {
                     text: 'Failed to cast vote. Please wait and try again.',
                     type: 'error'
                 })
-                console.log(error)
             })
             setVisible(false)
     }, [])

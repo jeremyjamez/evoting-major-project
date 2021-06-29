@@ -36,11 +36,6 @@ const navMenu = [
         icon: <Users />
     },
     {
-        label: "Constituency",
-        path: "/admin/constituencies",
-        icon: <MapPin/>
-    },
-    {
         label: 'Political Parties',
         path: "/admin/political-parties",
         icon: <CheckSquare/>
@@ -59,7 +54,7 @@ const DashboardLayout = (props) => {
     const [, setElectionEndTime, endTimeRef] = useCurrentState()
     const { setVisible, bindings } = useModal()
 
-    const token = parseCookies(null, 'token').token
+    const token = parseCookies(null).to
     const router = useRouter()
 
     const [, setToast] = useToasts()
@@ -182,7 +177,7 @@ const DashboardLayout = (props) => {
                                         </Grid>
                                         <Grid>
                                             <Button icon={<LogOut />} onClick={() => {
-                                                destroyCookie(null, "token")
+                                                destroyCookie(null, "to")
                                                 router.push('/admin/login')
                                             }} auto shadow type="secondary" size="large">Log Out</Button>
                                         </Grid>
@@ -193,7 +188,7 @@ const DashboardLayout = (props) => {
                                 </Grid>
                             </Grid.Container>
                         </Grid>
-                        <Grid xs={24}>
+                        <Grid xs={24} style={{display: 'block'}}>
                             {props.children}
                         </Grid>
                     </Grid.Container>

@@ -213,7 +213,7 @@ const Users = ({token}) => {
 export async function getServerSideProps(context){
     const cookies = parseCookies(context)
 
-    const token = cookies.token
+    const token = cookies.to
     const decodedToken = jwt.decode(token, { complete: true })
     var dateNow = moment(moment().valueOf()).unix()
 

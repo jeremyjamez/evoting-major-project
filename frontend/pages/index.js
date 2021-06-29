@@ -35,7 +35,7 @@ export default function Home({ publicKey }) {
       voterId: data.voterId,
       DateofBirth: moment(data.dob).toISOString(),
       publicKey: publicKey,
-      currentTime: moment().valueOf()
+      currentTime: Math.trunc(moment().valueOf() / 1000).toString()
     }
 
     const httpsAgent = new https.Agent({
@@ -71,6 +71,7 @@ export default function Home({ publicKey }) {
           } else {
             setCookie(null, 'public_key', t.publicKey)
             setCookie(null, 'voterId', data.voterId)
+            setCookie(null, 'electionId', t.electionId)
 
             if (!t.isTwoFactorEnabled) {
               router.push('/pair')
@@ -186,6 +187,10 @@ export async function getServerSideProps(context) {
 
   destroyCookie(context, 'private_key')
   destroyCookie(context, 'token')
+  destroyCookie(context, 'electionId')
+  destroyCookie(context, 'public_key')
+  destroyCookie(context, 'data')
+  destroyCookie(context, 'voterId')
 
   nookies.set(context, 'private_key', privateKey)
 

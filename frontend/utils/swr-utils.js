@@ -24,12 +24,21 @@ export const useCandidates = (token) => {
 }
 
 export const useElections = (token) => {
-    const { data: elections, error } = useSWR([`${baseUrl}/elections`,token], fetcher)
+    const { data: elections, error } = useSWR([`${baseUrl}/elections`,token], fetcher, {revalidateOnFocus: false, refreshInterval: 0})
     return {
         elections,
         isError: error
     }
 };
+
+export const useGetElection = (token, currentTime) => {
+    const { data: electionId } = useSWR([`${baseUrl}/elections/getbytime/${currentTime}`,token], fetcher, {revalidateOnFocus: false, refreshInterval: 0})
+    const { data: election, error } = useSWR(() => [`${baseUrl}/elections/${electionId}`,token], fetcher, {revalidateOnFocus: false})
+    return {
+        election,
+        isError: error
+    }
+}
 
 export const usePoliticalParties = (token) => {
     const { data: parties, error } = useSWR([`${baseUrl}/politicalparties`,token], fetcher)
@@ -56,32 +65,16 @@ export const useConstituencies = (token) => {
     }
 }
 
-export const useMP = (path,token) => {
-    const { data: mps, error } = useSWR([`${baseUrl}${path}`,token], fetcher)
-    return {
-        mps,
-        isError: error
-    }
-}
-
-export const useConstituencyMP = (name,token) => {
-    const { data: constituency } = useSWR([`${baseUrl}/Constituencies/GetByName/${name}`,token], fetcher)
+export const useConstituency = (name,token) => {
+    const { data: constituency } = useSWR([`${baseUrl}/Constituencies/GetConstituencyByName/${name}`,token], fetcher)
     const { data: candidate } = useSWR(() => [`${baseUrl}/Candidates/GetByConstituency/${constituency.constituencyId}`,token], fetcher)
-    const { data: mp } = useSWR(() => [`${baseUrl}/MemberOfParliaments/${constituency.constituencyId}/${candidate.candidateId}`,token], fetcher)
-    const { data: member } = useSWR(() => [`${baseUrl}/Members/${candidate.candidateId}`,token], fetcher)
     const { data: voters } = useSWR(() => [`${baseUrl}/voters/GetByConstituencyId/${constituency.constituencyId}`,token], fetcher)
 
     return {
         constituency,
         candidate,
-        mp,
-        member,
         voters
     }
-}
-
-export const usePollingStations = () => {
-
 }
 
 export const useUsers = (token) => {

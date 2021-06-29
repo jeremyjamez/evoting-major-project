@@ -75,9 +75,7 @@ namespace eVotingApi.Controllers
                 }
 
                 var jwtToken = GenerateJwtToken(existingUser);
-                DateTime result = DateTime.UtcNow;
-
-                existingUser.LastLoggedIn = result;
+                existingUser.LastLoggedIn = user.LastLoggedIn;
 
                 await _userManager.UpdateAsync(existingUser);
 

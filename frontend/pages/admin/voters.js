@@ -31,24 +31,6 @@ export default function Voters({token}) {
 
     const { voters, isLoading, isError } = useVoters(token)
 
-    const [telephone, setTelephone] = useState('');
-
-    const normalizeInput = (value, previousValue) => {
-        if (!value) return value;
-        const currentValue = value.replace(/[^\d]/g, '');
-        const cvLength = currentValue.length;
-
-        if (!previousValue || value.length > previousValue.length) {
-            if (cvLength < 4) return currentValue;
-            if (cvLength < 7) return `(${currentValue.slice(0, 3)}) ${currentValue.slice(3)}`;
-            return `(${currentValue.slice(0, 3)}) ${currentValue.slice(3, 6)}-${currentValue.slice(6, 10)}`;
-        }
-    };
-
-    const handleTelephoneChange = (e) => {
-        setTelephone(normalizeInput(e.target.value, telephone))
-    };
-
     return (
         <DashboardLayout>
             <Grid.Container style={{margin: '16px'}}>
@@ -69,9 +51,18 @@ export default function Voters({token}) {
 export async function getServerSideProps(ctx) {
     const cookies = nookies.get(ctx)
 
-    const token = cookies.token
+    const token = cookies.to
     const decodedToken = jwt.decode(token, { complete: true })
     var dateNow = moment(moment().valueOf()).unix()
+
+    if(token == null){
+        return {
+            redirect: {
+                destination: '/admin/login',
+                permanent: false
+            }
+        }
+    }
 
     if (decodedToken !== null && decodedToken.payload.exp < dateNow) {
         return {

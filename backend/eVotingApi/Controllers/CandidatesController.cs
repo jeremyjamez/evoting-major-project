@@ -27,6 +27,20 @@ namespace eVotingApi.Controllers
             _candidateService = candidateService;
         }
 
+        [Authorize(Roles = "Administrator,EOJ")]
+        [HttpGet]
+        public async Task<IActionResult> GetCandidates()
+        {
+            var candidates = await _candidateService.GetCandidates();
+
+            if(candidates == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(candidates);
+        }
+
         // GET: api/Candidates/1234567
         [HttpGet("{voterId}")]
         public async Task<IActionResult> GetCandidates(string voterId)
@@ -35,6 +49,19 @@ namespace eVotingApi.Controllers
             //var serializedObj = JsonSerializer.Serialize(candidates.ToArray(), candidates.ToArray().GetType());
             //var encryptedResponse = await new EncryptionConfig<List<CandidateDTO>>().EncryptPayload(serializedObj, voterId);
             return Ok(candidates);
+        }
+
+        [Authorize(Roles = "Administrator,EOJ")]
+        [Route("[action]/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetByConstituency(string id)
+        {
+            var constituency = await _candidateService.GetByConstituency(id);
+
+            if (constituency == null)
+                return NotFound();
+
+            return Ok(constituency);
         }
     }
 }

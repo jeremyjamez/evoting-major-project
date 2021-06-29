@@ -9,9 +9,9 @@ namespace eVotingApi.Models.DTO
     {
         public string Id { get; set; }
         public string VoterId { get; set; }
-        public string VoterName { get; set; }
-        public string Election { get; set; }
-        public string ConstituencyName { get; set; }
-        public string BallotTime { get; set; }
+        public string CandidateId { get; set; }
+        public string ConstituencyId { get; set; }
+        public string ElectionId { get; set; }
+        public long BallotTime { get; set; }
     }
 }
