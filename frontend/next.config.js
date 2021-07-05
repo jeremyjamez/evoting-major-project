@@ -14,7 +14,7 @@ const securityHeaders = [
     },
     {
         key: 'Permissions-Policy',
-        value: 'camera=()'
+        value: 'camera=(self)'
     },
     {
         key: 'X-Content-Type-Options',
