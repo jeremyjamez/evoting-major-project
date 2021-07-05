@@ -135,10 +135,19 @@ export async function getServerSideProps(ctx) {
     var dateNow = moment(moment().valueOf()).unix()
 
     if (decodedToken !== null && decodedToken.payload.exp > dateNow) {
-        if (!Object.prototype.hasOwnProperty(decodedToken.payload, 'Id')) {
+        if(decodedToken.payload.role === 'EOJ' || decodedToken.payload.role === 'Administrator'){
             return {
                 redirect: {
                     destination: '/admin/home',
+                    permanent: false
+                }
+            }
+        }
+
+        if(decodedToken.payload.role === 'EDW'){
+            return {
+                redirect: {
+                    destination: '/admin/search',
                     permanent: false
                 }
             }

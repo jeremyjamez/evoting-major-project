@@ -15,7 +15,7 @@ const schema = yup.object().shape({
   dob: yup.string().required('Date of Birth is a required field.')
 })
 
-export default function Home({ publicKey }) {
+export default function Home({ publicKey, csrfToken }) {
 
   const router = useRouter()
 
@@ -49,6 +49,7 @@ export default function Home({ publicKey }) {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'XSRF-TOKEN': csrfToken
         },
         body: JSON.stringify(payload)
       })

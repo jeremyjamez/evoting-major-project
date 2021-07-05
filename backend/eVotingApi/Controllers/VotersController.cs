@@ -166,6 +166,18 @@ namespace eVotingApi.Controllers
             return Ok(result);
         }
 
+        [Route("[action]")]
+        [HttpGet]
+        public async Task<IActionResult> GetVoterElections()
+        {
+            var voterElections = await _voterService.GetVoter_Elections();
+
+            if (voterElections == null)
+                return NotFound();
+
+            return Ok(voterElections);
+        }
+
         /// <summary>
         /// Randomly selects two security questions from an array of the voter's information
         /// </summary>

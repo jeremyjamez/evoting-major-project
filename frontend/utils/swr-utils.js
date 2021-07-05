@@ -116,3 +116,13 @@ export const useGetParty = (affiliation, token) => {
         isError: error
     }
 }
+
+export const useGetVoterElection = (token) => {
+    const {data: voters, error} = useSWR([`${baseUrl}/voters/getvoterelections`, token], fetcher, {revalidateOnFocus: false})
+
+    return {
+        voters,
+        isLoading: !error && !voters,
+        isError: error
+    }
+}

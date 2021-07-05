@@ -5,10 +5,22 @@ import { Bar, HorizontalBar } from "@reactchartjs/react-chart.js";
 import moment from "moment";
 import nookies from 'nookies'
 import jwt from 'jsonwebtoken'
-import { useCandidates, useConstituencies, useElections, useGetElection } from "../../utils/swr-utils";
+import { useCandidates, useConstituencies, useElections, useGetElection, useGetParty, usePoliticalParties } from "../../utils/swr-utils";
 import DataTable from 'react-data-table-component'
 import { useEffect, useState } from "react";
 import https from 'https'
+
+const options = {
+    scales: {
+        yAxes: [
+            {
+                ticks: {
+                    beginAtZero: true,
+                },
+            },
+        ],
+    },
+}
 
 export default function Home({ token }) {
 
@@ -16,7 +28,7 @@ export default function Home({ token }) {
     const { constituencies } = useConstituencies(token)
     const { candidates } = useCandidates(token)
     //const { election } = useGetElection(token, Math.trunc(moment().valueOf() / 1000).toString())
-    
+
     const { setVisible, bindings } = useModal(false)
 
     const voterPopulationData = {
@@ -56,62 +68,44 @@ export default function Home({ token }) {
 
     const [votes, setVotes, votesRef] = useCurrentState()
     const [voteData, setVoteData, voteDataRef] = useCurrentState()
-
-    var groupBy = function(arr, key) {
-        return arr.reduce(function(rv, x) {
-          (rv[x[key]] = rv[x[key]] || []).push(x);
-          return rv;
-        }, {});
-    }
+    const { parties } = usePoliticalParties(token)
 
     const generateVoteGraph = (data) => {
-        let conArr = []
-        let canArr = []
-        let dataArr = []
+        if (data) {
+            let conArr = constituencies.filter((con) =>
+                data.some((entry) => entry.constituencyId === con.constituencyId))
+                .map((con) => con.name)
 
-        data.forEach(d => {
-            constituencies.forEach(con => {
-                if(con.constituencyId === d.constituencyId){
-                    if(!conArr.includes(con.name)){
-                        conArr.push(con.name)
-                    }
-                }
-            })
+            let canArr = data.filter((d) =>
+                candidates.some((entry) => entry.candidateId === d.candidateId))
+                .map((entry, index) => {
+                    const candidate = candidates.find(
+                        (can) => can.candidateId === entry.candidateId
+                    )
 
-            for(var i = 0; i < candidates.length; i++){
-                if(candidates[i].constituencyId === d.constituencyId){
-                    if(candidates[i].candidateId === d.candidateId){
-                        dataArr.push(d.totalVotes)
-                        canArr.push({
-                            label: candidates[i].lastName + ', ' + candidates[i].firstName,
-                            data: [d.totalVotes]
-                        })
-                        break
+                    if (candidate === null) {
+                        return null
                     }
-                }
+
+                    const constituency = constituencies.find((con) => con.constituencyId === entry.constituencyId)
+                    const conIdx = conArr.indexOf(constituency.name)
+                    const party = parties.find((par) => par.partyId === candidate.affiliation)
+                    return {
+                        label: candidate.lastName + ", " + candidate.firstName,
+                        backgroundColor: party.colour,
+                        data: new Array(conIdx).fill(0).concat([entry.totalVotes])
+                    }
+                })
+
+            const votesData = {
+                labels: conArr,
+                datasets: canArr
             }
-        })
 
-        const votesData = {
-            labels: conArr,
-            datasets: canArr
+            return votesData
         }
-
-        console.log(votesData)
-
-        return votesData
+        return null
     }
-
-    /* votes.forEach(vote => {
-        setChartLabels(vote.constituencyId)
-    });
-
-    console.log(groupBy(votes, 'constituencyId'))
-
-    const votesData = {
-        labels: chartLabels,
-        datasets: groupBy(votes, 'constituencyId')
-    } */
 
     const handleElectionChange = (e) => {
         const httpsAgent = new https.Agent({
@@ -126,15 +120,15 @@ export default function Home({ token }) {
                 'Authorization': 'Bearer ' + token
             }
         })
-        .then(res => {
-            if(res.ok){
-                return res.json()
-            }
-        })
-        .then(data => {
-            setVotes(data)
-            setVoteData(generateVoteGraph(data))
-        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json()
+                }
+            })
+            .then(data => {
+                setVotes(data)
+                setVoteData(generateVoteGraph(data))
+            })
     }
 
     return (
@@ -146,27 +140,21 @@ export default function Home({ token }) {
                             election && <h3>{election.electionType} {moment(election.electionDate).format("DD/MM/YYYY hh:mm a")}</h3>
                         </Card> */}
                     </Grid>
-                    <Grid xs={24} xl={8}>
+                    <Grid xs={24} xl={7}>
                         <Card shadow>
                             <h3>Voter Population</h3>
                             <Bar data={voterPopulationData} />
                         </Card>
                     </Grid>
-                    <Grid xs={24} xl={8}>
+                    <Grid xs={24} xl={17}>
                         <Card shadow>
-                            <h3>Vote Statistics <Text small>(per election)</Text></h3>
-                        </Card>
-                    </Grid>
-                    <Grid xs={24}>
-                        <Card shadow>
-                            
                             <Grid.Container justify="space-between">
                                 <Grid>
                                     <h3>Votes <Text small>(per election)</Text></h3>
                                 </Grid>
                                 <Grid xs={8}>
-                                    <Button iconRight={<BarChart2 size={36}/>} onClick={() => setVisible(true)} auto size="large"></Button>
-                                    <Spacer x={2}/>
+                                    <Button iconRight={<BarChart2 size={36} />} type="secondary" onClick={() => setVisible(true)} auto size="large"></Button>
+                                    <Spacer x={2} />
                                     <Select size="large" width="100%" onChange={handleElectionChange}>
                                         {
                                             elections && elections.map((elec) => {
@@ -193,7 +181,7 @@ export default function Home({ token }) {
             </div>
             <Modal {...bindings} width="100%">
                 <Modal.Content>
-                    <HorizontalBar data={voteDataRef.current}/>
+                    <Bar data={voteDataRef.current} options={options}/>
                 </Modal.Content>
                 <Modal.Action passive onClick={() => setVisible(false)}>Close</Modal.Action>
             </Modal>
@@ -217,7 +205,7 @@ export async function getServerSideProps(ctx) {
     const decodedToken = jwt.decode(token, { complete: true })
     var dateNow = moment(moment().valueOf()).unix()
 
-    if(token == null){
+    if (token == null) {
         return {
             redirect: {
                 destination: '/admin/login',

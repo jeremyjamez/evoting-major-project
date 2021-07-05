@@ -24,7 +24,7 @@ const Verification = ({ questions, exp }) => {
     const pushAnswer = () => {
         setAnswerCorrect((prev) => prev + 1)
         if (correctValueRef.current === 2) {
-            router.push('/selectCandidate')
+            router.push('/facial-verification')
         }
     }
 

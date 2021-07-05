@@ -42,14 +42,6 @@ namespace eVotingApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSwaggerGen(config =>
-            {
-                config.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Online E-Voting Prototype",
-                    Version = "v1"
-                });
-            });
 
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
@@ -154,19 +146,6 @@ namespace eVotingApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers().RequireCors("AllowAll");
-                endpoints.MapSwagger("swagger/{documentName}/swagger.json");
-                endpoints.MapSwagger("swagger/{documentName}/swaggerv2.json", c =>
-                {
-                    c.SerializeAsV2 = true;
-                });
-            });
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.RoutePrefix = "";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Online E-Voting Prototype API V1");
             });
         }
     }

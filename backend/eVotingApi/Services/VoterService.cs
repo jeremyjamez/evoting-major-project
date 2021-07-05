@@ -158,6 +158,11 @@ namespace eVotingApi.Services
             return await _voters.Find(filter).Project(v => QuestionsToDTO(v)).FirstOrDefaultAsync();
         }
 
+        public async Task<List<Voter_Election>> GetVoter_Elections()
+        {
+            return await _voter_elections.Find(ve => true).ToListAsync();
+        }
+
         /*public async Task CheckAnswer(string answer, string voterId)
         {
             var builder = Builders<Voter>.IndexKeys;
