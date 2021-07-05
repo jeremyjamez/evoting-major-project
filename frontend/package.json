@@ -22,7 +22,6 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "next": "^10.2.3",
-    "next-csrf": "^0.1.2",
     "node-rsa": "^1.1.1",
     "nookies": "^2.5.2",
     "react": "^17.0.1",
