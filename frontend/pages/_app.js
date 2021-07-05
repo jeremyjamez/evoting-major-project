@@ -1,13 +1,6 @@
 import '../styles/global.css'
 import Head from 'next/head'
 import { GeistProvider, CssBaseline } from '@geist-ui/react'
-import { nextCsrf } from 'next-csrf'
-
-const options = {
-  secret: process.env.NEXT_PUBLIC_CSRF_SECRET
-}
-
-const { csrf, csrfToken } = nextCsrf(options)
 
 if (typeof document === 'undefined') { //@ts-ignore 
   global.document = { querySelector: function () {},
@@ -32,7 +25,7 @@ function App({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <CssBaseline />
-      <Component {...pageProps} csrf={csrfToken} />
+      <Component {...pageProps} />
     </GeistProvider>
   )
 }
